@@ -398,3 +398,11 @@ def step_impl(context, command, service_name):
     assert "composition" in context, "No composition found in context"
     composition = context.composition
     composition.issueCommand([command], [service_name])
+
+@given(u'user "{user_name}" creates a signature policy envelope "{sig_policy_env_name}" using "{sig_policy_as_string}"')
+def step_impl(context, user_name, sig_policy_env_name, sig_policy_as_string):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    policy_parser = bootstrap_util.PolicyParser(directory)
+    sig_policy_env = policy_parser.parse(sig_policy_as_string)
+    user.setTagValue(tagKey=sig_policy_env_name, tagValue=sig_policy_env)

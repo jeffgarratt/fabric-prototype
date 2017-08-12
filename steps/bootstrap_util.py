@@ -466,6 +466,28 @@ class AuthDSLHelper:
             signed_by=index
         )
 
+    @classmethod
+    def Member(cls, organization):
+        return organization.getMspPrincipalAsRole(mspRoleTypeAsString='MEMBER')
+
+class PolicyParser:
+
+    def __init__(self, directory):
+        self.directory = directory
+
+    def member(self, org_name):
+        org = self.directory.getOrganization(orgName=org_name)
+        return AuthDSLHelper.Member(organization=org)
+
+    def parse(self, policy_string):
+        n_out_of = AuthDSLHelper.NOutOf
+        signed_by = AuthDSLHelper.SignedBy
+        member = self.member
+        envelope = AuthDSLHelper.Envelope
+        result = None
+        exec('result = ' + policy_string)
+        return result
+
 def make_signature_header(serializeCertChain, nonce):
     return common_dot_common_pb2.SignatureHeader(creator=serializeCertChain,
                                                      nonce=nonce)
@@ -759,7 +781,6 @@ def set_default_policies_for_orgs(channel, orgs, group_name, version=0, policy_v
 
         for pKey, pVal in channel.groups[groupName].groups[org.name].policies.iteritems():
             pVal.mod_policy = BootstrapHelper.KEY_POLICY_ADMINS
-
 
 
 def create_envelope_for_msg(directory, nodeAdminTuple, chainId, msg, typeAsString):

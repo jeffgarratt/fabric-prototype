@@ -249,7 +249,7 @@ Feature: Bootstrap
       | peer3      |
 
       # Uncomment this if you wish to stop with just a channel created and joined on all peers
-      And we stop
+#      And we stop
 
       Given the user "configAdminPeerOrg1" creates an peer anchor set "anchors1" for orgs:
         | User            | Peer     | Organization  |
@@ -291,8 +291,9 @@ Feature: Bootstrap
     Given user "peer0Admin" gives "ccSpec" to user "dev0Org0"
       And user "peer0Admin" gives "ccSpec" to user "configAdminPeerOrg0"
 
+    And user "configAdminPeerOrg0" creates a signature policy envelope "signedByMemberOfPeerOrg0AndPeerOrg1" using "envelope(n_out_of(2,[signed_by(0),signed_by(1)]),[member('peerOrg0'), member('peerOrg1')])"
 
-    When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec"
+    When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg0AndPeerOrg1"
 
     And user "configAdminPeerOrg0" using cert alias "config-admin-cert" sends proposal "instantiateProposal1" to endorsers with timeout of "90" seconds with proposal responses "instantiateProposalResponses":
       | Endorser |
@@ -395,4 +396,4 @@ Feature: Bootstrap
 #        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
 #        | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
 #        | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
-#        | dc-base.yml  dc-composer.yml                          | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
+#        | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml                          | 10                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |

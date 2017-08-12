@@ -61,17 +61,19 @@ def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAl
     assert not proposalAlias in user.tags, "Proposal alias '{0}' already exists for '{1}'".format(proposalAlias, userName)
     user.setTagValue(proposalAlias, signedProposal)
 
-@when(u'user "{userName}" using cert alias "{certAlias}" creates a instantiate proposal "{proposalAlias}" for channel "{channelName}" using chaincode spec "{ccSpecAlias}"')
-def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAlias):
+@when(u'user "{userName}" using cert alias "{certAlias}" creates a instantiate proposal "{proposalAlias}" for channel "{channelName}" using chaincode spec "{ccSpecAlias}" and endorsement policy "{sig_policy_env_name}"')
+def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAlias, sig_policy_env_name):
         directory = bootstrap_util.getDirectory(context=context)
         user = directory.getUser(userName=userName)
         assert ccSpecAlias in user.tags, "ChaincodeSpec alias '{0}' not found for user '{1}'".format(ccSpecAlias, userName)
         ccSpec = user.tags[ccSpecAlias]
 
+        sig_policy_env = user.getTagValue(tagKey=sig_policy_env_name)
+
 
         ccDeploymentSpec = endorser_util.createDeploymentSpec(context=context, ccSpec=ccSpec)
         ccDeploymentSpec.code_package = ""
-        lcChaincodeSpec = endorser_util.createDeploymentChaincodeSpecForBDD(ccDeploymentSpec=ccDeploymentSpec, chainID=str(channelName))
+        lcChaincodeSpec = endorser_util.createDeploymentChaincodeSpecForBDD(ccDeploymentSpec=ccDeploymentSpec, chainID=str(channelName), sig_policy_env=sig_policy_env.SerializeToString())
         # Find the cert using the cert tuple information saved for the user under certAlias
         nodeAdminTuple = user.tags[certAlias]
         signersCert = directory.findCertForNodeAdminTuple(nodeAdminTuple)
