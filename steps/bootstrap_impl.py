@@ -376,12 +376,12 @@ def step_impl(context, seconds):
 def step_impl(context, seconds):
     time.sleep(float(seconds))
 
-@given(u'user "{userNameSource}" gives "{objectAlias}" to user "{userNameTarget}"')
-def step_impl(context, userNameSource, objectAlias, userNameTarget):
+@given(u'user "{userNameSource}" gives "{objectAlias}" to user "{userNameTarget}" who saves it as "{target_alias}"')
+def step_impl(context, userNameSource, objectAlias, userNameTarget, target_alias):
     directory = bootstrap_util.getDirectory(context)
     userSource = directory.getUser(userName=userNameSource)
     userTarget = directory.getUser(userName=userNameTarget)
-    userTarget.setTagValue(objectAlias, userSource.tags[objectAlias])
+    userTarget.setTagValue(target_alias, userSource.tags[objectAlias])
 
 @given(u'the ordererBootstrapAdmin creates a cert alias "{certAlias}" for orderer network bootstrap purposes for organizations')
 def step_impl(context, certAlias):

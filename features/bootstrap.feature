@@ -89,8 +89,8 @@ Feature: Bootstrap
     # Sleep as to allow system up time
     And I wait "<SystemUpWaitTime>" seconds
 
-    Given user "ordererBootstrapAdmin" gives "ordererSystemChannelId" to user "configAdminOrdererOrg0"
-    And user "ordererBootstrapAdmin" gives "ordererGenesisBlock" to user "configAdminOrdererOrg0"
+    Given user "ordererBootstrapAdmin" gives "ordererSystemChannelId" to user "configAdminOrdererOrg0" who saves it as "ordererSystemChannelId"
+    And user "ordererBootstrapAdmin" gives "ordererGenesisBlock" to user "configAdminOrdererOrg0" who saves it as "ordererGenesisBlock"
 
     And the orderer config admin "configAdminOrdererOrg0" creates a consortium "consortium1" with modification policy "/Channel/Orderer/Admins" for peer orgs who wish to form a network:
         | Organization  |
@@ -123,7 +123,7 @@ Feature: Bootstrap
       | dev0Org0  | consortium1 | peerOrg0     | consortium1-cert |
       | dev0Org1  | consortium1 | peerOrg1     | consortium1-cert |
 
-    And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org0"
+    And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org0" who saves it as "consortium1"
 
     And the user "dev0Org0" creates a peer organization set "peerOrgSet1" with peer organizations:
       | Organization  |
@@ -165,10 +165,10 @@ Feature: Bootstrap
 
     Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannel" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
-    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "dev0Org1"
+    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "dev0Org1" who saves it as "genesisBlockForMyNewChannel"
 
-    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer0Admin"
-    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer1Admin"
+    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer0Admin" who saves it as "genesisBlockForMyNewChannel"
+    Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer1Admin" who saves it as "genesisBlockForMyNewChannel"
 
 
     # This is entry point for joining an existing channel
@@ -229,8 +229,8 @@ Feature: Bootstrap
 
 #    And I quit
 
-    Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer2Admin"
-    Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer3Admin"
+    Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer2Admin" who saves it as "genesisBlockForMyNewChannel"
+    Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer3Admin" who saves it as "genesisBlockForMyNewChannel"
 
     When user "peer2Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
       | Peer       |
@@ -274,7 +274,7 @@ Feature: Bootstrap
         | Endorser |
         | peer0    |
 
-    Given user "peer0Admin" gives "ccSpec" to user "peer2Admin"
+    Given user "peer0Admin" gives "ccSpec" to user "peer2Admin" who saves it as "ccSpec"
 
     # Under the covers, create a deployment spec, etc.
     When user "peer2Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec"
@@ -288,8 +288,8 @@ Feature: Bootstrap
         | peer2    |
 
 
-    Given user "peer0Admin" gives "ccSpec" to user "dev0Org0"
-      And user "peer0Admin" gives "ccSpec" to user "configAdminPeerOrg0"
+    Given user "peer0Admin" gives "ccSpec" to user "dev0Org0" who saves it as "ccSpec"
+      And user "peer0Admin" gives "ccSpec" to user "configAdminPeerOrg0" who saves it as "ccSpec"
 
     And user "configAdminPeerOrg0" creates a signature policy envelope "signedByMemberOfPeerOrg0AndPeerOrg1" using "envelope(n_out_of(2,[signed_by(0),signed_by(1)]),[member('peerOrg0'), member('peerOrg1')])"
 
