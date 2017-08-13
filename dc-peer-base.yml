@@ -19,6 +19,9 @@ services:
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      # Chaincode logging
+#      - CORE_VM_DOCKER_ATTACHSTDOUT=true
+#      - CORE_CHAINCODE_LOGGING_LEVEL=debug
     ports:
       - '7051'
       - '7053'
