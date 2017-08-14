@@ -284,5 +284,11 @@ class DocumentGenerator:
                 (fileName, fileExists) = self.contextHelper.getTmpPathForName("{0}-{1}-{2}".format(user.getUserName(), tagKey, key), extension="protobuf")
                 self._writeProtobuf(fileName=fileName, msg=msg)
         else:
-            self.output.write(env.get_template("html/cli.html").render(command=str(tagValue)))
+            try:
+                str(tagValue).decode('ascii')
+            except UnicodeDecodeError:
+                self.output.write(env.get_template("html/cli.html").render(command="it was not a ascii-encoded unicode string"))
+            else:
+                # print "It may have been an ascii-encoded unicode string"
+                self.output.write(env.get_template("html/cli.html").render(command=str(tagValue)))
         return result

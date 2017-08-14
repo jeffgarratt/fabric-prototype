@@ -406,3 +406,21 @@ def step_impl(context, user_name, sig_policy_env_name, sig_policy_as_string):
     policy_parser = bootstrap_util.PolicyParser(directory)
     sig_policy_env = policy_parser.parse(sig_policy_as_string)
     user.setTagValue(tagKey=sig_policy_env_name, tagValue=sig_policy_env)
+
+@given(u'user "{user_name}" creates a serialized identity "{serialized_identity_name}" using cert alias "{cert_alias}"')
+def step_impl(context, user_name, serialized_identity_name, cert_alias):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    nat = user.getTagValue(cert_alias)
+    signers_cert = directory.findCertForNodeAdminTuple(nat)
+    serialized_identity = endorser_util.create_serialized_identity(msp_id=nat.organization, signers_cert=signers_cert)
+    user.setTagValue(tagKey=serialized_identity_name, tagValue=serialized_identity)
+
+@given(u'user "{user_name}" invokes "{function}" on "{alias_target}" saving result as "{alias_result}"')
+def step_impl(context, user_name, function, alias_target, alias_result):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    target = user.getTagValue(alias_target)
+    result = None
+    exec('result = target.{0}'.format(function))
+    user.setTagValue(tagKey=alias_result, tagValue=result)

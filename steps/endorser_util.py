@@ -171,3 +171,6 @@ def createDeploymentSpec(context, ccSpec):
     with open(outputPath, 'rb') as f:
         ccDeploymentSpec.ParseFromString(f.read())
     return ccDeploymentSpec
+
+def create_serialized_identity(msp_id, signers_cert):
+    return identities_pb2.SerializedIdentity(mspid=msp_id, id_bytes=crypto.dump_certificate(crypto.FILETYPE_PEM, signers_cert))
