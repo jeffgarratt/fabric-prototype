@@ -235,7 +235,8 @@ class User(Entity, orderer_util.UserRegistration):
 
     def setTagValue(self, tagKey, tagValue, overwrite=False):
         if tagKey in self.tags:
-            assert not overwrite,"TagKey '{0}' already exists for user {1}, and did not provide overwrite=True".format(tagKey, self.getUserName())
+            if not overwrite:
+                raise Exception("TagKey '{0}' already exists for user {1}, and did not provide overwrite=True".format(tagKey, self.getUserName()))
         self.tags[tagKey] = tagValue
         return tagValue
 
