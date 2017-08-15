@@ -46,15 +46,6 @@ def step_impl(context, enrollId, waitTime):
     time.sleep(float(waitTime))
 
 
-@then(u'user "{enrollId}" should get a delivery from "{composeService}" of "{expectedBlocks}" blocks with "{numMsgsToBroadcast}" messages within "{batchTimeout}" seconds')
-def step_impl(context, enrollId, expectedBlocks, numMsgsToBroadcast, batchTimeout, composeService):
-    userRegistration = orderer_util.getUserRegistration(context, enrollId)
-    streamHelper = userRegistration.getDelivererStreamHelper(context, composeService)
-    blocks = streamHelper.getBlocks()
-    # Verify block count
-    assert len(blocks) == int(expectedBlocks), "Expected {0} blocks, received {1}".format(expectedBlocks, len(blocks))
-
-
 @when(u'user "{enrollId}" sends deliver a seek request on "{composeService}" with properties')
 def step_impl(context, enrollId, composeService):
     row = context.table.rows[0]
