@@ -424,3 +424,11 @@ def step_impl(context, user_name, function, alias_target, alias_result):
     result = None
     exec('result = target.{0}'.format(function))
     user.setTagValue(tagKey=alias_result, tagValue=result)
+
+@when(u'the user "{user_name}" using cert alias "{cert_alias}" adds organization "{org_name}" to channel "{channel_id}" using orderer "{compose_service}" collecting signatures from')
+def step_impl(context, user_name, cert_alias, org_name, channel_id, compose_service):
+    directory = bootstrap_util.getDirectory(context)
+    requesting_config_admin = directory.getUser(userName=user_name)
+    requesting_config_admin_nat = requesting_config_admin.tags[cert_alias]
+    signing_nats = [directory.getUser(row['User']).getTagValue(row['Cert Alias']) for row in context.table.rows]
+    bootstrap_util.add_org_to_channel(context, directory, requesting_config_admin_nat, signing_nats, directory.getOrganization(org_name), channel_id)

@@ -1333,5 +1333,43 @@ def get_compose_service_by_organization(directory, discriminator):
     return groupby([(nat.organization, nat.nodeName) for nat in  nats_sorted_by_org if (discriminator in nat.nodeName) and ('signer' in nat.user.lower())], lambda x: x[0])
 
 
-def add_org_to_channel(directory, org, write_set):
-    pass
+def add_org_to_channel(context, directory, requesting_config_admin_nat, signing_nats, org_to_add, channel_id, orderer_compose_service='orderer0'):
+    contextHelper = ContextHelper.GetHelper(context=context)
+    bootstrap_helper = contextHelper.get_bootstrap_helper()
+
+    requesting_config_admin = directory.getUser(requesting_config_admin_nat.user)
+    deliverer_stream_helper = requesting_config_admin.getDelivererStreamHelper(context, orderer_compose_service)
+    latest_config_block = get_latest_configuration_block(deliverer_stream_helper, channel_id)
+    latest_channel_group = get_channel_group_from_config_block(latest_config_block)
+
+    read_set = common_dot_configtx_pb2.ConfigGroup()
+    write_set = common_dot_configtx_pb2.ConfigGroup()
+
+    read_set.CopyFrom(latest_channel_group)
+    write_set.CopyFrom(read_set)
+
+    # Add the MSP Config
+    write_set.groups[ApplicationGroup].groups[org_to_add.name].values[bootstrap_helper.KEY_MSP_INFO].value = toValue(
+        get_msp_config(org=org_to_add, directory=directory))
+    write_set.groups[ApplicationGroup].groups[org_to_add.name].values[bootstrap_helper.KEY_MSP_INFO].mod_policy=bootstrap_helper.KEY_POLICY_ADMINS
+    set_default_policies_for_orgs(channel=write_set, orgs=[org_to_add], group_name=ApplicationGroup)
+
+    # Now increment the ApplicationGroup version because keyset changed
+    write_set.groups[ApplicationGroup].version+=1
+
+    config_update = common_dot_configtx_pb2.ConfigUpdate(channel_id=channel_id, read_set=read_set, write_set=write_set)
+    config_update_envelope = create_config_update_envelope(config_update=config_update)
+
+    #Now add the signature(s)
+    for signing_nat in signing_nats:
+        config_admin = directory.getUser(signing_nat.user)
+        bootstrap_helper.add_signature_to_config_update_envelope(config_update_envelope, (config_admin, signing_nat.organization, directory.findCertForNodeAdminTuple(signing_nat)))
+
+    envelope_for_config_update = create_envelope_for_msg(directory=directory,
+                                                         nodeAdminTuple=requesting_config_admin_nat,
+                                                         chainId=channel_id,
+                                                         msg=config_update_envelope,
+                                                         typeAsString="CONFIG_UPDATE")
+    # Now broadcast to orderer
+    broadcast_channel_config_tx(context=context, certAlias=None, composeService=orderer_compose_service, user=requesting_config_admin,
+                                configTxEnvelope=envelope_for_config_update)
