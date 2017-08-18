@@ -264,7 +264,7 @@ Feature: Bootstrap
     # TODO: Will soon need to collect signatures (owners) and create a SignedChaincodeDeploymentSpec which will supplant the payload for installProposal.
 
     # Under the covers, create a deployment spec, etc.
-    And user "peer0Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec"
+    And user "peer0Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" using chaincode spec "ccSpec"
 
     And user "peer0Admin" using cert alias "peer-admin-cert" sends proposal "installProposal1" to endorsers with timeout of "90" seconds with proposal responses "installProposalResponses":
         | Endorser |
@@ -277,7 +277,7 @@ Feature: Bootstrap
     Given user "peer0Admin" gives "ccSpec" to user "peer2Admin" who saves it as "ccSpec"
 
     # Under the covers, create a deployment spec, etc.
-    When user "peer2Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec"
+    When user "peer2Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" using chaincode spec "ccSpec"
 
     And user "peer2Admin" using cert alias "peer-admin-cert" sends proposal "installProposal1" to endorsers with timeout of "90" seconds with proposal responses "installProposalResponses":
       | Endorser |

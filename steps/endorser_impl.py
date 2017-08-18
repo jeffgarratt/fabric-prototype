@@ -38,8 +38,9 @@ def step_impl(context, userName, ccDeploymentSpecAlias, ccSpecAlias, devopsCompo
     user.setTagValue(ccDeploymentSpecAlias, deploymentSpec)
 
 
-@when(u'user "{userName}" using cert alias "{certAlias}" creates a install proposal "{proposalAlias}" for channel "{channelName}" using chaincode spec "{ccSpecAlias}"')
-def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAlias):
+@when(u'user "{userName}" using cert alias "{certAlias}" creates a install proposal "{proposalAlias}" using chaincode spec "{ccSpecAlias}"')
+def step_impl(context, userName, certAlias, proposalAlias, ccSpecAlias):
+    channelName = ""
     directory = bootstrap_util.getDirectory(context=context)
     user = directory.getUser(userName=userName)
     assert ccSpecAlias in user.tags, "ChaincodeSpec alias '{0}' not found for user '{1}'".format(ccSpecAlias, userName)
