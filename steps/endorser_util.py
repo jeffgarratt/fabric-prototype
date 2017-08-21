@@ -160,7 +160,7 @@ def _createDeploymentSpecAsFile(ccSpec, outputPath):
 def createDeploymentSpec(context, ccSpec):
     contextHelper = ContextHelper.GetHelper(context=context)
     cacheDeploymentSpec = contextHelper.isConfigEnabled("cache-deployment-spec")
-    fileName = "deploymentspec-{0}-{1}-{2}".format(chaincode_pb2.ChaincodeSpec.Type.Name(ccSpec.type), ccSpec.chaincode_id.path, ccSpec.chaincode_id.name)
+    fileName = "deploymentspec-{0}-{1}-{2}-{3}".format(chaincode_pb2.ChaincodeSpec.Type.Name(ccSpec.type), ccSpec.chaincode_id.path, ccSpec.chaincode_id.name, ccSpec.chaincode_id.version)
     outputPath, fileExists = contextHelper.getTmpPathForName(name=fileName,
                                                              copyFromCache=cacheDeploymentSpec)
     if not fileExists:

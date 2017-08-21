@@ -257,7 +257,7 @@ Feature: Bootstrap
 
 
     # Entry point for invoking on an existing channel
-    When user "peer0Admin" creates a chaincode spec "ccSpec" with name "example02" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02" with args
+    When user "peer0Admin" creates a chaincode spec "ccSpec" with name "example02" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02" with args
       | funcName | arg1 |  arg2 | arg3 | arg4 |
       |   init   |  a   |  100  |  b   |  200 |
 

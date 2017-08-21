@@ -17,12 +17,12 @@ import endorser_util
 import bdd_grpc_util
 import bootstrap_util
 
-@when(u'user "{userName}" creates a chaincode spec "{ccSpecAlias}" with name "{chaincodeName}" of type "{ccType}" for chaincode "{chaincodePath}" with args')
-def step_impl(context, userName, ccType, chaincodeName, chaincodePath, ccSpecAlias):
+@when(u'user "{userName}" creates a chaincode spec "{ccSpecAlias}" with name "{chaincodeName}" and version "{version}" of type "{ccType}" for chaincode "{chaincodePath}" with args')
+def step_impl(context, userName, ccType, chaincodeName, version, chaincodePath, ccSpecAlias):
 	directory = bootstrap_util.getDirectory(context=context)
 	user = directory.getUser(userName)
 	args =  bootstrap_util.getArgsFromContextForUser(context, userName)
-	ccSpec = endorser_util.getChaincodeSpec(cc_type=ccType, path=chaincodePath, name=chaincodeName, args=bdd_grpc_util.toStringArray(args))
+	ccSpec = endorser_util.getChaincodeSpec(cc_type=ccType, path=chaincodePath, name=chaincodeName, args=bdd_grpc_util.toStringArray(args), version=version)
 	print("ccSpec = {0}".format(ccSpec))
 	user.setTagValue(ccSpecAlias, ccSpec)
 
