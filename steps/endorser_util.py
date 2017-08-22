@@ -113,6 +113,11 @@ def signProposal(proposal, entity, signersCert):
 	return signedProposal
 
 
+def createUpgradeChaincodeSpecForBDD(ccDeploymentSpec, chainID, **kwargs):
+    lc_chaincode_spec = getChaincodeSpec(cc_type="GOLANG", path="", name="lscc",
+                                         args=['upgrade', chainID, ccDeploymentSpec.SerializeToString()] + kwargs.values())
+    return lc_chaincode_spec
+
 def createDeploymentChaincodeSpecForBDD(ccDeploymentSpec, chainID, **kwargs):
     lc_chaincode_spec = getChaincodeSpec(cc_type="GOLANG", path="", name="lscc",
                                          args=['deploy', chainID, ccDeploymentSpec.SerializeToString()] + kwargs.values())

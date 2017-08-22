@@ -88,6 +88,34 @@ def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAl
         assert not proposalAlias in user.tags, "Proposal alias '{0}' already exists for '{1}'".format(proposalAlias, userName)
         user.setTagValue(proposalAlias, signedProposal)
 
+@when(u'user "{userName}" using cert alias "{certAlias}" creates an upgrade proposal "{proposalAlias}" for channel "{channelName}" using chaincode spec "{ccSpecAlias}" and endorsement policy "{sig_policy_env_name}"')
+def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAlias, sig_policy_env_name):
+    directory = bootstrap_util.getDirectory(context=context)
+    user = directory.getUser(userName=userName)
+    assert ccSpecAlias in user.tags, "ChaincodeSpec alias '{0}' not found for user '{1}'".format(ccSpecAlias, userName)
+    ccSpec = user.tags[ccSpecAlias]
+
+    sig_policy_env = user.getTagValue(tagKey=sig_policy_env_name)
+
+
+    ccDeploymentSpec = endorser_util.createDeploymentSpec(context=context, ccSpec=ccSpec)
+    ccDeploymentSpec.code_package = ""
+    lcChaincodeSpec = endorser_util.createUpgradeChaincodeSpecForBDD(ccDeploymentSpec=ccDeploymentSpec, chainID=str(channelName), sig_policy_env=sig_policy_env.SerializeToString())
+    # Find the cert using the cert tuple information saved for the user under certAlias
+    nodeAdminTuple = user.tags[certAlias]
+    signersCert = directory.findCertForNodeAdminTuple(nodeAdminTuple)
+    mspID = nodeAdminTuple.organization
+
+    proposal = endorser_util.createInvokeProposalForBDD(context, ccSpec=lcChaincodeSpec, chainID=channelName,signersCert=signersCert, Mspid=mspID, type="ENDORSER_TRANSACTION")
+
+    signedProposal = endorser_util.signProposal(proposal=proposal, entity=user, signersCert=signersCert)
+
+    # proposal = endorser_util.createDeploymentProposalForBDD(ccDeploymentSpec)
+    assert not proposalAlias in user.tags, "Proposal alias '{0}' already exists for '{1}'".format(proposalAlias, userName)
+    user.setTagValue(proposalAlias, signedProposal)
+
+
+
 @when(u'user "{userName}" using cert alias "{certAlias}" creates a proposal "{proposalAlias}" for channel "{channelName}" using chaincode spec "{ccSpecAlias}"')
 def step_impl(context, userName, certAlias, proposalAlias, channelName, ccSpecAlias):
     directory = bootstrap_util.getDirectory(context=context)
