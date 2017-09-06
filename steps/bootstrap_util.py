@@ -917,6 +917,12 @@ class CallbackHelper:
                                "{0}-{1}-{2}-tls.key".format(pnt.user, pnt.nodeName, pnt.organization))
         return (keyPath, certPath)
 
+    def getFilestorePath(self, project_name, compose_service, pathType=PathType.Local):
+        assert pathType in PathType, "Expected pathType of {0}".format(PathType)
+        basePath = "."
+        if pathType == PathType.Container:
+            basePath = self.volumeRootPathInContainer
+        return "{0}/volumes/{1}/{2}/{3}/filestore".format(basePath, self.discriminator, project_name, compose_service)
 
     def getLocalMspConfigRootCertPath(self, directory , project_name, compose_service, pathType=PathType.Local):
         (localMspConfigPath, nodeAdminTuple) = self._getPathAndUserInfo(directory=directory, project_name=project_name, compose_service=compose_service, pathType=pathType)
@@ -925,6 +931,11 @@ class CallbackHelper:
     def _createCryptoMaterial(self,directory , project_name, compose_service, network):
         self._writeMspFiles(directory , project_name=project_name, compose_service=compose_service, network=network)
         self._writeTLSFiles(directory , project_name=project_name, compose_service=compose_service, network=network)
+
+    def _createFilestore(self, project_name, compose_service):
+        local_filestore_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service)
+        os.makedirs("{0}".format(local_filestore_path))
+
 
     def _writeMspFiles(self, directory , project_name, compose_service, network):
         localMspConfigPath = self.getLocalMspConfigPath(project_name, compose_service)
@@ -1012,6 +1023,8 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
                                        compose_service=ordererService,
                                        project_name=composition.projectName,
                                        network=Network.Orderer)
+            self._createFilestore(compose_service=ordererService,
+                                  project_name=composition.projectName)
 
     def decomposing(self, composition, context):
         'Will remove the orderer volume path folder for the context'
@@ -1032,6 +1045,10 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             env["{0}_ORDERER_GENERAL_TLS_PRIVATEKEY".format(ordererService.upper())] = keyPath
             env["{0}_ORDERER_GENERAL_TLS_ROOTCAS".format(ordererService.upper())] = "[{0}]".format(self.getLocalMspConfigRootCertPath(
                 directory=directory, project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container))
+            # The Filestore settings
+            container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container)
+            env["{0}_ORDERER_FILELEDGER_LOCATION".format(ordererService.upper())] = container_filestore_path
+
 
 class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Peer nodes upon composition'
@@ -1054,6 +1071,9 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
                                        compose_service=peerService,
                                        project_name=composition.projectName,
                                        network=Network.Peer)
+            self._createFilestore(compose_service=peerService,
+                                  project_name=composition.projectName)
+
 
     def decomposing(self, composition, context):
         'Will remove the orderer volume path folder for the context'
@@ -1075,6 +1095,9 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
             env["{0}_CORE_PEER_TLS_ROOTCERT_FILE".format(peerService.upper())] = self.getLocalMspConfigRootCertPath(
                 directory=directory, project_name=composition.projectName, compose_service=peerService, pathType=PathType.Container)
             env["{0}_CORE_PEER_TLS_SERVERHOSTOVERRIDE".format(peerService.upper())] = peerService
+            # The Filestore settings
+            container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=peerService, pathType=PathType.Container)
+            env["{0}_CORE_PEER_FILESYSTEMPATH".format(peerService.upper())] = container_filestore_path
 
 
 def getDefaultConsortiumGroup(consortiums_mod_policy):
