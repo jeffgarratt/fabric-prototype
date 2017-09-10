@@ -191,15 +191,21 @@ class UserRegistration:
         for compose_service, deliverStreamHelper in self.abDeliversStreamHelperDict.iteritems():
             deliverStreamHelper.send(None)
         self.abDeliversStreamHelperDict.clear()
+        self.atomicBroadcastStubsDict.clear()
 
-    def connectToDeliverFunction(self, context, composeService, nodeAdminTuple, timeout=1):
+    def connectToDeliverFunction(self, context, composeService, nodeAdminTuple, timeout=1, fail_if_already_connected=False):
         'Connect to the deliver function and drain messages to associated orderer queue'
-        assert not composeService in self.abDeliversStreamHelperDict, "Already connected to deliver stream on {0}".format(composeService)
-        streamHelper = DeliverStreamHelper(directory=self.directory,
+        streamHelper = None
+        if composeService in self.abDeliversStreamHelperDict:
+            if fail_if_already_connected:
+                raise Exception("Already connected to deliver stream on {0}".format(composeService))
+            streamHelper = self.abDeliversStreamHelperDict[composeService]
+        else:
+            streamHelper = DeliverStreamHelper(directory=self.directory,
                                            ordererStub=self.getABStubForComposeService(context=context,
                                                                                        composeService=composeService),
                                            entity=self, nodeAdminTuple=nodeAdminTuple)
-        self.abDeliversStreamHelperDict[composeService] = streamHelper
+            self.abDeliversStreamHelperDict[composeService] = streamHelper
         return streamHelper
 
     def getDelivererStreamHelper(self, context, composeService):

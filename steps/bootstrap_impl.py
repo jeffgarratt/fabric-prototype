@@ -295,8 +295,6 @@ def step_impl(context, userName, composeService):
 
 @given(u'user "{userName}" retrieves the latest config update "{latest_config_name}" from orderer "{service_name}" for channel "{channel_id_or_ref}"')
 def step_impl(context, userName, latest_config_name, service_name, channel_id_or_ref):
-
-
     directory = bootstrap_util.getDirectory(context)
     user = directory.getUser(userName=userName)
     (channel_id,) = bootstrap_util.get_args_for_user([channel_id_or_ref], user)
@@ -357,6 +355,11 @@ def step_impl(context, userName, anchorSetName):
     nodeAdminTuples = [directory.findNodeAdminTuple(row['User'], row['Peer'], row['Organization']) for row in context.table.rows]
     user.setTagValue(anchorSetName, bootstrap_util.getAnchorPeersConfigGroup(context=context, nodeAdminTuples=nodeAdminTuples))
 
+
+@given(u'we set the base fabric version to "{default_fabric_version}"')
+def step_impl(context, default_fabric_version):
+    compose.Composition.set_default_version(context, default_fabric_version)
+
 @given(u'we compose "{composeYamlFile}"')
 def step_impl(context, composeYamlFile):
     # time.sleep(10)              # Should be replaced with a definitive interlock guaranteeing that all peers/membersrvc are ready
@@ -399,6 +402,14 @@ def step_impl(context, command, service_name):
     composition = context.composition
     composition.issueCommand([command], [service_name])
 
+@given(u'user "{user_name}" issues the "{command}" command to "{service_name}"')
+def step_impl(context, user_name, command, service_name):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    assert "composition" in context, "No composition found in context"
+    composition = context.composition
+    composition.issueCommand([command], [service_name])
+
 @given(u'user "{user_name}" creates a signature policy envelope "{sig_policy_env_name}" using "{sig_policy_as_string}"')
 def step_impl(context, user_name, sig_policy_env_name, sig_policy_as_string):
     directory = bootstrap_util.getDirectory(context)
@@ -432,3 +443,34 @@ def step_impl(context, user_name, cert_alias, org_name, channel_id, compose_serv
     requesting_config_admin_nat = requesting_config_admin.tags[cert_alias]
     signing_nats = [directory.getUser(row['User']).getTagValue(row['Cert Alias']) for row in context.table.rows]
     bootstrap_util.add_org_to_channel(context, directory, requesting_config_admin_nat, signing_nats, directory.getOrganization(org_name), channel_id)
+
+@given(u'user "{user_name}" upgrades "{compose_service}" to version "{upgrade_version}"')
+def step_impl(context, user_name, compose_service, upgrade_version):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    assert "composition" in context, "No composition found in context"
+    composition = context.composition
+    composition.issueCommand(['stop'],[compose_service])
+    composition.issueCommand(['rm','-f'],[compose_service])
+    composition.set_version_for_service(compose_service, upgrade_version)
+    composition.issueCommand(['up','-d'],[compose_service])
+
+
+@given(u'all users disconnect from orderers')
+def step_impl(context):
+    directory = bootstrap_util.getDirectory(context)
+    directory.cleanup()
+
+@given(u'user "{user_name}" creates a capabilities config update "{config_update_alias}" using config "{config_update_source_alias}" using channel ID "{channel_id_or_ref}" with mod policy "{mod_policy}" for group "{group_name}" to add capabilities')
+def step_impl(context, user_name, config_update_alias, config_update_source_alias, channel_id_or_ref, mod_policy , group_name):
+    contextHelper = ContextHelper.GetHelper(context=context)
+    bootstrap_helper = contextHelper.get_bootstrap_helper()
+    directory = bootstrap_util.getDirectory(context)
+    config_admin = directory.getUser(user_name)
+    (channel_id,) = bootstrap_util.get_args_for_user([channel_id_or_ref], config_admin)
+    source_channel_group = config_admin.getTagValue(config_update_source_alias)
+    capabilities_to_add = [row['Capabilities'] for row in context.table.rows]
+    # new_config_group = bootstrap_helper.add_capabilities(config_group=source_channel_group.groups[group_name], capabilities_to_add=capabilities_to_add)
+    new_config_update = bootstrap_helper.create_capabilities_config_update(channel_id=channel_id, config_group=source_channel_group, group_name=group_name, capabilities=capabilities_to_add)
+    config_admin.setTagValue(config_update_alias, new_config_update)
+

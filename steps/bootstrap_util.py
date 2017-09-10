@@ -536,6 +536,8 @@ class BootstrapHelper:
     # OrdererAddressesKey is the cb.ConfigItem type key name for the OrdererAddresses message
     KEY_ORDERER_ADDRESSES = "OrdererAddresses"
 
+    # Key for capabilities
+    KEY_CAPABILITIES = "Capabilities"
 
     DEFAULT_NONCE_SIZE = 24
 
@@ -700,6 +702,55 @@ class BootstrapHelper:
 
 
         return channel
+
+
+    def add_capabilities(self, config_group, capabilities_to_add, mod_policy="Admins", increment_new_group_version=True, increment_value_version=True, fail_if_exists=True):
+        # First create a copy to return (does NOT alter the supplied messages)
+        new_config_group = common_dot_configtx_pb2.ConfigGroup()
+        new_config_group.CopyFrom(config_group)
+
+        #Must increment the version of the group as the cardinality of a member is changing
+        if increment_new_group_version:
+            new_config_group.version +=1
+
+        # Increment the version if required
+        if BootstrapHelper.KEY_CAPABILITIES in new_config_group.values:
+            if increment_value_version:
+                new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].version +=1
+        else:
+            # Newly created, set the appropriate mod_policy and version
+            new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].mod_policy = mod_policy
+            new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].version = 0
+
+        # Get the current capabilities
+        capabilities = common_dot_configuration_pb2.Capabilities()
+        capabilities.ParseFromString(new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].value)
+
+        # Make sure does NOT already exist
+        for new_capabilitiy in capabilities_to_add:
+            if fail_if_exists:
+                assert not new_capabilitiy in capabilities.capabilities, 'Capability already exist: {0}'.format(new_capabilitiy)
+            # Now add
+            capabilities.capabilities[new_capabilitiy]
+        new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].value = capabilities.SerializeToString()
+        return new_config_group
+
+    def create_capabilities_config_update(self, channel_id, config_group, group_name, capabilities):
+        'Creates the config update and adds capabilities specified'
+
+        read_set = common_dot_configtx_pb2.ConfigGroup()
+        write_set = common_dot_configtx_pb2.ConfigGroup()
+
+        read_set.CopyFrom(config_group)
+        write_set.CopyFrom(read_set)
+
+        new_config_group = self.add_capabilities(config_group=config_group.groups[group_name], capabilities_to_add=capabilities)
+
+        write_set.groups[group_name].CopyFrom(new_config_group)
+
+        config_update = common_dot_configtx_pb2.ConfigUpdate(channel_id=channel_id, read_set=read_set, write_set=write_set)
+
+        return config_update
 
 
 def getDirectory(context):
@@ -1051,6 +1102,10 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container)
             env["{0}_ORDERER_FILELEDGER_LOCATION".format(ordererService.upper())] = container_filestore_path
 
+            # Now the orderer image if it is set
+            version_for_orderer = composition.get_version_for_service(ordererService)
+            if version_for_orderer:
+                env["{0}_VERSION_EXTENSION".format(ordererService.upper())] = ":{0}".format(version_for_orderer)
 
 class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Peer nodes upon composition'
@@ -1100,6 +1155,12 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
             # The Filestore settings
             container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=peerService, pathType=PathType.Container)
             env["{0}_CORE_PEER_FILESYSTEMPATH".format(peerService.upper())] = container_filestore_path
+
+            # Now the peer image if it is set
+            version_for_peer = composition.get_version_for_service(peerService)
+            if version_for_peer:
+                env["{0}_VERSION_EXTENSION".format(peerService.upper())] = ":{0}".format(version_for_peer)
+
 
 
 def getDefaultConsortiumGroup(consortiums_mod_policy):

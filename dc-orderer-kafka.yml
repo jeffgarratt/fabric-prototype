@@ -145,6 +145,7 @@ services:
       - zookeeper2
 
   orderer0:
+    image: hyperledger/fabric-orderer${ORDERER0_VERSION_EXTENSION}
     extends:
       file: dc-orderer-base.yml
       service: orderer
@@ -158,6 +159,7 @@ services:
       - kafka3
 
   orderer1:
+    image: hyperledger/fabric-orderer${ORDERER1_VERSION_EXTENSION}
     extends:
       service: orderer0
     environment:
@@ -177,6 +179,7 @@ services:
       - kafka3
 
   orderer2:
+    image: hyperledger/fabric-orderer${ORDERER2_VERSION_EXTENSION}
     extends:
       service: orderer0
     environment:

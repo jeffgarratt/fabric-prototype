@@ -19,12 +19,15 @@ from msp import msp_config_pb2, msp_principal_pb2, identities_pb2
 from peer import configuration_pb2 as peer_dot_configuration_pb2
 from orderer import configuration_pb2 as orderer_dot_configuration_pb2
 
-from {{ msgClassModule }} import {{ msgClassName }}
-{{ msgVarName }} = {{ msgClassName }}()
-directory.initFromPath('{{ path_to_pickle }}')
+#from {{ msgClassModule }} import {{ msgClassName }}
+#{{ msgVarName }} = {{ msgClassName }}()
+#directory.initFromPath('{{ path_to_pickle }}')
 
 from steps import bootstrap_util, contexthelper, compose
 context = contexthelper.Context()
+directory = bootstrap_util.getDirectory(context)
+directory.initFromPath('{{ path_to_pickle }}')
+
 composition = compose.Composition(context=context, projectName='{{ compose_project_name }}', composeFilesYaml='{{  docker_compose_yml_file }}', register_and_up=False)
 composition.rebuildContainerData()
 context.compose_containers=composition.containerDataList
