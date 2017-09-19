@@ -6,3 +6,4 @@
 [behave]
 tags=~@orderer
 	 ~@endorser
+	 ~@safe_asset_transfer

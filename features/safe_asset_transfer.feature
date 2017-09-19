@@ -11,7 +11,8 @@
 #  @generateDocs will generate documentation for the scenario that can be used for both verification and comprehension.
 #
 
-@bootstrap
+
+@safe_asset_transfer
 Feature: Safe Asset Transfer
   As a blockchain user
   I want to bootstrap a new blockchain network and demonstrate safe asset transfer

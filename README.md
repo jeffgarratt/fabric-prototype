@@ -1,9 +1,19 @@
-# Welcome to the Behavioral Driven Development (BDD) subsytem for Fabric
-Developers will find these mechanisms useful for both exploratory and verification purposes.
+# Welcome to Fabric Prototype
+Developers will find these mechanisms useful for prototyping variant Hyperledger Fabric based systems.
 
 ## Getting started
 
 ### Installation
+
+#### Prerequisites
+Make sure you have a properly configured Hyperledger Fabric development environment.
+
+#### Clone this repo into fabric root folder
+From the fabric root folder
+```
+git clone https://github.com/jeffgarratt/fabric-prototype.git
+cd fabric-prototype
+```
 
 #### Setup python virtual environment wrapper usage
 
@@ -78,7 +88,7 @@ The behave system also uses several docker containers.  Execute the following co
 Change back to the bddtests folder (Where this readme is located) to execute subsequent behave commands.
 
 ```
-    cd bddtests
+    cd fabric-prototype
 ```
 
 #### Running all of the behave features and suppressing skipped steps (-k)
