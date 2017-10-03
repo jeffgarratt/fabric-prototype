@@ -43,6 +43,16 @@ This will automaticall switch you to the new environment if successful.  In the 
 
 **NOTE**: If you have issues installing the modules below, and you are running the vagrant environment, consider performing a **vagrant destroy** followed by a **vagrant up**.
 
+You can install either using fixed versions with a requirments file or by installing the latest based upon pip.
+
+##### Installing using a requirements.txt file with fixed versions
+
+```
+pip install -r requirements.txt
+```
+
+##### Installing using latest versions from pip
+
 ```
     pip install behave
     pip install grpcio-tools

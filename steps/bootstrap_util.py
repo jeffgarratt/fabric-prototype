@@ -22,7 +22,6 @@ if sys.version_info < (3, 6):
     import sha3
 
 from OpenSSL import crypto
-from OpenSSL import rand
 import ecdsa
 
 from collections import namedtuple
@@ -542,7 +541,8 @@ class BootstrapHelper:
 
     @classmethod
     def getNonce(cls):
-        return rand.bytes(BootstrapHelper.DEFAULT_NONCE_SIZE)
+        # return rand.bytes(BootstrapHelper.DEFAULT_NONCE_SIZE)
+        return os.urandom(BootstrapHelper.DEFAULT_NONCE_SIZE)
 
     def add_signature_to_config_update_envelope(self, configUpdateEnvelope, (entity, mspId, cert)):
         serializedIdentity = identities_pb2.SerializedIdentity(mspid=mspId, id_bytes=crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -878,7 +878,7 @@ class LocalMspConfig(Enum):
 class CallbackHelper:
 
 
-    def __init__(self, discriminator, volumeRootPathInContainer = "/var/hyperledger/bddtests"):
+    def __init__(self, discriminator, volumeRootPathInContainer = "/var/hyperledger/bddtests", volumeRootPathLocal = "/var/hyperledger/bddtests"):
         self.volumeRootPathInContainer = volumeRootPathInContainer
         self.discriminator = discriminator
 
