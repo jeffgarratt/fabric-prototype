@@ -13,7 +13,7 @@ services:
 #       - couchdb0
     volumes:
         - ${COMPOSER0_PATH_TO_HFC}:/home/composer/.hfc-key-store
-        - ./volumes/composer:/var/hyperledger/bddtests/volumes/composer
+        - /var/hyperledger/bddtests/volumes/composer:/var/hyperledger/bddtests/volumes/composer
 
     environment:
         -  COMPOSER_CONFIG=${COMPOSER0_COMPOSER_CONFIG}
@@ -61,6 +61,6 @@ services:
        - peer2
 #       - couchdb2
     volumes:
-        - ./volumes/composer:/var/hyperledger/bddtests/volumes/composer
+        - /var/hyperledger/bddtests/volumes/composer:/var/hyperledger/bddtests/volumes/composer
     environment:
           COMPOSER_CONFIG: ${COMPOSER1_COMPOSER_CONFIG}

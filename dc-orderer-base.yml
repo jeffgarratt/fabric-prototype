@@ -19,7 +19,7 @@ services:
       - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
       - ORDERER_KAFKA_VERBOSE=true
     volumes:
-      - ./volumes/orderer:/var/hyperledger/bddtests/volumes/orderer
+      - /var/hyperledger/bddtests/volumes/orderer:/var/hyperledger/bddtests/volumes/orderer
       - /etc/hyperledger/msp:/etc/hyperledger/msp
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer

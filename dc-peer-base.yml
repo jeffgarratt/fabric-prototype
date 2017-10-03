@@ -26,7 +26,7 @@ services:
       - '7051'
       - '7053'
     volumes:
-      - ./volumes/peer:/var/hyperledger/bddtests/volumes/peer
+      - /var/hyperledger/bddtests/volumes/peer:/var/hyperledger/bddtests/volumes/peer
       - /var/run/docker.sock:/var/run/docker.sock
     # Script will wait until membersrvc is up (if it exists) before starting
     # $$GOPATH (double dollar) required to prevent docker-compose doing its own

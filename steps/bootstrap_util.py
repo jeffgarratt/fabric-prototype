@@ -880,11 +880,12 @@ class CallbackHelper:
 
     def __init__(self, discriminator, volumeRootPathInContainer = "/var/hyperledger/bddtests", volumeRootPathLocal = "/var/hyperledger/bddtests"):
         self.volumeRootPathInContainer = volumeRootPathInContainer
+        self.volumeRootPathLocal = volumeRootPathLocal
         self.discriminator = discriminator
 
     def getVolumePath(self, project_name, pathType=PathType.Local):
         assert pathType in PathType, "Expected pathType of {0}".format(PathType)
-        basePath = "."
+        basePath = self.volumeRootPathLocal
         if pathType == PathType.Container:
             basePath = self.volumeRootPathInContainer
         return "{0}/volumes/{1}/{2}".format(basePath, self.discriminator, project_name)
@@ -919,7 +920,7 @@ class CallbackHelper:
 
     def getFilestorePath(self, project_name, compose_service, pathType=PathType.Local):
         assert pathType in PathType, "Expected pathType of {0}".format(PathType)
-        basePath = "."
+        basePath = self.volumeRootPathLocal
         if pathType == PathType.Container:
             basePath = self.volumeRootPathInContainer
         return "{0}/volumes/{1}/{2}/{3}/filestore".format(basePath, self.discriminator, project_name, compose_service)
