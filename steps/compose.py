@@ -19,15 +19,18 @@ import bdd_test_util
 from contexthelper import ContextHelper
 import json
 
+from collections import defaultdict
+
 from abc import ABCMeta, abstractmethod
 
 class ContainerData:
-    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports):
+    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports, image):
         self.containerName = containerName
         self.ipAddress = ipAddress
         self.envFromInspect = envFromInspect
         self.composeService = composeService
         self.ports = ports
+        self.image = image
 
     def getEnv(self, key):
         envValue = None
@@ -65,6 +68,8 @@ def GetDockerSafeUUID():
 
 class Composition:
 
+    KEY_ENV_EXTENSION_VERSION = 'VERSION'
+
     @classmethod
     def RegisterCallbackInContext(cls, context, callback):
         if not isinstance(callback, CompositionCallback):
@@ -82,6 +87,18 @@ class Composition:
     def GetUUID(cls):
         return GetDockerSafeUUID()
 
+    @classmethod
+    def set_default_version(cls, context, default_version):
+        context.composition_default_version = default_version
+
+
+    @classmethod
+    def get_default_version(cls, context):
+        if not "composition_default_version" in context:
+            context.composition_default_version = "latest"
+        return context.composition_default_version
+
+
     def __init__(self, context, composeFilesYaml, projectName=None,
                  force_recreate=True, components=[], register_and_up=True):
         self.contextHelper = ContextHelper.GetHelper(context=context)
@@ -93,6 +110,7 @@ class Composition:
         self.composeFilesYaml = composeFilesYaml
         self.serviceNames = []
         self.serviceNames = self._collectServiceNames()
+        self.env_extensions = defaultdict(dict)
         if register_and_up:
             # Register with contextHelper (Supports docgen)
             self.contextHelper.registerComposition(self)
@@ -213,13 +231,17 @@ class Composition:
             # container environment
             container_env = container['Config']['Env']
 
+            # container image
+            container_image = container['Config']['Image']
+
+
             # container exposed ports
             container_ports = container['NetworkSettings']['Ports']
 
             # container docker-compose service
             container_compose_service = container['Config']['Labels']['com.docker.compose.service']
 
-            self.containerDataList.append(ContainerData(container_name, container_ipaddress, container_env, container_compose_service, container_ports))
+            self.containerDataList.append(ContainerData(container_name, container_ipaddress, container_env, container_compose_service, container_ports, container_image))
 
     def decompose(self):
         self.issueCommand(["unpause"])
@@ -243,3 +265,13 @@ class Composition:
 
         # Invoke callbacks
         [callback.decomposing(self, self.context) for callback in Composition.GetCompositionCallbacksFromContext(self.context)]
+
+
+    def set_version_for_service(self, compose_service, upgrade_version):
+        self.env_extensions[compose_service][Composition.KEY_ENV_EXTENSION_VERSION] = upgrade_version
+
+    def get_version_for_service(self, compose_service):
+        version = Composition.get_default_version(self.contextHelper.context)
+        if self.env_extensions[compose_service].has_key(Composition.KEY_ENV_EXTENSION_VERSION):
+            version = self.env_extensions[compose_service][Composition.KEY_ENV_EXTENSION_VERSION]
+        return version
