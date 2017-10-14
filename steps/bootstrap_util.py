@@ -658,6 +658,7 @@ class BootstrapHelper:
                 rule=ruleMajority, sub_policy=BootstrapHelper.KEY_POLICY_ADMINS).SerializeToString()))
             for pKey, pVal in group.policies.iteritems():
                 pVal.mod_policy = BootstrapHelper.KEY_POLICY_ADMINS
+            group.mod_policy = BootstrapHelper.KEY_POLICY_ADMINS
 
         # Setting block validation policy for the orderer group
         channel.groups[OrdererGroup].policies[BootstrapHelper.KEY_POLICY_BLOCK_VALIDATION].policy.CopyFrom(Policy(type=typeImplicitMeta, value=IMP(
