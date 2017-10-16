@@ -24,13 +24,15 @@ from collections import defaultdict
 from abc import ABCMeta, abstractmethod
 
 class ContainerData:
-    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports, image):
+    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports, image, inspect_data):
         self.containerName = containerName
         self.ipAddress = ipAddress
         self.envFromInspect = envFromInspect
         self.composeService = composeService
         self.ports = ports
         self.image = image
+        self.inspect_data = inspect_data
+
 
     def getEnv(self, key):
         envValue = None
@@ -215,33 +217,33 @@ class Composition:
         for containerID in self.refreshContainerIDs():
 
             # get container metadata
-            container = json.loads(bdd_test_util.cli_call(["docker", "inspect", containerID], expect_success=True)[0])[0]
+            inspect_data = json.loads(bdd_test_util.cli_call(["docker", "inspect", containerID], expect_success=True)[0])[0]
 
             # container name
-            container_name = container['Name'][1:]
+            container_name = inspect_data['Name'][1:]
 
             # container ip address (only if container is running)
             container_ipaddress = None
-            if container['State']['Running']:
-                container_ipaddress = container['NetworkSettings']['IPAddress']
+            if inspect_data['State']['Running']:
+                container_ipaddress = inspect_data['NetworkSettings']['IPAddress']
                 if not container_ipaddress:
                     # ipaddress not found at the old location, try the new location
-                    container_ipaddress = container['NetworkSettings']['Networks'].values()[0]['IPAddress']
+                    container_ipaddress = inspect_data['NetworkSettings']['Networks'].values()[0]['IPAddress']
 
             # container environment
-            container_env = container['Config']['Env']
+            container_env = inspect_data['Config']['Env']
 
             # container image
-            container_image = container['Config']['Image']
+            container_image = inspect_data['Config']['Image']
 
 
             # container exposed ports
-            container_ports = container['NetworkSettings']['Ports']
+            container_ports = inspect_data['NetworkSettings']['Ports']
 
             # container docker-compose service
-            container_compose_service = container['Config']['Labels']['com.docker.compose.service']
+            container_compose_service = inspect_data['Config']['Labels']['com.docker.compose.service']
 
-            self.containerDataList.append(ContainerData(container_name, container_ipaddress, container_env, container_compose_service, container_ports, container_image))
+            self.containerDataList.append(ContainerData(container_name, container_ipaddress, container_env, container_compose_service, container_ports, container_image, inspect_data))
 
     def decompose(self):
         self.issueCommand(["unpause"])

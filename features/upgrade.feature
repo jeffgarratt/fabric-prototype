@@ -88,6 +88,9 @@ Feature: Bootstrap
 
     And we compose "<ComposeFile>"
 
+    Then all services should have state with status of "running" and running is "True" with the following exceptions:
+      | Service | Status | Running |
+
 
     # Sleep as to allow system up time
     And I wait "<SystemUpWaitTime>" seconds
@@ -497,23 +500,37 @@ Feature: Bootstrap
 
     And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateTx1" to orderer "<orderer0>"
 
-#    And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "consortiumsConfigUpdate1Envelope" using configUpdate "consortiumsConfigUpdate1"
-#
-#    And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "consortiumsConfigUpdate1Envelope" from developers:
-#      | Developer              | Cert Alias        |
-#      | configAdminOrdererOrg0 | config-admin-cert |
-##      | configAdminOrdererOrg1 | config-admin-cert |
-#
-#    And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "consortiumsConfigUpdateTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "consortiumsConfigUpdate1Envelope"
-#
-#    And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "consortiumsConfigUpdateTx1" to orderer "<orderer0>"
-#
-
-
 
     #  So if you create a new Channel post orderer fix, you will now have a correctly set mod_policy at channel level vs prior channel genesis block.
-    # orderer config Admin then adds the same capability to existing channel
+
+    ###########################################################################
+    #
+    # orderer config Admin then adds the same capability to the Orderer group for existing channels
     # and expected result is non-upgraded peers should panic
+    #
+    ###########################################################################
+    Given user "configAdminOrdererOrg0" retrieves the latest config update "latestPeerConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
+    And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForPeer" using config "latestPeerConfigForCapabilitiesChange" using channel ID "com.acme.blockchain.jdoe.channel1" with mod policy "Admins" for group "Orderer" to add capabilities:
+      | Capabilities |
+      | V1.1         |
+    And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeer" using configUpdate "capabilitiesV1.1ConfigUpdateForPeer"
+
+    And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeer" from developers:
+      | Developer              | Cert Alias        |
+      | configAdminOrdererOrg0 | config-admin-cert |
+#      | configAdminOrdererOrg1 | config-admin-cert |
+
+    And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateForPeerTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeer"
+
+    And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateForPeerTx1" to orderer "<orderer0>"
+
+    And I wait "<BroadcastWaitTime>" seconds
+
+    Then all services should have state with status of "running" and running is "True" with the following exceptions:
+      | Service | Status | Running |
+      | peer0   | exited | False   |
+      | peer2   | exited | False   |
+
 
     # Then upgrade the remaining back-revved peers, they should successfully catch up to network (verify if Gossipe can reestablish)
 
@@ -528,9 +545,9 @@ Feature: Bootstrap
     # TODO: Once events are working, consider listen event listener as well.
 
     Examples: Orderer Options
-      | ComposeFile | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
-      | dc-base.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 0                   | latest             |
-#      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      |
-#      | dc-base.yml  dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.1.0-snapshot-eb297c7 | 0                   | x86_64-1.1.0-snapshot-eb297c7 |
-#      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      |
-#      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      |
+      | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
+      | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 0                   | latest             |
+#      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
+#      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
+#      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
+#      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 0                   | latest             |

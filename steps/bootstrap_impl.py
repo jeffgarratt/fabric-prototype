@@ -21,6 +21,7 @@ import orderer_util
 import compose
 import composer
 import time
+import ast
 
 @given(u'the orderer network has organizations')
 def step_impl(context):
@@ -366,6 +367,34 @@ def step_impl(context, composeYamlFile):
     composition = compose.Composition(context, composeYamlFile)
     context.compose_containers = composition.containerDataList
     context.composition = composition
+
+def check_state(container_data, state_status, state_running):
+    current_state_status = container_data.inspect_data['State']['Status']
+    assert  current_state_status == state_status, "Expected State:Status of {0} for service {1}, instead found {2}".format(state_status, container_data.composeService, current_state_status)
+    assert container_data.inspect_data['State']['Running'] == ast.literal_eval(state_running), "Expected State:Running to be {0} for service {1}, instead found {2}".format(state_running, container_data.composeService, container_data.inspect_data['State']['Running'])
+
+
+@then(u'all services should have state with status of "{state_status}" and running is "{state_running}" with the following exceptions')
+def step_impl(context, state_status, state_running):
+    assert "composition" in context, "No composition found in context"
+    composition = context.composition
+    exceptional_services = [row['Service'] for row in context.table.rows]
+
+    # First make sure all of the exceptional services are in the service list
+    difference = set(exceptional_services).difference(set(composition.getServiceNames()))
+    assert len(difference) == 0, "Exceptional service(s) not found: {0}".format(difference)
+
+    # Rebuild the container data first
+    composition.rebuildContainerData()
+
+    # Verify the service that are NOT in the exception list are in expected State
+    for container_data in [c for c in composition.containerDataList if not c.composeService in exceptional_services]:
+        check_state(container_data, state_status, state_running)
+
+    # Now Verify the exceptional services are in their specified State
+    for row in context.table.rows:
+        container_data = next(c for c in composition.containerDataList if c.composeService == row['Service'])
+        check_state(container_data, row['Status'], row['Running'])
 
 @given(u'I wait "{seconds}" seconds')
 def step_impl(context, seconds):
