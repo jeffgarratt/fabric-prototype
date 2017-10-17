@@ -533,6 +533,14 @@ Feature: Bootstrap
 
 
     # Then upgrade the remaining back-revved peers, they should successfully catch up to network (verify if Gossipe can reestablish)
+    Given user "peer0Admin" upgrades "peer0" to version "<PeerUpgradeVersion>"
+    And I wait "<RestartPeerWaitTime>" seconds
+
+    Given user "peer2Admin" upgrades "peer2" to version "<PeerUpgradeVersion>"
+    And I wait "<RestartPeerWaitTime>" seconds
+
+    Then all services should have state with status of "running" and running is "True" with the following exceptions:
+      | Service | Status | Running |
 
     # Next step would be upgrade the channel capabilities (add V1.1)
 
@@ -546,7 +554,7 @@ Feature: Bootstrap
 
     Examples: Orderer Options
       | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
-      | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 0                   | latest             |
+      | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
