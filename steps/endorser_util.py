@@ -22,7 +22,9 @@ import bootstrap_util
 from peer import chaincode_pb2
 from peer import transaction_pb2
 from peer import proposal_pb2
+from peer import proposal_response_pb2
 from peer import peer_pb2_grpc
+from common import ledger_pb2 as common_dot_ledger_pb2
 from msp import identities_pb2
 
 from common import common_pb2 as common_dot_common_pb2
@@ -128,6 +130,7 @@ def createInstallChaincodeSpecForBDD(ccDeploymentSpec, chainID):
                                          args=['install', ccDeploymentSpec.SerializeToString()])
     return lc_chaincode_spec
 
+
 def getEndorserStubs(context, composeServices, directory, nodeAdminTuple):
     stubs = []
     user = directory.getUser(nodeAdminTuple.user)
@@ -179,3 +182,79 @@ def createDeploymentSpec(context, ccSpec):
 
 def create_serialized_identity(msp_id, signers_cert):
     return identities_pb2.SerializedIdentity(mspid=msp_id, id_bytes=crypto.dump_certificate(crypto.FILETYPE_PEM, signers_cert))
+
+
+def get_proposal_response_payload_as_type(proposal_response, cls):
+    proposal_response_payload = proposal_response_pb2.ProposalResponsePayload()
+    proposal_response_payload.ParseFromString(proposal_response.payload)
+    cca = proposal_pb2.ChaincodeAction()
+    cca.ParseFromString(proposal_response_payload.extension)
+    result = cls()
+    result.ParseFromString(cca.response.payload)
+    return result
+
+class QSCCHelper:
+
+    def __init__(self, context, user, directory, node_admin_tuple, channel_name ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+        self.context = context
+        self.user = user
+        self.directory = directory
+        self.node_admin_tuple = node_admin_tuple
+        self.channel_name = channel_name
+        self.endorsers = endorsers
+
+    def _get_cc_spec(self, args):
+        return getChaincodeSpec(cc_type="GOLANG", path="", name="qscc", args=args)
+
+    def _send(self, cc_spec, type_of_response, timeout=2):
+        return send_proposal_and_get_response_payload_as_type(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, type_of_response=type_of_response, timeout=timeout, channelName=self.channel_name, endorsers=self.endorsers)
+
+    def get_chain_info(self, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetChainInfo', self.channel_name])
+        return self._send(cc_spec=cc_spec, type_of_response=common_dot_ledger_pb2.BlockchainInfo, timeout=timeout)
+
+    def get_block_by_number(self, block_number, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetBlockByNumber', self.channel_name, str(block_number)])
+        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+
+    def get_transaction_by_id(self, transaction_id, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetTransactionByID', self.channel_name, transaction_id])
+        return self._send(cc_spec=cc_spec, type_of_response=transaction_pb2.ProcessedTransaction, timeout=timeout)
+
+    def get_block_by_transaction_id(self, transaction_id, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetBlockByTxID', self.channel_name, transaction_id])
+        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+
+
+class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
+
+    def __init__(self, processed_transaction):
+        bootstrap_util.EnvelopeExractor.__init__(self, processed_transaction.transactionEnvelope)
+
+        self.processed_transaction = processed_transaction
+        self.tx = transaction_pb2.Transaction()
+        self.tx.ParseFromString(self.payload.data)
+
+        self.chaincode_action_payload = transaction_pb2.ChaincodeActionPayload()
+        self.chaincode_action_payload.ParseFromString(self.tx.actions[0].payload)
+
+        # self.signature_header = common_dot_common_pb2.SignatureHeader()
+        # self.signature_header.ParseFromString(self.tx.actions[0].header)
+
+        self.chaincode_proposal_payload = proposal_pb2.ChaincodeProposalPayload()
+        self.chaincode_proposal_payload.ParseFromString(self.chaincode_action_payload.chaincode_proposal_payload)
+
+        self.chaincode_invocation_spec =chaincode_pb2.ChaincodeInvocationSpec()
+        self.chaincode_invocation_spec.ParseFromString(self.chaincode_proposal_payload.input)
+
+
+
+def send_proposal_and_get_response_payload_as_type(context, user, directory, nodeAdminTuple, cc_spec, type_of_response, timeout=2, channelName ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+    signersCert = directory.findCertForNodeAdminTuple(nodeAdminTuple)
+    mspID = nodeAdminTuple.organization
+    proposal = createInvokeProposalForBDD(context, ccSpec=cc_spec, chainID=channelName, signersCert=signersCert, Mspid=mspID, type="ENDORSER_TRANSACTION")
+    signedProposal = signProposal(proposal=proposal, entity=user, signersCert=signersCert)
+    endorserStubs = getEndorserStubs(context, composeServices=endorsers, directory=directory, nodeAdminTuple=nodeAdminTuple)
+    proposalResponseFutures = [endorserStub.ProcessProposal.future(signedProposal, int(timeout)) for endorserStub in endorserStubs]
+    resultsDict =  dict(zip(endorsers, [respFuture.result() for respFuture in proposalResponseFutures]))
+    return dict([(endorser, get_proposal_response_payload_as_type(proposal_response, type_of_response)) for endorser,proposal_response in resultsDict.iteritems()])

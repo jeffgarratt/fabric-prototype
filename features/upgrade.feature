@@ -250,6 +250,7 @@ Feature: Bootstrap
       | Peer  |
       | peer3 |
 
+
       # Uncomment this if you wish to stop with just a channel created and joined on all peers
 #      And we stop
 
@@ -258,7 +259,11 @@ Feature: Bootstrap
       | peer2Signer | peer2 | peerOrg1     |
 
 
-      # Entry point for invoking on an existing channel
+    ###########################################################################
+    #
+    # Entry point for invoking on an existing channel
+    #
+    ###########################################################################
     When user "peer0Admin" creates a chaincode spec "ccSpec" with name "example02" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02" with args
       | funcName | arg1 | arg2 | arg3 | arg4 |
       | init     | a    | 100  | b    | 200  |
@@ -542,6 +547,42 @@ Feature: Bootstrap
     Then all services should have state with status of "running" and running is "True" with the following exceptions:
       | Service | Status | Running |
 
+
+    ###########################################################################
+    #
+    # Verifying blockinfo for all peers in the existing channel
+    #
+    ###########################################################################
+    Given I wait "3" seconds
+
+    When user "dev0Org0" creates a chaincode spec "qsccSpecGetChainInfo" with name "qscc" and version "1.0" of type "GOLANG" for chaincode "/" with args
+      | funcName     | arg1                              |
+      | GetChainInfo | com.acme.blockchain.jdoe.channel1 |
+
+    And user "dev0Org0" using cert alias "consortium1-cert" creates a proposal "queryGetChainInfoProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "qsccSpecGetChainInfo"
+
+    And user "dev0Org0" using cert alias "consortium1-cert" sends proposal "queryGetChainInfoProposal1" to endorsers with timeout of "30" seconds with proposal responses "queryGetChainInfoProposal1Responses":
+      | Endorser |
+      | peer0    |
+      | peer1    |
+      | peer2    |
+      | peer3    |
+
+    Then user "dev0Org0" expects proposal responses "queryGetChainInfoProposal1Responses" with status "200" from endorsers:
+      | Endorser |
+      | peer0    |
+      | peer1    |
+      | peer2    |
+      | peer3    |
+
+    And user "dev0Org0" expects proposal responses "queryGetChainInfoProposal1Responses" each have the same value from endorsers:
+      | Endorser |
+      | peer0    |
+      | peer1    |
+      | peer2    |
+      | peer3    |
+
+
     # Next step would be upgrade the channel capabilities (add V1.1)
 
     # Config_update to peer channel with new value 'Capabilities', and no specific capability.Scenario:
@@ -553,8 +594,8 @@ Feature: Bootstrap
     # TODO: Once events are working, consider listen event listener as well.
 
     Examples: Orderer Options
-      | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
-      | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 2                   | latest             |
+      | ComposeFile | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
+      | dc-base.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |

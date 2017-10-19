@@ -1355,14 +1355,37 @@ def get_latest_configuration_block(deliverer_stream_helper, channel_id):
         latest_config_block = blocks[0]
     return latest_config_block
 
+class EnvelopeExractor:
+
+    def __init__(self, envelope):
+        self.envelope = envelope
+
+        self.payload = common_dot_common_pb2.Payload()
+        self.payload.ParseFromString(self.envelope.payload)
+
+        self.channel_header = common_dot_common_pb2.ChannelHeader()
+        self.channel_header.ParseFromString(self.payload.header.channel_header)
+
+        self.signature_header = common_dot_common_pb2.SignatureHeader()
+        self.signature_header.ParseFromString(self.payload.header.signature_header)
+
+    def get_channel_header_type_name(self):
+        return common_dot_common_pb2.HeaderType.Name(self.channel_header.type)
+
+    def get_creator(self):
+        serialized_identity = identities_pb2.SerializedIdentity()
+        serialized_identity.ParseFromString(self.signature_header.creator)
+        return serialized_identity
+
+
 def get_channel_group_from_config_block(block):
     assert len(block.data.data) == 1, "Expected single transaction for configuration block, instead found {0} transactions".format(len(block.data.data))
     e = common_dot_common_pb2.Envelope()
     e.ParseFromString(block.data.data[0])
-    p = common_dot_common_pb2.Payload()
-    p.ParseFromString(e.payload)
+    envelope_extractor = EnvelopeExractor(e)
+    assert envelope_extractor.channel_header.type == common_dot_common_pb2.HeaderType.Value('CONFIG'), "Expected a block with single TX of type CONFIG, got type {0}".format(common_dot_common_pb2.HeaderType.Name(envelope_extractor.channel_header.type))
     config_envelope = common_dot_configtx_pb2.ConfigEnvelope()
-    config_envelope.ParseFromString(p.data)
+    config_envelope.ParseFromString(envelope_extractor.payload.data)
     return config_envelope.config.channel_group
 
 def getArgsFromContextForUser(context, userName):
