@@ -553,7 +553,7 @@ Feature: Bootstrap
     # Verifying blockinfo for all peers in the existing channel
     #
     ###########################################################################
-    Given I wait "3" seconds
+    Given I wait "10" seconds
 
     When user "dev0Org0" creates a chaincode spec "qsccSpecGetChainInfo" with name "qscc" and version "1.0" of type "GOLANG" for chaincode "/" with args
       | funcName     | arg1                              |
