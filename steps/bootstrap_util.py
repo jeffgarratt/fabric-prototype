@@ -735,7 +735,7 @@ class BootstrapHelper:
         new_config_group.values[BootstrapHelper.KEY_CAPABILITIES].value = capabilities.SerializeToString()
         return new_config_group
 
-    def create_capabilities_config_update(self, channel_id, config_group, group_name, capabilities):
+    def create_capabilities_config_update(self, channel_id, config_group, group_to_capabilities_to_add):
         'Creates the config update and adds capabilities specified'
 
         read_set = common_dot_configtx_pb2.ConfigGroup()
@@ -744,13 +744,24 @@ class BootstrapHelper:
         read_set.CopyFrom(config_group)
         write_set.CopyFrom(read_set)
 
-        new_config_group = self.add_capabilities(config_group=config_group.groups[group_name], capabilities_to_add=capabilities)
-
-        write_set.groups[group_name].CopyFrom(new_config_group)
+        # Loop through each group and add capabilities
+        for group_path, capabilities in group_to_capabilities_to_add.iteritems():
+            config_group_to_add_to = self.get_group_from_config_path(config_group=write_set, config_path=group_path)
+            new_config_group = self.add_capabilities(config_group=config_group_to_add_to, capabilities_to_add=capabilities)
+            config_group_to_add_to.CopyFrom(new_config_group)
 
         config_update = common_dot_configtx_pb2.ConfigUpdate(channel_id=channel_id, read_set=read_set, write_set=write_set)
 
         return config_update
+
+    def get_group_from_config_path(self, config_group, config_path):
+        current_config_group = config_group
+        assert config_path.split('/')[1]=='Channel', 'Expected /Channel to start config path, instead found {0}'.format(config_path)
+        for group_id in config_path.split('/')[2:]:
+            assert group_id in current_config_group.groups.keys(), "Key not found in config group {0}, path specified was {1}".format(group_id, config_path)
+            current_config_group = current_config_group.groups[group_id]
+        return current_config_group
+
 
 
 def getDirectory(context):
@@ -1376,6 +1387,21 @@ class EnvelopeExractor:
         serialized_identity = identities_pb2.SerializedIdentity()
         serialized_identity.ParseFromString(self.signature_header.creator)
         return serialized_identity
+
+
+class BlockWrapper:
+
+    def __init__(self, block):
+        self.block = block
+        self.envx_list = []
+        for tx_bytes in block.data.data:
+            envelope = common_dot_common_pb2.Envelope()
+            envelope.ParseFromString(tx_bytes)
+            envx = EnvelopeExractor(envelope)
+            self.envx_list.append(envx)
+        block.metadata.metadata[common_dot_common_pb2.BlockMetadataIndex.Value('TRANSACTIONS_FILTER')]
+
+
 
 
 def get_channel_group_from_config_block(block):

@@ -13,6 +13,7 @@
 # limitations under the License.
 #
 
+from collections import defaultdict
 from behave import *
 from contexthelper import ContextHelper
 import endorser_util
@@ -490,16 +491,17 @@ def step_impl(context):
     directory = bootstrap_util.getDirectory(context)
     directory.cleanup()
 
-@given(u'user "{user_name}" creates a capabilities config update "{config_update_alias}" using config "{config_update_source_alias}" using channel ID "{channel_id_or_ref}" with mod policy "{mod_policy}" for group "{group_name}" to add capabilities')
-def step_impl(context, user_name, config_update_alias, config_update_source_alias, channel_id_or_ref, mod_policy , group_name):
+@given(u'user "{user_name}" creates a capabilities config update "{config_update_alias}" using config "{config_update_source_alias}" using channel ID "{channel_id_or_ref}" with mod policy "{mod_policy}" to add capabilities')
+def step_impl(context, user_name, config_update_alias, config_update_source_alias, channel_id_or_ref, mod_policy):
     contextHelper = ContextHelper.GetHelper(context=context)
     bootstrap_helper = contextHelper.get_bootstrap_helper()
     directory = bootstrap_util.getDirectory(context)
     config_admin = directory.getUser(user_name)
     (channel_id,) = bootstrap_util.get_args_for_user([channel_id_or_ref], config_admin)
     source_channel_group = config_admin.getTagValue(config_update_source_alias)
-    capabilities_to_add = [row['Capabilities'] for row in context.table.rows]
+    group_to_capabilities_to_add = defaultdict(set)
+    [group_to_capabilities_to_add[row['Group']].add(row['Capabilities']) for row in context.table.rows]
     # new_config_group = bootstrap_helper.add_capabilities(config_group=source_channel_group.groups[group_name], capabilities_to_add=capabilities_to_add)
-    new_config_update = bootstrap_helper.create_capabilities_config_update(channel_id=channel_id, config_group=source_channel_group, group_name=group_name, capabilities=capabilities_to_add)
+    new_config_update = bootstrap_helper.create_capabilities_config_update(channel_id=channel_id, config_group=source_channel_group, group_to_capabilities_to_add=group_to_capabilities_to_add)
     config_admin.setTagValue(config_update_alias, new_config_update)
 
