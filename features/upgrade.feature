@@ -84,7 +84,7 @@ Feature: Bootstrap
     # to be used for setting the orderer genesis block path parameter in composition
     And the orderer admins use the genesis block for chain "ordererSystemChannelId" to configure orderers
 
-    And we set the base fabric version to "x86_64-1.0.3"
+    And we set the base fabric version to "<FabricBaseVersion>"
 
     And we compose "<ComposeFile>"
 
@@ -123,6 +123,7 @@ Feature: Bootstrap
     And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "consortiumsConfigUpdateTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "consortiumsConfigUpdate1Envelope"
 
     And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "consortiumsConfigUpdateTx1" to orderer "<orderer0>"
+
 
 
     Given the following application developers are defined for peer organizations and each saves their cert as alias
@@ -488,7 +489,12 @@ Feature: Bootstrap
 
 
     # Demonstrate turning on a non-compatible capability in a channel
-    # Config_update to orderer system channel with new value 'Capabilities', use the first one 'V1.1'
+    ###########################################################################
+    #
+    # Config_update to orderer system channel for group /Channel/Orderer with new value 'Capabilities', use the first one 'V1.1'
+    # NOTE: Currently 2 step process as the ordere will fixup the /Channel group mod_policy after this upgrade of '/Channel/Orderer'
+    #
+    ###########################################################################
     Given user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on orderer "<orderer0>"
     And user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
     And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer" using config "latestOrdererConfigForCapabilitiesChange" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
@@ -504,6 +510,28 @@ Feature: Bootstrap
     And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer"
 
     And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateTx1" to orderer "<orderer0>"
+
+
+    ###########################################################################
+    #
+    # Config_update to orderer system channel for group /Channel with new value 'Capabilities', use the first one 'V1.1'
+    # NOTE: Currently 2 step process as the ordere will fixup the /Channel group mod_policy after first upgrade of '/Channel/Orderer'
+    #
+    ###########################################################################
+    Given user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange2" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
+    And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer2" using config "latestOrdererConfigForCapabilitiesChange2" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
+      | Group    | Capabilities |
+      | /Channel | V1.1         |
+    And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" using configUpdate "capabilitiesV1.1ConfigUpdateForOrderer2"
+
+    And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" from developers:
+      | Developer              | Cert Alias        |
+      | configAdminOrdererOrg0 | config-admin-cert |
+#      | configAdminOrdererOrg1 | config-admin-cert |
+
+    And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateTx2" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2"
+
+    And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateTx2" to orderer "<orderer0>"
 
 
     #  So if you create a new Channel post orderer fix, you will now have a correctly set mod_policy at channel level vs prior channel genesis block.
@@ -585,6 +613,31 @@ Feature: Bootstrap
 
     # Next step would be upgrade the channel capabilities (add V1.1)
 
+    ###########################################################################
+    #
+    # orderer config Admin then adds the same capability to the /Channel and /Channel/Application group for existing channels
+    #
+    ###########################################################################
+    Given user "configAdminOrdererOrg0" retrieves the latest config update "latestPeerConfigForCapabilitiesChangeForChannel" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
+    And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForPeerChannelLevel" using config "latestPeerConfigForCapabilitiesChangeForChannel" using channel ID "com.acme.blockchain.jdoe.channel1" with mod policy "Admins" to add capabilities:
+      | Group                | Capabilities |
+      | /Channel             | V1.1         |
+      | /Channel/Application | V1.1         |
+    And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeerChannelLevel" using configUpdate "capabilitiesV1.1ConfigUpdateForPeerChannelLevel"
+
+    And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeerChannelLevel" from developers:
+      | Developer              | Cert Alias        |
+      | configAdminOrdererOrg0 | config-admin-cert |
+      | configAdminPeerOrg0    | config-admin-cert |
+      | configAdminPeerOrg1    | config-admin-cert |
+#      | configAdminOrdererOrg1 | config-admin-cert |
+
+    And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateForPeerTx1ChannelLevel" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeerChannelLevel"
+
+    And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateForPeerTx1ChannelLevel" to orderer "<orderer0>"
+
+
+
     # Config_update to peer channel with new value 'Capabilities', and no specific capability.Scenario:
     # Expect the non-upgraded peers to panic (Verify)
 
@@ -593,9 +646,10 @@ Feature: Bootstrap
 
     # TODO: Once events are working, consider listen event listener as well.
 
+    # FabricBaseVersion normally is 'x86_64-1.0.3'
     Examples: Orderer Options
-      | ComposeFile | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
-      | dc-base.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | latest                | 2                   | latest             |
+      | ComposeFile | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
+      | dc-base.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
 #      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |

@@ -1176,7 +1176,15 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
 
 def getDefaultConsortiumGroup(consortiums_mod_policy):
     default_config_group = common_dot_configtx_pb2.ConfigGroup()
-    default_config_group.groups[ConsortiumsGroup].mod_policy=consortiums_mod_policy
+    consortiums_config_group = default_config_group.groups[ConsortiumsGroup]
+    consortiums_config_group.mod_policy=consortiums_mod_policy
+    acceptAllPolicy = common_dot_policies_pb2.Policy(type=common_dot_policies_pb2.Policy.PolicyType.Value("SIGNATURE"),
+                                                     value=AuthDSLHelper.Envelope(signaturePolicy=AuthDSLHelper.NOutOf(0, []), identities=[]).SerializeToString())
+    consortiums_config_group.policies[BootstrapHelper.KEY_POLICY_ADMINS].policy.CopyFrom(acceptAllPolicy)
+    for pKey, pVal in consortiums_config_group.policies.iteritems():
+        pVal.mod_policy = consortiums_mod_policy
+
+
     return default_config_group
 
 
