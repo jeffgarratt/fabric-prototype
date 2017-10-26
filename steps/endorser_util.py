@@ -22,6 +22,7 @@ import bootstrap_util
 from peer import chaincode_pb2
 from peer import transaction_pb2
 from peer import proposal_pb2
+from peer import query_pb2
 from peer import proposal_response_pb2
 from peer import peer_pb2_grpc
 from common import ledger_pb2 as common_dot_ledger_pb2
@@ -193,21 +194,28 @@ def get_proposal_response_payload_as_type(proposal_response, cls):
     result.ParseFromString(cca.response.payload)
     return result
 
-class QSCCHelper:
+class SystemChaincodeHelper:
 
-    def __init__(self, context, user, directory, node_admin_tuple, channel_name ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+    def __init__(self, system_chaincode_name, context, user, directory, node_admin_tuple, channel_name ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
         self.context = context
         self.user = user
         self.directory = directory
         self.node_admin_tuple = node_admin_tuple
+        self.system_chaincode_name = system_chaincode_name
         self.channel_name = channel_name
         self.endorsers = endorsers
 
     def _get_cc_spec(self, args):
-        return getChaincodeSpec(cc_type="GOLANG", path="", name="qscc", args=args)
+        return getChaincodeSpec(cc_type="GOLANG", path="", name=self.system_chaincode_name, args=args)
 
     def _send(self, cc_spec, type_of_response, timeout=2):
         return send_proposal_and_get_response_payload_as_type(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, type_of_response=type_of_response, timeout=timeout, channelName=self.channel_name, endorsers=self.endorsers)
+
+
+class QSCCHelper(SystemChaincodeHelper):
+
+    def __init__(self, context, user, directory, node_admin_tuple, channel_name="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+        SystemChaincodeHelper.__init__(self, system_chaincode_name='qscc', context=context, user=user, directory=directory, node_admin_tuple=node_admin_tuple, channel_name=channel_name, endorsers=endorsers)
 
     def get_chain_info(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetChainInfo', self.channel_name])
@@ -223,6 +231,19 @@ class QSCCHelper:
 
     def get_block_by_transaction_id(self, transaction_id, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetBlockByTxID', self.channel_name, transaction_id])
+        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+
+class CSCCHelper(SystemChaincodeHelper):
+
+    def __init__(self, context, user, directory, node_admin_tuple, channel_name="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+        SystemChaincodeHelper.__init__(self, system_chaincode_name='cscc', context=context, user=user, directory=directory, node_admin_tuple=node_admin_tuple, channel_name=channel_name, endorsers=endorsers)
+
+    def get_channel_list(self, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetChannels'])
+        return self._send(cc_spec=cc_spec, type_of_response=query_pb2.ChannelQueryResponse, timeout=timeout)
+
+    def get_config_block(self, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetConfigBlock', self.channel_name])
         return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
 
 
