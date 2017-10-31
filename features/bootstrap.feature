@@ -67,8 +67,8 @@ Feature: Bootstrap
         | configAdminPeerOrg0 | configAdmin | peerOrg0     | config-admin-cert |
         | configAdminPeerOrg1 | configAdmin | peerOrg1     | config-admin-cert |
         | configAdminPeerOrg2 | configAdmin | peerOrg2     | config-admin-cert |
-        | composer0Signer     | admin       | peerOrg0     |                   |
-        | composer1Signer     | admin       | peerOrg1     |                   |
+        | composer0Signer     | admin       | peerOrg0     | signer-cert       |
+        | composer1Signer     | admin       | peerOrg1     | signer-cert       |
 
     # Order info includes orderer admin/orderer information and address (host:port) from previous steps
     # Only the peer organizations can vary.
@@ -82,7 +82,11 @@ Feature: Bootstrap
     # to be used for setting the orderer genesis block path parameter in composition
       And the orderer admins use the genesis block for chain "ordererSystemChannelId" to configure orderers
 
+
+      And we set the base fabric version to "<FabricBaseVersion>"
+
       And we compose "<ComposeFile>"
+
 
     # Sleep as to allow system up time
       And I wait "<SystemUpWaitTime>" seconds
@@ -389,10 +393,11 @@ Feature: Bootstrap
       # TODO: Once events are working, consider listen event listener as well.
 
       Examples: Orderer Options
-        | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info |
-        | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
-#        | dc-base.yml dc-composer.yml                                          | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
-#        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
-#        | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
-#        | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
-#        | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml                          | 10                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
+        | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | FabricBaseVersion |
+        | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
+#        | dc-base.yml dc-flink-base.yml                         | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
+#        | dc-base.yml dc-composer.yml                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | x86_64-1.0.3      |
+#        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
+#        | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | latest            |
+#        | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | latest            |
+#        | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |

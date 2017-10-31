@@ -41,6 +41,52 @@ class ComposerCompositionCallback(CompositionCallback, CallbackHelper):
     def getComposerPath(self, project_name, compose_service, pathType=PathType.Local):
         return "{0}/{1}".format(self.getVolumePath(project_name, pathType), compose_service)
 
+    def create_v1_metadata(self, user_name):
+        metadata = {"version":1,"userName": user_name,"businessNetwork": None,"roles":["PeerAdmin","ChannelAdmin"]}
+        return metadata
+
+    def create_v1_id_card(self, node_admin_tuple, conn_profile):
+        from zipfile import ZipFile
+        from io import BytesIO
+        user_name = node_admin_tuple.user
+        user = self.directory.getUser(userName=user_name)
+        in_memory = BytesIO()
+        zf = ZipFile(in_memory, mode="w")
+        metadata = self.create_v1_metadata(user_name=node_admin_tuple.nodeName)
+        zf.writestr("metadata.json", json.dumps(metadata, separators=(',', ':')))
+        zf.writestr("connection.json", json.dumps(conn_profile, separators=(',', ':')))
+        cert = self.directory.findCertForNodeAdminTuple(node_admin_tuple)
+        zf.writestr(os.path.join("credentials","certificate"), crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        zf.writestr(os.path.join("credentials","privateKey"), crypto.dump_privatekey(crypto.FILETYPE_PEM, user.pKey))
+        zf.close()
+        in_memory.seek(0)
+        return in_memory.read()
+
+    def create_v1_conn_profile(self, profile_name, channel, description, key_val_store_path, orderer_compose_services, peer_compose_services, msp_id, timeout=300):
+        connection_profile = {'type': 'hlfv1'}
+        connection_profile['name'] = profile_name
+        connection_profile['description'] = description
+
+        orderer_list = [{"url": "grpcs://{0}:7050".format(orderer),
+                         "cert": self.directory.getTrustedRootsForOrdererNetworkAsPEM(),
+                         "hostnameOverride": orderer,
+                         } for orderer in orderer_compose_services]
+        connection_profile["orderers"] = orderer_list
+        connection_profile["ca"] = {"url" : "http://peer0:7054", "name" : ""}
+        peer_list = [{
+            "requestURL": "grpcs://{0}:7051".format(peer),
+            "eventURL": "grpcs://{0}:7053".format(peer),
+            "cert": self.directory.getTrustedRootsForPeerNetworkAsPEM(),
+            "hostnameOverride": peer,
+        } for peer in peer_compose_services]
+        connection_profile["peers"] = peer_list
+        connection_profile["channel"] = "com.acme.blockchain.jdoe.channel1"
+        connection_profile["mspID"] = msp_id
+        connection_profile["timeout"] = "{0}".format(timeout)
+        connection_profile["keyValStore"] = key_val_store_path
+        return connection_profile
+
+
     def getConnectionProfile(self, ordererCertPath, peerCertPath, key_val_store_path, orderer_compose_services, peer_compose_services, msp_id):
         connectionProfile = {'type': 'hlfv1'}
         orderer_list = [{"url": "grpcs://{0}:7050".format(orderer),
@@ -114,6 +160,11 @@ class ComposerCompositionCallback(CompositionCallback, CallbackHelper):
             for pnt, cert in [(peerNodeTuple, cert) for peerNodeTuple, cert in directory.ordererAdminTuples.items() if
                               composer_service in peerNodeTuple.user and "signer" in peerNodeTuple.user.lower()]:
                 self.write_keyvalstore_files(cert_tuple=pnt, key_val_store_path=key_val_store_path, json_file_name="admin")
+
+                # #Write ID card info out
+                # self.write_id_card("{0}-{1}".format(pnt.nodeName, composition.projectName), channel=, description,
+                #                    key_val_store_path, orderer_compose_services,
+                #                    peer_compose_services, msp_id, timeout=300)
 
                 # TODO: Revisit this after David Kelsey and Composer team rework identity workflow for install/instantiate
                 #Loop through all peers associated with the same organization as the user and modify the localMspConfig.admincerts adding the signer cert.

@@ -103,7 +103,7 @@ class Composition:
 
     def __init__(self, context, composeFilesYaml, projectName=None,
                  force_recreate=True, components=[], register_and_up=True):
-        self.contextHelper = ContextHelper.GetHelper(context=context)
+        self.contextHelper = ContextHelper.GetHelper(context=context, guuid=projectName)
         if not projectName:
             projectName = self.contextHelper.getGuuid()
         self.projectName = projectName

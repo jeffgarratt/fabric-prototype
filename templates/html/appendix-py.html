@@ -20,6 +20,7 @@ from msp import msp_config_pb2, msp_principal_pb2, identities_pb2
 from peer import configuration_pb2 as peer_dot_configuration_pb2
 from orderer import configuration_pb2 as orderer_dot_configuration_pb2
 from steps import endorser_util
+from steps import composer
 
 from steps import bootstrap_util, contexthelper, compose
 context = contexthelper.Context()
@@ -34,6 +35,19 @@ context.compose_containers=composition.containerDataList
 user = directory.getUser('dev0Org0')
 node_admin_tuple = user.tags['consortium1-cert']
 qscch = endorser_util.QSCCHelper(context=context, user=user, directory=directory, node_admin_tuple=node_admin_tuple)
+
+# Creating ID card for composer
+ccc = composer.ComposerCompositionCallback(context,None)
+cp = ccc.create_v1_conn_profile('test', 'com.acme.blockchain.jdoe.channel1','desc','/tmp/keyValStore',['orderer0'], ['peer0','peer1'], 'peerOrg0')
+composer0Signer = directory.getUser('composer0Signer')
+nat = composer0Signer.tags['signer-cert']
+data = ccc.create_v1_id_card(nat, cp)
+(card_file_name, exists) = contexthelper.ContextHelper.GetHelper(context, guuid=composition.projectName).getTmpPathForName(name='admin',extension='card')
+with open(card_file_name, "w") as f:
+     f.write(data)
+
+with open("{0}.zip".format(card_file_name), "w") as f:
+     f.write(data)
 
 
 user = directory.getUser("configAdminOrdererOrg0")

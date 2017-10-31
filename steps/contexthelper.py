@@ -32,14 +32,17 @@ class Context(object):
 class ContextHelper:
 
     @classmethod
-    def GetHelper(cls, context):
+    def GetHelper(cls, context, guuid = None):
         if not "contextHelper" in context:
-            context.contextHelper = ContextHelper(context)
+            context.contextHelper = ContextHelper(context=context,guuid=guuid)
         return context.contextHelper
 
-    def __init__(self, context):
+    def __init__(self, context, guuid=None):
         self.context = context
-        self.guuid = str(uuid.uuid1()).replace('-','')
+        if guuid:
+            self.guuid = guuid
+        else:
+            self.guuid = str(uuid.uuid1()).replace('-','')
 
     def get_bootstrap_helper(self):
         import bootstrap_util
