@@ -499,7 +499,7 @@ Feature: Bootstrap
     And user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
     And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer" using config "latestOrdererConfigForCapabilitiesChange" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
       | Group            | Capabilities |
-      | /Channel/Orderer | V1.1         |
+      | /Channel/Orderer | V1_1         |
     And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer" using configUpdate "capabilitiesV1.1ConfigUpdateForOrderer"
 
     And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer" from developers:
@@ -521,7 +521,7 @@ Feature: Bootstrap
     Given user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange2" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
     And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer2" using config "latestOrdererConfigForCapabilitiesChange2" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
       | Group    | Capabilities |
-      | /Channel | V1.1         |
+      | /Channel | V1_1         |
     And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" using configUpdate "capabilitiesV1.1ConfigUpdateForOrderer2"
 
     And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" from developers:
@@ -545,7 +545,7 @@ Feature: Bootstrap
     Given user "configAdminOrdererOrg0" retrieves the latest config update "latestPeerConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
     And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForPeer" using config "latestPeerConfigForCapabilitiesChange" using channel ID "com.acme.blockchain.jdoe.channel1" with mod policy "Admins" to add capabilities:
       | Group            | Capabilities |
-      | /Channel/Orderer | V1.1         |
+      | /Channel/Orderer | V1_1         |
     And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeer" using configUpdate "capabilitiesV1.1ConfigUpdateForPeer"
 
     And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForPeer" from developers:
@@ -611,7 +611,7 @@ Feature: Bootstrap
       | peer3    |
 
 
-    # Next step would be upgrade the channel capabilities (add V1.1)
+    # Next step would be upgrade the channel capabilities (add V1_1)
 
     ###########################################################################
     #
