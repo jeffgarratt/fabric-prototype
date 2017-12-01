@@ -419,6 +419,26 @@ Feature: Bootstrap
 #    And all orderer nodes are upgraded to version "x86_64-1.1.0-snapshot-b070697"
 #    And all orderer nodes are started
 
+
+    And we "stop" service "<orderer0>"
+    And we "stop" service "<orderer1>"
+    And we "stop" service "<orderer2>"
+
+
+    And we "stop" service "kafka0"
+    And we "stop" service "kafka1"
+    And we "stop" service "kafka2"
+    And we "stop" service "kafka3"
+
+
+
+    And user "orderer0Admin" upgrades "kafka0" to version "<OrdererUpgradeVersion>"
+    And user "orderer0Admin" upgrades "kafka1" to version "<OrdererUpgradeVersion>"
+    And user "orderer0Admin" upgrades "kafka2" to version "<OrdererUpgradeVersion>"
+    And user "orderer0Admin" upgrades "kafka3" to version "<OrdererUpgradeVersion>"
+    And I wait "<SystemUpWaitTime>" seconds
+
+
     And user "orderer0Admin" upgrades "<orderer0>" to version "<OrdererUpgradeVersion>"
     And I wait "<RestartOrdererWaitTime>" seconds
 
@@ -581,7 +601,7 @@ Feature: Bootstrap
     # Verifying blockinfo for all peers in the existing channel
     #
     ###########################################################################
-    Given I wait "10" seconds
+    Given I wait "<VerifyAllBlockHeightsWaitTime>" seconds
 
     When user "dev0Org0" creates a chaincode spec "qsccSpecGetChainInfo" with name "qscc" and version "1.0" of type "GOLANG" for chaincode "/" with args
       | funcName     | arg1                              |
@@ -648,9 +668,9 @@ Feature: Bootstrap
 
     # FabricBaseVersion normally is 'x86_64-1.0.3'
     Examples: Orderer Options
-      | ComposeFile | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion |
-      | dc-base.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             |
+      | ComposeFile                       | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion | VerifyAllBlockHeightsWaitTime |
+#      | dc-base.yml                       | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             | 10                            |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
-#      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
+      | dc-base.yml  dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest             | 20                            |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 0                   | latest             |

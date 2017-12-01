@@ -46,6 +46,7 @@ services:
       - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
 
   kafka0:
+    image: hyperledger/fabric-kafka${KAFKA0_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: kafka
@@ -97,12 +98,14 @@ services:
       #
       # zookeeper.session.timeout.ms
       #- KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS = 6000
+      - KAFKA_LOG_DIRS=${KAFKA0_KAFKA_LOG_DIRS}
     depends_on:
       - zookeeper0
       - zookeeper1
       - zookeeper2
 
   kafka1:
+    image: hyperledger/fabric-kafka${KAFKA1_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: kafka
@@ -111,12 +114,14 @@ services:
       - KAFKA_DEFAULT_REPLICATION_FACTOR=3
       - KAFKA_MIN_INSYNC_REPLICAS=2
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_LOG_DIRS=${KAFKA1_KAFKA_LOG_DIRS}
     depends_on:
       - zookeeper0
       - zookeeper1
       - zookeeper2
 
   kafka2:
+    image: hyperledger/fabric-kafka${KAFKA2_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: kafka
@@ -125,12 +130,14 @@ services:
       - KAFKA_DEFAULT_REPLICATION_FACTOR=3
       - KAFKA_MIN_INSYNC_REPLICAS=2
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_LOG_DIRS=${KAFKA2_KAFKA_LOG_DIRS}
     depends_on:
       - zookeeper0
       - zookeeper1
       - zookeeper2
 
   kafka3:
+    image: hyperledger/fabric-kafka${KAFKA3_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: kafka
@@ -139,6 +146,7 @@ services:
       - KAFKA_DEFAULT_REPLICATION_FACTOR=3
       - KAFKA_MIN_INSYNC_REPLICAS=2
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_LOG_DIRS=${KAFKA3_KAFKA_LOG_DIRS}
     depends_on:
       - zookeeper0
       - zookeeper1

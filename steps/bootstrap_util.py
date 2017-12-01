@@ -1068,6 +1068,8 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
         self.genesisFileName = genesisFileName
         self.genesisBlock = genesisBlock
         compose.Composition.RegisterCallbackInContext(context, self)
+        # Now initialize the Kafka composition callbacks
+        KafkaCompositionCallback(context)
 
     def getGenesisFilePath(self, project_name, pathType=PathType.Local):
         return "{0}/{1}".format(self.getVolumePath(project_name=project_name, pathType=pathType), self.genesisFileName)
@@ -1117,6 +1119,7 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             version_for_orderer = composition.get_version_for_service(ordererService)
             if version_for_orderer:
                 env["{0}_VERSION_EXTENSION".format(ordererService.upper())] = ":{0}".format(version_for_orderer)
+
 
 class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Peer nodes upon composition'
@@ -1171,6 +1174,42 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
             version_for_peer = composition.get_version_for_service(peerService)
             if version_for_peer:
                 env["{0}_VERSION_EXTENSION".format(peerService.upper())] = ":{0}".format(version_for_peer)
+
+
+class KafkaCompositionCallback(compose.CompositionCallback, CallbackHelper):
+    'Responsible for setting up Kafka nodes upon composition'
+
+    def __init__(self, context):
+        CallbackHelper.__init__(self, discriminator="kafka")
+        self.context = context
+        compose.Composition.RegisterCallbackInContext(context, self)
+
+    def get_kafka_service_list(self, composition):
+        return [serviceName for serviceName in composition.getServiceNames() if "kafka" in serviceName]
+
+    def composing(self, composition, context):
+        'Will create the filestore folder for each kafka node'
+        directory = getDirectory(context)
+
+        for kafka_service in self.get_kafka_service_list(composition):
+            self._createFilestore(compose_service=kafka_service,
+                                  project_name=composition.projectName)
+
+
+    def decomposing(self, composition, context):
+        'Will remove the orderer volume path folder for the context'
+        shutil.rmtree(self.getVolumePath(composition.projectName))
+
+    def getEnv(self, composition, context, env):
+        directory = getDirectory(context)
+        for kafka_service in self.get_kafka_service_list(composition):
+            # The Filestore settings
+            container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=kafka_service, pathType=PathType.Container)
+            env["{0}_KAFKA_LOG_DIRS".format(kafka_service.upper())] = container_filestore_path
+
+            # Now the Kafka versions
+            version_for_kafka = composition.get_version_for_service(kafka_service)
+            env["{0}_VERSION_EXTENSION".format(kafka_service.upper())] = ":{0}".format(version_for_kafka)
 
 
 
