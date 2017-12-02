@@ -1069,7 +1069,8 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
         self.genesisBlock = genesisBlock
         compose.Composition.RegisterCallbackInContext(context, self)
         # Now initialize the Kafka composition callbacks
-        KafkaCompositionCallback(context)
+        KafkaCompositionCallback(context=context)
+        ZookeeperCompositionCallback(context=context)
 
     def getGenesisFilePath(self, project_name, pathType=PathType.Local):
         return "{0}/{1}".format(self.getVolumePath(project_name=project_name, pathType=pathType), self.genesisFileName)
@@ -1210,6 +1211,40 @@ class KafkaCompositionCallback(compose.CompositionCallback, CallbackHelper):
             # Now the Kafka versions
             version_for_kafka = composition.get_version_for_service(kafka_service)
             env["{0}_VERSION_EXTENSION".format(kafka_service.upper())] = ":{0}".format(version_for_kafka)
+
+
+class ZookeeperCompositionCallback(compose.CompositionCallback, CallbackHelper):
+    'Responsible for setting up Kafka nodes upon composition'
+
+    def __init__(self, context):
+        CallbackHelper.__init__(self, discriminator="zookeeper")
+        self.context = context
+        compose.Composition.RegisterCallbackInContext(context, self)
+
+    def get_zk_service_list(self, composition):
+        return [serviceName for serviceName in composition.getServiceNames() if "zookeeper" in serviceName]
+
+    def composing(self, composition, context):
+        'Will create the filestore folder for each node'
+        directory = getDirectory(context)
+        for zk_service in self.get_zk_service_list(composition):
+            self._createFilestore(compose_service=zk_service,
+                                  project_name=composition.projectName)
+
+    def decomposing(self, composition, context):
+        'Will remove the orderer volume path folder for the context'
+        shutil.rmtree(self.getVolumePath(composition.projectName))
+
+    def getEnv(self, composition, context, env):
+        directory = getDirectory(context)
+        for zk_service in self.get_zk_service_list(composition):
+            # The Filestore settings
+            container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=zk_service, pathType=PathType.Container)
+            env["{0}_ZOO_DATA_DIR".format(zk_service.upper())] = container_filestore_path
+
+            # Now the versions
+            version_for_zk = composition.get_version_for_service(zk_service)
+            env["{0}_VERSION_EXTENSION".format(zk_service.upper())] = ":{0}".format(version_for_zk)
 
 
 

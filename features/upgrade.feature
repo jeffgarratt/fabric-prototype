@@ -406,19 +406,9 @@ Feature: Bootstrap
     # NOTE: If you do NOT upgrade ALL of the orderers before using any of the capabilities, it is possible to have a state fork for any channel (i.e. orderer system or peers)
     #
 
-
-    # Constraints rquired for orderer based fork (1.0.X -> 1.1)
-    #       - Rolling upgrade to 1.1
-    #       - Config update sent (default to MAJORITY admins required) [NOTE: this will narrow to orderer admins per a forthcoming CR from jyellick]
-    #       - Sent to orderer upgraded to 1.1 (with co-existing 1.0.X orderers)
-    #       - and capabilities added to config
-#    Given all orderer admins agree to upgrade
+    Given all orderer admins agree to upgrade
     Given all users disconnect from orderers
     # All orderer admins stop their respective orderer nodes (NOTE:  ALL orderers in the network must be stopped prior to subsequent steps to allay fork)
-#    And all orderer nodes are stopped
-#    And all orderer nodes are upgraded to version "x86_64-1.1.0-snapshot-b070697"
-#    And all orderer nodes are started
-
 
     And we "stop" service "<orderer0>"
     And we "stop" service "<orderer1>"
@@ -430,6 +420,15 @@ Feature: Bootstrap
     And we "stop" service "kafka2"
     And we "stop" service "kafka3"
 
+    And we "stop" service "zookeeper0"
+    And we "stop" service "zookeeper1"
+    And we "stop" service "zookeeper2"
+
+    And user "orderer0Admin" upgrades "zookeeper0" to version "<OrdererUpgradeVersion>"
+    And user "orderer0Admin" upgrades "zookeeper1" to version "<OrdererUpgradeVersion>"
+    And user "orderer0Admin" upgrades "zookeeper2" to version "<OrdererUpgradeVersion>"
+
+    And I wait "<RestartOrdererWaitTime>" seconds
 
 
     And user "orderer0Admin" upgrades "kafka0" to version "<OrdererUpgradeVersion>"
@@ -448,6 +447,9 @@ Feature: Bootstrap
     And user "orderer2Admin" upgrades "<orderer2>" to version "<OrdererUpgradeVersion>"
     And I wait "<RestartOrdererWaitTime>" seconds
 
+    And I wait "<VerifyAllBlockHeightsWaitTime>" seconds
+
+#    And all orderer nodes are verified ready
     And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer0>"
     And user "dev0Org0" retrieves the latest config update "latestChannelConfigAfterUpgradeOfOrderersFromOrderer0" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
 
@@ -457,7 +459,6 @@ Feature: Bootstrap
     And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer2>"
     And user "dev0Org0" retrieves the latest config update "latestChannelConfigAfterUpgradeOfOrderersFromOrderer2" from orderer "<orderer2>" for channel "com.acme.blockchain.jdoe.channel1"
 
-#    And all orderer nodes are verified ready
 
 #    When when I submit a capabilities to an orderer
 #    Then the orderers will reject the update
@@ -671,6 +672,6 @@ Feature: Bootstrap
       | ComposeFile                       | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion | VerifyAllBlockHeightsWaitTime |
 #      | dc-base.yml                       | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             | 10                            |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
-      | dc-base.yml  dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest             | 20                            |
+      | dc-base.yml  dc-orderer-kafka.yml | 60               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest              | 65                            |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 0                   | latest             |

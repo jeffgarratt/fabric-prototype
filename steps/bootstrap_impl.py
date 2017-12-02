@@ -505,3 +505,7 @@ def step_impl(context, user_name, config_update_alias, config_update_source_alia
     new_config_update = bootstrap_helper.create_capabilities_config_update(channel_id=channel_id, config_group=source_channel_group, group_to_capabilities_to_add=group_to_capabilities_to_add)
     config_admin.setTagValue(config_update_alias, new_config_update)
 
+
+@given(u'all orderer admins agree to upgrade')
+def step_impl(context):
+    pass

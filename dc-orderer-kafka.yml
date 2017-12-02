@@ -8,6 +8,7 @@ version: '2'
 services:
 
   zookeeper0:
+    image: hyperledger/fabric-zookeeper${ZOOKEEPER0_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: zookeeper
@@ -28,22 +29,27 @@ services:
       # followers use to connect to the leader, while the second is for leader
       # election.
       - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+      - ZOO_DATA_DIR=${ZOOKEEPER0_ZOO_DATA_DIR}
 
   zookeeper1:
+    image: hyperledger/fabric-zookeeper${ZOOKEEPER1_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: zookeeper
     environment:
       - ZOO_MY_ID=2
       - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+      - ZOO_DATA_DIR=${ZOOKEEPER1_ZOO_DATA_DIR}
 
   zookeeper2:
+    image: hyperledger/fabric-zookeeper${ZOOKEEPER2_VERSION_EXTENSION}
     extends:
       file: dc-orderer-kafka-base.yml
       service: zookeeper
     environment:
       - ZOO_MY_ID=3
       - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+      - ZOO_DATA_DIR=${ZOOKEEPER2_ZOO_DATA_DIR}
 
   kafka0:
     image: hyperledger/fabric-kafka${KAFKA0_VERSION_EXTENSION}
