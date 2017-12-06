@@ -416,13 +416,20 @@ Feature: Bootstrap
 
 
     And we "stop" service "kafka0"
+    And I wait "6" seconds
     And we "stop" service "kafka1"
+    And I wait "6" seconds
     And we "stop" service "kafka2"
+    And I wait "6" seconds
     And we "stop" service "kafka3"
+    And I wait "6" seconds
 
     And we "stop" service "zookeeper0"
+    And I wait "6" seconds
     And we "stop" service "zookeeper1"
+    And I wait "6" seconds
     And we "stop" service "zookeeper2"
+    And I wait "6" seconds
 
     And user "orderer0Admin" upgrades "zookeeper0" to version "<OrdererUpgradeVersion>"
     And user "orderer0Admin" upgrades "zookeeper1" to version "<OrdererUpgradeVersion>"
@@ -672,6 +679,6 @@ Feature: Bootstrap
       | ComposeFile                       | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion | VerifyAllBlockHeightsWaitTime |
 #      | dc-base.yml                       | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             | 10                            |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
-      | dc-base.yml  dc-orderer-kafka.yml | 90               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest              | 95                            |
+      | dc-base.yml  dc-orderer-kafka.yml | 40                 | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest              | 20                            |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 0                   | latest             |
