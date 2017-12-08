@@ -105,7 +105,7 @@ Feature: Bootstrap
       | peerOrg1     |
       | peerOrg2     |
 
-    And user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on orderer "<orderer0>"
+    And user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
 
     And user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfig" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
 
@@ -166,8 +166,8 @@ Feature: Bootstrap
     # Requesting a deliver earlier may result in a SERVICE_UNAVAILABLE response and a connection drop
     And I wait "<ChannelJoinDelay>" seconds
 
-    When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer0>"
-    And user "dev0Org0" sends deliver a seek request on orderer "<orderer0>" with properties:
+    When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
+    And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
       | ChainId                           | Start | End |
       | com.acme.blockchain.jdoe.channel1 | 0     | 0   |
 
@@ -201,7 +201,7 @@ Feature: Bootstrap
       | User        | Peer  | Organization |
       | peer0Signer | peer0 | peerOrg0     |
 
-    And user "configAdminPeerOrg0" using cert alias "config-admin-cert" connects to deliver function on orderer "<orderer0>"
+    And user "configAdminPeerOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
 
     And user "configAdminPeerOrg0" retrieves the latest config update "latestChannelConfigUpdate" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
 
@@ -223,7 +223,7 @@ Feature: Bootstrap
 
     And I wait "<BroadcastWaitTime>" seconds
 
-    And user "configAdminPeerOrg0" sends deliver a seek request on orderer "<orderer0>" with properties:
+    And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
       | ChainId                           | Start | End |
       | com.acme.blockchain.jdoe.channel1 | 1     | 1   |
 
@@ -326,7 +326,7 @@ Feature: Bootstrap
       # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
     And I wait "<BroadcastWaitTime>" seconds
 
-    And user "configAdminPeerOrg0" sends deliver a seek request on orderer "<orderer0>" with properties:
+    And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
       | ChainId                           | Start | End |
       | com.acme.blockchain.jdoe.channel1 | 2     | 2   |
 
@@ -392,7 +392,7 @@ Feature: Bootstrap
       # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
     And I wait "<BroadcastWaitTime>" seconds
 
-    And user "dev0Org0" sends deliver a seek request on orderer "<orderer0>" with properties:
+    And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
       | ChainId                           | Start | End |
       | com.acme.blockchain.jdoe.channel1 | 3     | 3   |
 
@@ -457,13 +457,13 @@ Feature: Bootstrap
     And I wait "<VerifyAllBlockHeightsWaitTime>" seconds
 
 #    And all orderer nodes are verified ready
-    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer0>"
+    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
     And user "dev0Org0" retrieves the latest config update "latestChannelConfigAfterUpgradeOfOrderersFromOrderer0" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
 
-    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer1>"
+    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer1>" using port "7050"
     And user "dev0Org0" retrieves the latest config update "latestChannelConfigAfterUpgradeOfOrderersFromOrderer1" from orderer "<orderer1>" for channel "com.acme.blockchain.jdoe.channel1"
 
-    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on orderer "<orderer2>"
+    And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer2>" using port "7050"
     And user "dev0Org0" retrieves the latest config update "latestChannelConfigAfterUpgradeOfOrderersFromOrderer2" from orderer "<orderer2>" for channel "com.acme.blockchain.jdoe.channel1"
 
 
@@ -496,7 +496,7 @@ Feature: Bootstrap
       # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
     And I wait "<BroadcastWaitTime>" seconds
 
-    And user "dev0Org0" sends deliver a seek request on orderer "<orderer0>" with properties:
+    And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
       | ChainId                           | Start | End |
       | com.acme.blockchain.jdoe.channel1 | 4     | 4   |
 
@@ -523,7 +523,7 @@ Feature: Bootstrap
     # NOTE: Currently 2 step process as the ordere will fixup the /Channel group mod_policy after this upgrade of '/Channel/Orderer'
     #
     ###########################################################################
-    Given user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on orderer "<orderer0>"
+    Given user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
     And user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
     And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer" using config "latestOrdererConfigForCapabilitiesChange" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
       | Group            | Capabilities |
@@ -707,6 +707,6 @@ Feature: Bootstrap
       | ComposeFile                       | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | RestartOrdererWaitTime | FabricBaseVersion | OrdererUpgradeVersion | RestartPeerWaitTime | PeerUpgradeVersion | VerifyAllBlockHeightsWaitTime |
 #      | dc-base.yml                       | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 0                      | x86_64-1.0.3      | latest                | 2                   | latest             | 10                            |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 2                   | latest             |
-      | dc-base.yml  dc-orderer-kafka.yml | 40                 | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest              | 30                            |
+      | dc-base.yml  dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | x86_64-1.0.3      | latest                | 0                   | latest             | 30                            |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       | 2                      | latest                | 0                   | latest             |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-composer.yml      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | 2                      | latest                | 0                   | latest             |
