@@ -509,3 +509,10 @@ def step_impl(context, user_name, config_update_alias, config_update_source_alia
 @given(u'all orderer admins agree to upgrade')
 def step_impl(context):
     pass
+
+@given(u'all peer admins remove existing chaincode docker images')
+def step_impl(context):
+    assert "composition" in context, "No composition found in context"
+    composition = context.composition
+    composition.remove_chaincode_containers()
+    composition.remove_chaincode_images()

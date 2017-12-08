@@ -251,12 +251,8 @@ class Composition:
         self.issueCommand(["kill"])
         self.issueCommand(["rm", "-f"])
 
-        # Now remove associated chaincode containers if any
-        output, error, returncode = \
-            bdd_test_util.cli_call(["docker"] + ["ps", "-qa", "--filter", "name={0}".format(self.projectName)], expect_success=True, env=self.getEnv())
-        for containerId in output.splitlines():
-            output, error, returncode = \
-                bdd_test_util.cli_call(["docker"] + ["rm", "-f", containerId], expect_success=True, env=self.getEnv())
+        # Now remove associated chaincode containers if any (NOTE: does not discriminate chaincode containers specifically, just to this project)
+        self.remove_chaincode_containers()
 
         # Remove the associated network
         output, error, returncode = \
@@ -267,6 +263,39 @@ class Composition:
 
         # Invoke callbacks
         [callback.decomposing(self, self.context) for callback in Composition.GetCompositionCallbacksFromContext(self.context)]
+
+
+    def docker_ids(self):
+        output, error, returncode = \
+            bdd_test_util.cli_call(["docker"] + ["ps", "-qa", "--filter", "name={0}".format(self.projectName)], expect_success=True, env=self.getEnv())
+        return output.splitlines()
+
+
+    def inspect(self, format='{{.Id}} {{.Path}} {{.Image}}'):
+        'Returns the inspect information for each container in this project'
+        inspect_results = []
+        for containerId in self.docker_ids():
+            output, error, returncode = \
+                bdd_test_util.cli_call(["docker"] + ["inspect", "--format={0}".format(format), containerId], expect_success=True, env=self.getEnv())
+            inspect_results.append(output.split())
+        return inspect_results
+
+
+    def remove_chaincode_containers(self):
+        'Remove associated chaincode containers if any for this project only.'
+        chaincode_inspect_list = [info for info in self.inspect(format='{{.Id}} {{.Path}} {{.Image}}') if info[1] == 'chaincode']
+        for container_id,path,image_id in chaincode_inspect_list:
+            output, error, returncode = \
+                bdd_test_util.cli_call(["docker"] + ["rm", "-f", container_id], expect_success=True, env=self.getEnv())
+
+
+    def remove_chaincode_images(self):
+        'Remove associated chaincode images if any for this project only.'
+        output, error, returncode = \
+            bdd_test_util.cli_call(["docker"] + ["images", "-qa", "{}*".format(self.projectName)], expect_success=True, env=self.getEnv())
+        for imageId in output.splitlines():
+            output, error, returncode = \
+                bdd_test_util.cli_call(["docker"] + ["rmi", imageId], expect_success=True, env=self.getEnv())
 
 
     def set_version_for_service(self, compose_service, upgrade_version):

@@ -666,6 +666,34 @@ Feature: Bootstrap
 
 
 
+    ###########################################################################
+    #
+    # Verify can query the chaincodes after upgrade
+    #
+    # NOTE: First need to make sure existing chaincode images are cleared or TLS cert failure will occur in restarted chaincode container log
+    #
+    ###########################################################################
+    Given all peer admins remove existing chaincode docker images
+
+    When user "dev0Org0" using cert alias "consortium1-cert" creates a proposal "queryProposal2" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "querySpec1"
+
+    And user "dev0Org0" using cert alias "consortium1-cert" sends proposal "queryProposal2" to endorsers with timeout of "30" seconds with proposal responses "queryProposal2Responses":
+      | Endorser |
+      | peer0    |
+      | peer2    |
+
+    Then user "dev0Org0" expects proposal responses "queryProposal2Responses" with status "200" from endorsers:
+      | Endorser |
+      | peer0    |
+      | peer2    |
+
+    And user "dev0Org0" expects proposal responses "queryProposal2Responses" each have the same value from endorsers:
+      | Endorser |
+      | peer0    |
+      | peer2    |
+
+
+
     # Config_update to peer channel with new value 'Capabilities', and no specific capability.Scenario:
     # Expect the non-upgraded peers to panic (Verify)
 
