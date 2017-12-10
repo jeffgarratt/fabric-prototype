@@ -25,6 +25,7 @@ from peer import proposal_pb2
 from peer import query_pb2
 from peer import proposal_response_pb2
 from peer import peer_pb2_grpc
+from peer import resources_pb2
 from common import ledger_pb2 as common_dot_ledger_pb2
 from msp import identities_pb2
 
@@ -245,6 +246,11 @@ class CSCCHelper(SystemChaincodeHelper):
     def get_config_block(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetConfigBlock', self.channel_name])
         return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+
+    def get_config_tree(self, timeout=2):
+        cc_spec= self._get_cc_spec(args=['GetConfigTree', self.channel_name])
+        return self._send(cc_spec=cc_spec, type_of_response=resources_pb2.ConfigTree, timeout=timeout)
+
 
 
 class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
