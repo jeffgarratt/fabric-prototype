@@ -1122,6 +1122,40 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
                 env["{0}_VERSION_EXTENSION".format(ordererService.upper())] = ":{0}".format(version_for_orderer)
 
 
+class CouchDBCompositionCallback(compose.CompositionCallback, CallbackHelper):
+    'Responsible for setting up Kafka nodes upon composition'
+
+    def __init__(self, context):
+        CallbackHelper.__init__(self, discriminator="couchdb")
+        self.context = context
+        compose.Composition.RegisterCallbackInContext(context, self)
+
+    def get_couchdb_service_list(self, composition):
+        return [serviceName for serviceName in composition.getServiceNames() if "couchdb" in serviceName]
+
+    def composing(self, composition, context):
+        'Will create the filestore folder for each node'
+        directory = getDirectory(context)
+        for couchdb_service in self.get_couchdb_service_list(composition):
+            self._createFilestore(compose_service=couchdb_service,
+                                  project_name=composition.projectName)
+
+    def decomposing(self, composition, context):
+        'Will remove the orderer volume path folder for the context'
+        shutil.rmtree(self.getVolumePath(composition.projectName))
+
+    def getEnv(self, composition, context, env):
+        directory = getDirectory(context)
+        for couchdb_service in self.get_couchdb_service_list(composition):
+            # The Filestore settings
+            container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=couchdb_service, pathType=PathType.Local)
+            env["{0}_HOST_DATA_DIR".format(couchdb_service.upper())] = container_filestore_path
+
+            # Now the versions
+            version_for_couchdb = composition.get_version_for_service(couchdb_service)
+            env["{0}_VERSION_EXTENSION".format(couchdb_service.upper())] = ":{0}".format(version_for_couchdb)
+
+
 class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Peer nodes upon composition'
 
@@ -1129,6 +1163,9 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
         CallbackHelper.__init__(self, discriminator="peer")
         self.context = context
         compose.Composition.RegisterCallbackInContext(context, self)
+        # Now initialize the CouchDB composition callbacks
+        CouchDBCompositionCallback(context=context)
+
 
     def getPeerList(self, composition):
         return [serviceName for serviceName in composition.getServiceNames() if "peer" in serviceName]

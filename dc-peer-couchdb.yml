@@ -8,9 +8,11 @@ version: '2'
 services:
 
   couchdb0:
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb${COUCHDB0_VERSION_EXTENSION}
     ports:
       - '5984'
+    volumes:
+      - ${COUCHDB0_HOST_DATA_DIR}:/opt/couchdb/data
 
   peer0:
     environment:
@@ -20,9 +22,11 @@ services:
        - couchdb0
 
   couchdb1:
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb${COUCHDB1_VERSION_EXTENSION}
     ports:
       - '5984'
+    volumes:
+      - ${COUCHDB1_HOST_DATA_DIR}:/opt/couchdb/data
 
   peer1:
     environment:
@@ -32,9 +36,11 @@ services:
        - couchdb1
 
   couchdb2:
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb${COUCHDB2_VERSION_EXTENSION}
     ports:
       - '5984'
+    volumes:
+      - ${COUCHDB2_HOST_DATA_DIR}:/opt/couchdb/data
 
   peer2:
     environment:
@@ -44,9 +50,11 @@ services:
        - couchdb2
 
   couchdb3:
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb${COUCHDB3_VERSION_EXTENSION}
     ports:
       - '5984'
+    volumes:
+      - ${COUCHDB3_HOST_DATA_DIR}:/opt/couchdb/data
 
   peer3:
     environment:
