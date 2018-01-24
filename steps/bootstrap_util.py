@@ -38,6 +38,7 @@ from msp import msp_config_pb2, msp_principal_pb2, identities_pb2
 from peer import configuration_pb2 as peer_dot_configuration_pb2
 from orderer import configuration_pb2 as orderer_dot_configuration_pb2
 import orderer_util
+from bdd_test_util import cli_call
 
 from contexthelper import ContextHelper
 
@@ -946,6 +947,9 @@ class CallbackHelper:
         self.volumeRootPathLocal = volumeRootPathLocal
         self.discriminator = discriminator
 
+    def get_service_list(self, composition):
+        return [serviceName for serviceName in composition.getServiceNames() if self.discriminator in serviceName]
+
     def getVolumePath(self, project_name, pathType=PathType.Local):
         assert pathType in PathType, "Expected pathType of {0}".format(PathType)
         basePath = self.volumeRootPathLocal
@@ -981,12 +985,42 @@ class CallbackHelper:
                                "{0}-{1}-{2}-tls.key".format(pnt.user, pnt.nodeName, pnt.organization))
         return (keyPath, certPath)
 
+
+    def glob_recursive(self, root_dir='.', pattern='*'):
+        matches = []
+        import glob
+        for root, dirnames, filenames in os.walk(root_dir):
+            for filename in glob.fnmatch.filter(filenames, pattern):
+                matches.append(os.path.join(root, filename))
+        return matches
+
     def getFilestorePath(self, project_name, compose_service, pathType=PathType.Local):
         assert pathType in PathType, "Expected pathType of {0}".format(PathType)
         basePath = self.volumeRootPathLocal
         if pathType == PathType.Container:
             basePath = self.volumeRootPathInContainer
         return "{0}/volumes/{1}/{2}/{3}/filestore".format(basePath, self.discriminator, project_name, compose_service)
+
+
+    def _copy_filestore(self, src_path, dest_path):
+        assert os.path.exists(src_path), "Filestore source path not found: {0}".format(src_path)
+        shutil.copytree(src_path, dest_path, ignore=shutil.ignore_patterns('blockfile_*'))
+        # Now use sudo cp for the permissioned files
+        for file_path_skipped in self.glob_recursive(root_dir=src_path, pattern='blockfile_*'):
+            cli_call(['sudo','cp',file_path_skipped, file_path_skipped.replace(src_path, dest_path)])
+
+    def snapshot_filestore(self, project_name, compose_service, snapshot, pathType=PathType.Local):
+        file_store_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service, pathType=pathType)
+        assert os.path.exists(file_store_path), "Filestore path not found for service {0}: {1}".format(compose_service, file_store_path)
+        destination_path = "{0}-{1}".format(file_store_path, snapshot)
+        self._copy_filestore(src_path=file_store_path, dest_path=destination_path)
+        return destination_path
+
+    def restore_filestore_snapshot(self, project_name, compose_service, snapshot, pathType=PathType.Local):
+        file_store_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service, pathType=pathType)
+        assert not os.path.exists(file_store_path), "Filestore path already exists for service {0}: {1}".format(compose_service, file_store_path)
+        src_path = "{0}-{1}".format(file_store_path, snapshot)
+        self._copy_filestore(src_path=src_path, dest_path=file_store_path)
 
     def getLocalMspConfigRootCertPath(self, directory , project_name, compose_service, pathType=PathType.Local):
         (localMspConfigPath, nodeAdminTuple) = self._getPathAndUserInfo(directory=directory, project_name=project_name, compose_service=compose_service, pathType=pathType)
