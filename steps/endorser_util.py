@@ -209,8 +209,11 @@ class SystemChaincodeHelper:
     def _get_cc_spec(self, args):
         return getChaincodeSpec(cc_type="GOLANG", path="", name=self.system_chaincode_name, args=args)
 
-    def _send(self, cc_spec, type_of_response, timeout=2):
-        return send_proposal_and_get_response_payload_as_type(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, type_of_response=type_of_response, timeout=timeout, channelName=self.channel_name, endorsers=self.endorsers)
+    def _send(self, cc_spec, type_of_response, timeout=2, type="ENDORSER_TRANSACTION", channel_name=None):
+        # Allow for different channel name
+        if channel_name == None:
+            channel_name = self.channel_name
+        return send_proposal_and_get_response_payload_as_type(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, type_of_response=type_of_response, timeout=timeout, type=type, channelName=channel_name, endorsers=self.endorsers)
 
 
 class QSCCHelper(SystemChaincodeHelper):
@@ -251,6 +254,9 @@ class CSCCHelper(SystemChaincodeHelper):
         cc_spec= self._get_cc_spec(args=['GetConfigTree', self.channel_name])
         return self._send(cc_spec=cc_spec, type_of_response=resources_pb2.ConfigTree, timeout=timeout)
 
+    def join_channel(self, genesis_block, timeout=2):
+        cc_spec= self._get_cc_spec(args=['JoinChain', genesis_block.SerializeToString()])
+        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout, type="CONFIG", channel_name="")
 
 
 class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
@@ -276,10 +282,10 @@ class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
 
 
 
-def send_proposal_and_get_response_payload_as_type(context, user, directory, nodeAdminTuple, cc_spec, type_of_response, timeout=2, channelName ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+def send_proposal_and_get_response_payload_as_type(context, user, directory, nodeAdminTuple, cc_spec, type_of_response, timeout=2, type="ENDORSER_TRANSACTION", channelName ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
     signersCert = directory.findCertForNodeAdminTuple(nodeAdminTuple)
     mspID = nodeAdminTuple.organization
-    proposal = createInvokeProposalForBDD(context, ccSpec=cc_spec, chainID=channelName, signersCert=signersCert, Mspid=mspID, type="ENDORSER_TRANSACTION")
+    proposal = createInvokeProposalForBDD(context, ccSpec=cc_spec, chainID=channelName, signersCert=signersCert, Mspid=mspID, type=type)
     signedProposal = signProposal(proposal=proposal, entity=user, signersCert=signersCert)
     endorserStubs = getEndorserStubs(context, composeServices=endorsers, directory=directory, nodeAdminTuple=nodeAdminTuple)
     proposalResponseFutures = [endorserStub.ProcessProposal.future(signedProposal, int(timeout)) for endorserStub in endorserStubs]
