@@ -60,10 +60,12 @@ Feature: Bootstrap
         | peer1Signer         | peer1       | peerOrg0     |                   |
         | peer2Signer         | peer2       | peerOrg1     |                   |
         | peer3Signer         | peer3       | peerOrg1     |                   |
+        | peer4Signer         | peer4       | peerOrg2     |                   |
         | peer0Admin          | peer0       | peerOrg0     | peer-admin-cert   |
         | peer1Admin          | peer1       | peerOrg0     | peer-admin-cert   |
         | peer2Admin          | peer2       | peerOrg1     | peer-admin-cert   |
         | peer3Admin          | peer3       | peerOrg1     | peer-admin-cert   |
+        | peer4Admin          | peer4       | peerOrg2     | peer-admin-cert   |
         | configAdminPeerOrg0 | configAdmin | peerOrg0     | config-admin-cert |
         | configAdminPeerOrg1 | configAdmin | peerOrg1     | config-admin-cert |
         | configAdminPeerOrg2 | configAdmin | peerOrg2     | config-admin-cert |
@@ -250,6 +252,32 @@ Feature: Bootstrap
         | Peer  |
         | peer3 |
 
+
+#      #######################################################
+#      #
+#      # Add peerOrg2 to channel
+#      #
+#      #######################################################
+#      When the user "configAdminPeerOrg0" using cert alias "config-admin-cert" adds organization "peerOrg2" to channel "com.acme.blockchain.jdoe.channel1" using orderer "orderer0" collecting signatures from:
+#        | User                | Cert Alias        |
+#        | configAdminPeerOrg0 | config-admin-cert |
+#        | configAdminPeerOrg1 | config-admin-cert |
+#
+#      And I wait "<BroadcastWaitTime>" seconds
+#      # Had to add a wait as instantiation would fail with variant response bytes due to MSP cache not be updated in some cases.
+#      And I wait "3" seconds
+#
+#
+#      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer4Admin" who saves it as "genesisBlockForMyNewChannel"
+#    # This is entry point for joining an existing channel
+#      When user "peer4Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+#        | Peer  |
+#        | peer4 |
+#
+#      Then user "peer4Admin" expects result code for "joinChannelResult" of "200" from peers:
+#        | Peer  |
+#        | peer4 |
+
       # Uncomment this if you wish to stop with just a channel created and joined on all peers
 #      And we stop
 
@@ -266,19 +294,19 @@ Feature: Bootstrap
       #  Demonstrate retrieving the latest block from the peer using deliver interface
       #
       #########################################################################
-      When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer0" using port "7051"
-      And user "dev0Org0" sends deliver a seek request on node "peer0" with properties:
-        | ChainId                               | Start |  End    |
-        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
-
-      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromPeer" from "peer0" of "1" blocks with "1" messages within "1" seconds
-
-      When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer2" using port "7051"
-      And user "dev0Org0" sends deliver a seek request on node "peer2" with properties:
-        | ChainId                               | Start |  End    |
-        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
-
-      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromOtherOrgsPeer" from "peer2" of "1" blocks with "1" messages within "1" seconds
+#      When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer0" using port "7051"
+#      And user "dev0Org0" sends deliver a seek request on node "peer0" with properties:
+#        | ChainId                               | Start |  End    |
+#        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
+#
+#      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromPeer" from "peer0" of "1" blocks with "1" messages within "1" seconds
+#
+#      When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer2" using port "7051"
+#      And user "dev0Org0" sends deliver a seek request on node "peer2" with properties:
+#        | ChainId                               | Start |  End    |
+#        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
+#
+#      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromOtherOrgsPeer" from "peer2" of "1" blocks with "1" messages within "1" seconds
 
 
       # Entry point for invoking on an existing channel
