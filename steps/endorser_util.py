@@ -15,6 +15,7 @@
 
 import os
 import json
+from abc import ABCMeta, abstractmethod
 from contexthelper import ContextHelper
 import bdd_test_util
 import bdd_grpc_util
@@ -186,14 +187,39 @@ def create_serialized_identity(msp_id, signers_cert):
     return identities_pb2.SerializedIdentity(mspid=msp_id, id_bytes=crypto.dump_certificate(crypto.FILETYPE_PEM, signers_cert))
 
 
-def get_proposal_response_payload_as_type(proposal_response, cls):
+def get_proposal_response_payload_as_type(proposal_response, proposal_response_handler):
     proposal_response_payload = proposal_response_pb2.ProposalResponsePayload()
     proposal_response_payload.ParseFromString(proposal_response.payload)
     cca = proposal_pb2.ChaincodeAction()
     cca.ParseFromString(proposal_response_payload.extension)
-    result = cls()
-    result.ParseFromString(cca.response.payload)
-    return result
+    return proposal_response_handler.handle_response_payload(cca.response.payload)
+
+
+class ProposalResponseHandler:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def handle_response_payload(self, response_payload):
+        pass
+
+class PrototbufProposalResponseHandler(ProposalResponseHandler):
+
+    def __init__(self, protobuf_type):
+        self.protobuf_type = protobuf_type
+
+    def handle_response_payload(self, response_payload):
+        result = self.protobuf_type()
+        result.ParseFromString(response_payload)
+        return result
+
+class StringProposalResponseHandler(ProposalResponseHandler):
+
+    def __init__(self):
+        pass
+
+    def handle_response_payload(self, response_payload):
+        return response_payload
+
 
 class SystemChaincodeHelper:
 
@@ -209,11 +235,11 @@ class SystemChaincodeHelper:
     def _get_cc_spec(self, args):
         return getChaincodeSpec(cc_type="GOLANG", path="", name=self.system_chaincode_name, args=args)
 
-    def _send(self, cc_spec, type_of_response, timeout=2, type="ENDORSER_TRANSACTION", channel_name=None):
+    def _send(self, cc_spec, proposal_response_handler, timeout=2, type="ENDORSER_TRANSACTION", channel_name=None):
         # Allow for different channel name
         if channel_name == None:
             channel_name = self.channel_name
-        return send_proposal_and_get_response_payload_as_type(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, type_of_response=type_of_response, timeout=timeout, type=type, channelName=channel_name, endorsers=self.endorsers)
+        return send_proposal_and_get_response_payload_using_handler(context=self.context, user=self.user, directory=self.directory, nodeAdminTuple=self.node_admin_tuple, cc_spec=cc_spec, proposal_response_handler=proposal_response_handler, timeout=timeout, type=type, channelName=channel_name, endorsers=self.endorsers)
 
 
 class QSCCHelper(SystemChaincodeHelper):
@@ -223,19 +249,19 @@ class QSCCHelper(SystemChaincodeHelper):
 
     def get_chain_info(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetChainInfo', self.channel_name])
-        return self._send(cc_spec=cc_spec, type_of_response=common_dot_ledger_pb2.BlockchainInfo, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(common_dot_ledger_pb2.BlockchainInfo), timeout=timeout)
 
     def get_block_by_number(self, block_number, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetBlockByNumber', self.channel_name, str(block_number)])
-        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(common_dot_common_pb2.Block), timeout=timeout)
 
     def get_transaction_by_id(self, transaction_id, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetTransactionByID', self.channel_name, transaction_id])
-        return self._send(cc_spec=cc_spec, type_of_response=transaction_pb2.ProcessedTransaction, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(transaction_pb2.ProcessedTransaction), timeout=timeout)
 
     def get_block_by_transaction_id(self, transaction_id, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetBlockByTxID', self.channel_name, transaction_id])
-        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(common_dot_common_pb2.Block), timeout=timeout)
 
 class CSCCHelper(SystemChaincodeHelper):
 
@@ -244,19 +270,19 @@ class CSCCHelper(SystemChaincodeHelper):
 
     def get_channel_list(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetChannels'])
-        return self._send(cc_spec=cc_spec, type_of_response=query_pb2.ChannelQueryResponse, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(query_pb2.ChannelQueryResponse), timeout=timeout)
 
     def get_config_block(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetConfigBlock', self.channel_name])
-        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(common_dot_common_pb2.Block), timeout=timeout)
 
     def get_config_tree(self, timeout=2):
         cc_spec= self._get_cc_spec(args=['GetConfigTree', self.channel_name])
-        return self._send(cc_spec=cc_spec, type_of_response=resources_pb2.ConfigTree, timeout=timeout)
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(resources_pb2.ConfigTree), timeout=timeout)
 
     def join_channel(self, genesis_block, timeout=2):
         cc_spec= self._get_cc_spec(args=['JoinChain', genesis_block.SerializeToString()])
-        return self._send(cc_spec=cc_spec, type_of_response=common_dot_common_pb2.Block, timeout=timeout, type="CONFIG", channel_name="")
+        return self._send(cc_spec=cc_spec, proposal_response_handler=PrototbufProposalResponseHandler(common_dot_common_pb2.Block), timeout=timeout, type="CONFIG", channel_name="")
 
 
 class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
@@ -282,7 +308,7 @@ class ProcessedTransactionExtractor(bootstrap_util.EnvelopeExractor):
 
 
 
-def send_proposal_and_get_response_payload_as_type(context, user, directory, nodeAdminTuple, cc_spec, type_of_response, timeout=2, type="ENDORSER_TRANSACTION", channelName ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
+def send_proposal_and_get_response_payload_using_handler(context, user, directory, nodeAdminTuple, cc_spec, proposal_response_handler, timeout=2, type="ENDORSER_TRANSACTION", channelName ="com.acme.blockchain.jdoe.channel1", endorsers=['peer0', 'peer1', 'peer2', 'peer3']):
     signersCert = directory.findCertForNodeAdminTuple(nodeAdminTuple)
     mspID = nodeAdminTuple.organization
     proposal = createInvokeProposalForBDD(context, ccSpec=cc_spec, chainID=channelName, signersCert=signersCert, Mspid=mspID, type=type)
@@ -290,4 +316,4 @@ def send_proposal_and_get_response_payload_as_type(context, user, directory, nod
     endorserStubs = getEndorserStubs(context, composeServices=endorsers, directory=directory, nodeAdminTuple=nodeAdminTuple)
     proposalResponseFutures = [endorserStub.ProcessProposal.future(signedProposal, int(timeout)) for endorserStub in endorserStubs]
     resultsDict =  dict(zip(endorsers, [respFuture.result() for respFuture in proposalResponseFutures]))
-    return dict([(endorser, get_proposal_response_payload_as_type(proposal_response, type_of_response)) for endorser,proposal_response in resultsDict.iteritems()])
+    return dict([(endorser, get_proposal_response_payload_as_type(proposal_response, proposal_response_handler)) for endorser, proposal_response in resultsDict.iteritems()])

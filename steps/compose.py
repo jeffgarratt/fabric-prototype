@@ -76,7 +76,17 @@ class Composition:
     def RegisterCallbackInContext(cls, context, callback):
         if not isinstance(callback, CompositionCallback):
             raise TypeError("Expected type to be {0}, instead received {1}".format(CompositionCallback, type(callback)))
+        types_of_callbacks = [type(cb) for cb in Composition.GetCompositionCallbacksFromContext(context)]
+        assert not type(callback) in types_of_callbacks, "Type of callback already registered in context: {0}".format(type(callback))
         Composition.GetCompositionCallbacksFromContext(context).append(callback)
+
+    @classmethod
+    def GetCallbackInContextByDiscriminator(cls, context, discriminator):
+        callbacks_dict = dict([(cb.discriminator,cb) for cb in Composition.GetCompositionCallbacksFromContext(context)])
+        callback = None
+        if discriminator in callbacks_dict.keys():
+            callback = callbacks_dict[discriminator]
+        return callback
 
     @classmethod
     def GetCompositionCallbacksFromContext(cls, context):

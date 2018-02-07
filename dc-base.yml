@@ -80,7 +80,7 @@ services:
       - CORE_PEER_FILESYSTEMPATH=${PEER2_CORE_PEER_FILESYSTEMPATH}
     depends_on:
       - orderer0
-      - peer0
+#      - peer0
 
   peer3:
     image: hyperledger/fabric-peer${PEER3_VERSION_EXTENSION}
@@ -100,7 +100,7 @@ services:
       - CORE_PEER_FILESYSTEMPATH=${PEER3_CORE_PEER_FILESYSTEMPATH}
     depends_on:
       - orderer0
-      - peer0
+      - peer2
 
   peer4:
     image: hyperledger/fabric-peer${PEER4_VERSION_EXTENSION}
@@ -120,4 +120,4 @@ services:
       - CORE_PEER_FILESYSTEMPATH=${PEER4_CORE_PEER_FILESYSTEMPATH}
     depends_on:
       - orderer0
-      - peer0
+

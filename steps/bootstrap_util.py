@@ -26,6 +26,7 @@ import ecdsa
 
 from collections import namedtuple
 from itertools import groupby
+from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 
 from enum import Enum
 
@@ -506,6 +507,41 @@ def make_chain_header(type, channel_id, txID="", extension='', version=1,
                                                extension=extension)
 
 
+class ServiceStopped:
+    def __init__(self, composition, compose_service):
+        self.composition = composition
+        self.compose_service = compose_service
+    def __enter__(self):
+        self.composition.issueCommand(['stop'],[self.compose_service])
+        return (self.composition, self.compose_service)
+    def __exit__(self, type, value, traceback):
+        self.composition.issueCommand(['start'],[self.compose_service])
+
+
+class ServicesStoppedAndReadyForSnapshot:
+    def __init__(self, callback_helper, snapshot_name, composition, compose_services, snapshot_folder_exist, stop_wait_interval=0):
+        self.callback_helper = callback_helper
+        self.composition = composition
+        self.compose_services = compose_services
+        self.snapshot_folder_exist = snapshot_folder_exist
+        self.snapshot_name = snapshot_name
+        self.stop_wait_interval = stop_wait_interval
+
+    def __enter__(self):
+        for compose_service in self.compose_services:
+            assert compose_service in self.callback_helper.get_service_list(composition=self.composition), "Compose service not found: {0}".format(compose_service)
+            # Check it the snapshot path existence expectation is met
+            snapshot_path = self.callback_helper.get_snapshot_path(project_name=self.composition.projectName, compose_service=compose_service, snapshot=self.snapshot_name)
+            assert self.snapshot_folder_exist == os.path.exists(snapshot_path), "Expected the snapshot folder to {0}exist: {1}".format("" if self.snapshot_folder_exist else "NOT ", snapshot_path)
+        for compose_service in self.compose_services:
+            self.composition.issueCommand(['stop'],[compose_service])
+            time.sleep(self.stop_wait_interval)
+        return self
+    def __exit__(self, type, value, traceback):
+        for compose_service in self.compose_services:
+            self.composition.issueCommand(['start'],[compose_service])
+
+
 class BootstrapHelper:
     KEY_CONSENSUS_TYPE = "ConsensusType"
     KEY_ORDERER_KAFKA_BROKERS = "KafkaBrokers"
@@ -763,6 +799,71 @@ class BootstrapHelper:
             current_config_group = current_config_group.groups[group_id]
         return current_config_group
 
+    def _orderer_system_snapshot_template_method(self, method_name, context, composition, snapshot_name, snapshot_folder_exist):
+        'Performs the provided snapshot method for the orderer system.'
+        orderer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, OrdererGensisBlockCompositionCallback.DISCRIMINATOR)
+        assert orderer_callback_helper, "No Orderer callback helper currently registered in context"
+        with ServicesStoppedAndReadyForSnapshot(callback_helper=orderer_callback_helper, snapshot_name=snapshot_name,
+                                                composition=composition, compose_services=orderer_callback_helper.get_service_list(composition=composition),
+                                                snapshot_folder_exist=snapshot_folder_exist) as ctxMgr:
+            for compose_service in ctxMgr.compose_services:
+                func = getattr(orderer_callback_helper, method_name)
+                func(project_name=composition.projectName, compose_service=compose_service, snapshot=snapshot_name)
+            # Now stop the Kafka servers slowly to allow for leader changes during shutdown, then snapshot
+            kafka_callback_helper = composition.GetCallbackInContextByDiscriminator(context, KafkaCompositionCallback.DISCRIMINATOR)
+            if kafka_callback_helper:
+                with ServicesStoppedAndReadyForSnapshot(callback_helper=kafka_callback_helper, snapshot_name=snapshot_name,
+                                                        composition=composition, compose_services=kafka_callback_helper.get_service_list(composition),
+                                                        snapshot_folder_exist=snapshot_folder_exist,
+                                                        stop_wait_interval=KafkaCompositionCallback.REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS / 1000) as kafkaCtxMgr:
+                    for compose_service in kafkaCtxMgr.compose_services:
+                        func = getattr(kafka_callback_helper, method_name)
+                        func(project_name=composition.projectName, compose_service=compose_service, snapshot=snapshot_name)
+
+    def snapshot_orderer_system(self, context, composition, snapshot_name):
+        'Snapshots the orderer system.'
+        self._orderer_system_snapshot_template_method(method_name="snapshot_filestore", context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=False)
+
+    def restore_orderer_system_using_snapshot(self, context, composition, snapshot_name):
+        'Restores the orderer system using a supplied snapshot name.'
+        self._orderer_system_snapshot_template_method(method_name="restore_filestore_snapshot", context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=True)
+
+    def _snapshot_peer(self, peer_callback_helper, method_name, compose_service, context, composition, snapshot_name, composition_config_as_yaml):
+        'Performs the provided snapshot method for the peer compose_service provided.'
+        func = getattr(peer_callback_helper, method_name)
+        func(project_name=composition.projectName, compose_service=compose_service, snapshot=snapshot_name)
+
+        # See if this peer has a dependent couchdb service
+        couchdb_service = peer_callback_helper.get_couchdb_service_for_peer(compose_service=compose_service, composition_config_as_yaml=composition_config_as_yaml)
+        if couchdb_service:
+            # Now stop the associated couchdb server and snapshot
+            couchdb_callback_helper = composition.GetCallbackInContextByDiscriminator(context, CouchDBCompositionCallback.DISCRIMINATOR)
+            assert couchdb_callback_helper, "No CouchDB callback helper currently registered in context"
+            # Now stop the couchdb servers
+            with ServiceStopped(composition=composition, compose_service=couchdb_service):
+                func = getattr(couchdb_callback_helper, method_name)
+                func(project_name=composition.projectName, compose_service=couchdb_service, snapshot=snapshot_name)
+
+    def _snapshot_peers_template_method(self, method_name, peers, context, composition, snapshot_name, snapshot_folder_exist):
+        'Performs the provided snapshot method for the peers list provided.'
+        import yaml
+        peer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, PeerCompositionCallback.DISCRIMINATOR)
+        assert peer_callback_helper, "No Peer callback helper currently registered in context"
+        config = yaml.load(composition.getConfig())
+        with ServicesStoppedAndReadyForSnapshot(callback_helper=peer_callback_helper, snapshot_name=snapshot_name, composition=composition, compose_services=peers, snapshot_folder_exist=snapshot_folder_exist) as ctxMgr:
+            pool = ThreadPoolExecutor(len(ctxMgr.compose_services))
+            futures = [pool.submit(self._snapshot_peer, peer_callback_helper, method_name,
+                                   compose_service, context, composition,
+                                   snapshot_name, config) for compose_service in ctxMgr.compose_services]
+            results = [r.result() for r in as_completed(futures)]
+
+    def snapshot_peers(self, peers_to_snapshot, context, composition, snapshot_name):
+        'Snapshots the list of peer service names provided.'
+        self._snapshot_peers_template_method(method_name="snapshot_filestore", peers=peers_to_snapshot, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=False)
+
+    def restore_peers_using_snapshot(self, peers_to_restore, context, composition, snapshot_name):
+        'Restore from snapshots the list of peer service names provided.'
+        self._snapshot_peers_template_method(method_name="restore_filestore_snapshot", peers=peers_to_restore, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=True)
 
 
 def getDirectory(context):
@@ -1009,6 +1110,11 @@ class CallbackHelper:
         for file_path_skipped in self.glob_recursive(root_dir=src_path, pattern='blockfile_*'):
             cli_call(['sudo','cp',file_path_skipped, file_path_skipped.replace(src_path, dest_path)])
 
+    def get_snapshot_path(self, project_name, compose_service, snapshot, pathType=PathType.Local):
+        "Returns the snapshot path calculated per the supplied snapshot name."
+        file_store_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service, pathType=pathType)
+        return "{0}-{1}".format(file_store_path, snapshot)
+
     def snapshot_filestore(self, project_name, compose_service, snapshot, pathType=PathType.Local):
         file_store_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service, pathType=pathType)
         assert os.path.exists(file_store_path), "Filestore path not found for service {0}: {1}".format(compose_service, file_store_path)
@@ -1017,7 +1123,10 @@ class CallbackHelper:
         return destination_path
 
     def restore_filestore_snapshot(self, project_name, compose_service, snapshot, pathType=PathType.Local):
+        '''Restores the supplied snapshot WARNING: Will attempt to delete the existing filestore folder first!!!!'''
         file_store_path = self.getFilestorePath(project_name=project_name, compose_service=compose_service, pathType=pathType)
+        # First remove the existing filestore folder
+        cli_call(['sudo','rm','-rf', file_store_path])
         assert not os.path.exists(file_store_path), "Filestore path already exists for service {0}: {1}".format(compose_service, file_store_path)
         src_path = "{0}-{1}".format(file_store_path, snapshot)
         self._copy_filestore(src_path=src_path, dest_path=file_store_path)
@@ -1096,6 +1205,8 @@ class CallbackHelper:
 class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting the GensisBlock for the Orderer nodes upon composition'
 
+    DISCRIMINATOR = "orderer"
+
     def __init__(self, context, genesisBlock, genesisFileName="genesis_file"):
         CallbackHelper.__init__(self, discriminator="orderer")
         self.context = context
@@ -1109,7 +1220,8 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
     def getGenesisFilePath(self, project_name, pathType=PathType.Local):
         return "{0}/{1}".format(self.getVolumePath(project_name=project_name, pathType=pathType), self.genesisFileName)
 
-    def getOrdererList(self, composition):
+    @classmethod
+    def get_orderer_service_list(cls, composition):
         return [serviceName for serviceName in composition.getServiceNames() if "orderer" in serviceName]
 
     def composing(self, composition, context):
@@ -1119,7 +1231,7 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             f.write(self.genesisBlock.SerializeToString())
         directory = getDirectory(context)
 
-        for ordererService in self.getOrdererList(composition):
+        for ordererService in OrdererGensisBlockCompositionCallback.get_orderer_service_list(composition):
             self._createCryptoMaterial(directory=directory,
                                        compose_service=ordererService,
                                        project_name=composition.projectName,
@@ -1135,7 +1247,7 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
         directory = getDirectory(context)
         env["ORDERER_GENERAL_GENESISMETHOD"] = "file"
         env["ORDERER_GENERAL_GENESISFILE"] = self.getGenesisFilePath(composition.projectName, pathType=PathType.Container)
-        for ordererService in self.getOrdererList(composition):
+        for ordererService in OrdererGensisBlockCompositionCallback.get_orderer_service_list(composition):
             localMspConfigPath = self.getLocalMspConfigPath(composition.projectName, ordererService, pathType=PathType.Container)
             env["{0}_ORDERER_GENERAL_LOCALMSPDIR".format(ordererService.upper())] = localMspConfigPath
             env["{0}_ORDERER_GENERAL_LOCALMSPID".format(ordererService.upper())] = self._getMspId(compose_service=ordererService, directory=directory)
@@ -1158,6 +1270,9 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
 
 class CouchDBCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Kafka nodes upon composition'
+
+
+    DISCRIMINATOR = "couchdb"
 
     def __init__(self, context):
         CallbackHelper.__init__(self, discriminator="couchdb")
@@ -1193,12 +1308,22 @@ class CouchDBCompositionCallback(compose.CompositionCallback, CallbackHelper):
 class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Peer nodes upon composition'
 
+    DISCRIMINATOR = "peer"
+
     def __init__(self, context):
         CallbackHelper.__init__(self, discriminator="peer")
         self.context = context
         compose.Composition.RegisterCallbackInContext(context, self)
         # Now initialize the CouchDB composition callbacks
         CouchDBCompositionCallback(context=context)
+
+
+    def get_couchdb_service_for_peer(self, compose_service, composition_config_as_yaml):
+        'Returns the couchdb service for this peer or None if none found.'
+        assert PeerCompositionCallback.DISCRIMINATOR in compose_service, "Expected a peer compose service, received: {0}".format(compose_service)
+        couchdb_services = [c for c in composition_config_as_yaml['services'][compose_service]['depends_on'] if c.startswith(CouchDBCompositionCallback.DISCRIMINATOR)]
+        assert len(couchdb_services) <= 1, "Expected either exactly one or no dependent services starting with {0} for peer {1}".format(CouchDBCompositionCallback.DISCRIMINATOR, compose_service)
+        return couchdb_services[0] if len(couchdb_services)==1 else None
 
 
     def getPeerList(self, composition):
@@ -1251,19 +1376,24 @@ class PeerCompositionCallback(compose.CompositionCallback, CallbackHelper):
 class KafkaCompositionCallback(compose.CompositionCallback, CallbackHelper):
     'Responsible for setting up Kafka nodes upon composition'
 
+    DISCRIMINATOR = "kafka"
+
+    REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS = 6000
+
     def __init__(self, context):
         CallbackHelper.__init__(self, discriminator="kafka")
         self.context = context
         compose.Composition.RegisterCallbackInContext(context, self)
 
-    def get_kafka_service_list(self, composition):
+    @classmethod
+    def get_kafka_service_list(cls, composition):
         return [serviceName for serviceName in composition.getServiceNames() if "kafka" in serviceName]
 
     def composing(self, composition, context):
         'Will create the filestore folder for each kafka node'
         directory = getDirectory(context)
 
-        for kafka_service in self.get_kafka_service_list(composition):
+        for kafka_service in KafkaCompositionCallback.get_kafka_service_list(composition):
             self._createFilestore(compose_service=kafka_service,
                                   project_name=composition.projectName)
 
@@ -1274,7 +1404,7 @@ class KafkaCompositionCallback(compose.CompositionCallback, CallbackHelper):
 
     def getEnv(self, composition, context, env):
         directory = getDirectory(context)
-        for kafka_service in self.get_kafka_service_list(composition):
+        for kafka_service in KafkaCompositionCallback.get_kafka_service_list(composition):
             # The Filestore settings
             container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=kafka_service, pathType=PathType.Container)
             env["{0}_KAFKA_LOG_DIRS".format(kafka_service.upper())] = container_filestore_path

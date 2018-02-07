@@ -11,7 +11,7 @@
 #  @generateDocs will generate documentation for the scenario that can be used for both verification and comprehension.
 #
 
-@bootstrap
+@upgrade
 Feature: Bootstrap
   As a blockchain entrepreneur
   I want to bootstrap a new blockchain network and then demonstrate non-compatible upgrade (e.g. 1.0.X -> 1.1)
