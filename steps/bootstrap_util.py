@@ -851,11 +851,10 @@ class BootstrapHelper:
         assert peer_callback_helper, "No Peer callback helper currently registered in context"
         config = yaml.load(composition.getConfig())
         with ServicesStoppedAndReadyForSnapshot(callback_helper=peer_callback_helper, snapshot_name=snapshot_name, composition=composition, compose_services=peers, snapshot_folder_exist=snapshot_folder_exist) as ctxMgr:
-            pool = ThreadPoolExecutor(len(ctxMgr.compose_services))
-            futures = [pool.submit(self._snapshot_peer, peer_callback_helper, method_name,
-                                   compose_service, context, composition,
-                                   snapshot_name, config) for compose_service in ctxMgr.compose_services]
-            results = [r.result() for r in as_completed(futures)]
+            with ThreadPoolExecutor(max_workers=len(ctxMgr.compose_services)) as executor:
+                [executor.submit(self._snapshot_peer, peer_callback_helper, method_name,
+                                 compose_service, context, composition,
+                                 snapshot_name, config) for compose_service in ctxMgr.compose_services]
 
     def snapshot_peers(self, peers_to_snapshot, context, composition, snapshot_name):
         'Snapshots the list of peer service names provided.'
