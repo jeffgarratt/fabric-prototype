@@ -25,10 +25,7 @@ import bdd_test_util
 import bootstrap_util
 import bdd_grpc_util
 
-
-from grpc.beta import implementations
-from grpc.framework.interfaces.face.face import AbortionError
-from grpc.beta.interfaces import StatusCode
+import grpc
 
 # The default chain ID when the system is statically bootstrapped for testing
 TEST_CHAIN_ID = "testchainid"
@@ -75,25 +72,6 @@ class StreamHelper:
         except Queue.Empty:
             return
 
-    def readMessage(self):
-        for reply in self.readMessages(1):
-            return reply
-        assert False, "Received no messages"
-
-    def readMessages(self, expectedCount):
-        msgsReceived = []
-        counter = 0
-        try:
-            for reply in self.replyGenerator:
-                counter += 1
-                #print("received reply: {0}, counter = {1}".format(reply, counter))
-                msgsReceived.append(reply)
-                if counter == int(expectedCount):
-                    break
-        except AbortionError as networkError:
-            self.handleNetworkError(networkError)
-        return msgsReceived
-
     def _start_receive(self):
         counter = 0
         try:
@@ -101,19 +79,21 @@ class StreamHelper:
                 counter += 1
                 #print("received reply: {0}, counter = {1}".format(reply, counter))
                 self.receiveQueue.put(reply)
-        except AbortionError as networkError:
-            self.handleNetworkError(networkError)
+            print("Reply generator exhausted, closing stream.")
+        except grpc.RpcError as rpcError:
+            if rpcError.code() == grpc.StatusCode.CANCELLED:
+                print("Cancelled with RcpError, closing stream: {0}".format(rpcError))
+            elif rpcError.code() == grpc.StatusCode.ABORTED:
+                print("Aborted with RcpError, closing stream: {0}".format(rpcError))
+            elif rpcError.code() == grpc.StatusCode.UNAVAILABLE:
+                print("Unavailabale RcpError, make sure endpoint is reachable, closing stream: {0}".format(rpcError))
+            else:
+                print("RcpError, closing stream: {0}".format(rpcError))
+        except Exception as e:
+            print("Exception, closing stream: {0}".format(e))
         finally:
             self.streamClosed = True
         return
-
-    def handleNetworkError(self, networkError):
-        if networkError.code == StatusCode.OUT_OF_RANGE and networkError.details == "EOF":
-            print("Error received and ignored: {0}".format(networkError))
-            print()
-            self.streamClosed = True
-        else:
-            raise Exception("Unexpected NetworkError: {0}".format(networkError))
 
     def send(self, msg):
         if msg:
