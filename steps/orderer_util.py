@@ -20,6 +20,7 @@ import Queue
 from concurrent.futures import ThreadPoolExecutor
 from orderer import ab_pb2, ab_pb2_grpc
 from common import common_pb2
+from peer import events_pb2_grpc
 
 import bdd_test_util
 import bootstrap_util
@@ -219,7 +220,8 @@ class UserRegistration:
         ipAddress, port_to_use = bdd_test_util.getPortHostMapping(context.compose_containers, composeService, port)
         # print("ipAddress in getABStubForComposeService == {0}:{1}".format(ipAddress, port))
         channel = bdd_grpc_util.getGRPCChannel(ipAddress=ipAddress, port=port_to_use, root_certificates="".join([peer_root_certificates, root_certificates]), ssl_target_name_override=composeService)
-        newABStub = ab_pb2_grpc.AtomicBroadcastStub(channel)
+        # Added logic to choose between ab.Deliver and events.Deliver for orderer vs peer respectively.
+        newABStub = ab_pb2_grpc.AtomicBroadcastStub(channel) if bootstrap_util.OrdererGensisBlockCompositionCallback.DISCRIMINATOR in composeService else events_pb2_grpc.DeliverStub(channel)
         self.atomicBroadcastStubsDict[composeService] = newABStub
         return newABStub
 
