@@ -314,6 +314,11 @@ def send_proposal_and_get_response_payload_using_handler(context, user, director
     proposal = createInvokeProposalForBDD(context, ccSpec=cc_spec, chainID=channelName, signersCert=signersCert, Mspid=mspID, type=type)
     signedProposal = signProposal(proposal=proposal, entity=user, signersCert=signersCert)
     endorserStubs = getEndorserStubs(context, composeServices=endorsers, directory=directory, nodeAdminTuple=nodeAdminTuple)
-    proposalResponseFutures = [endorserStub.ProcessProposal.future(signedProposal, int(timeout)) for endorserStub in endorserStubs]
-    resultsDict =  dict(zip(endorsers, [respFuture.result() for respFuture in proposalResponseFutures]))
-    return dict([(endorser, get_proposal_response_payload_as_type(proposal_response, proposal_response_handler)) for endorser, proposal_response in resultsDict.iteritems()])
+    results = []
+    for proposal_resp_future in [endorserStub.ProcessProposal.future(signedProposal, int(timeout)) for endorserStub in endorserStubs]:
+        try:
+            proposal_resposnse = proposal_resp_future.result()
+            results.append((proposal_resposnse, get_proposal_response_payload_as_type(proposal_resposnse, proposal_response_handler)))
+        except Exception as e:
+            results.append((e, None))
+    return dict(zip(endorsers, results))
