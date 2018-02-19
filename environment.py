@@ -39,6 +39,7 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
+    import time
     contextHelper = ContextHelper.GetHelper(context=context)
     contextHelper.after_scenario(scenario)
 
@@ -77,6 +78,8 @@ def after_scenario(context, scenario):
         context.composition.decompose()
     # Ask the directory to cleanup
     getDirectory(context).cleanup()
+    # Give streams time enough to gracefully close and exit receive loops
+    time.sleep(1)
 
 # stop any running peer that could get in the way before starting the tests
 def before_all(context):
