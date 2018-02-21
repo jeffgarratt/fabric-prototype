@@ -154,7 +154,7 @@ def createCertificate(req, issuerCertKey, serial, validityPeriod, digest="sha256
     issuerCert, issuerKey = issuerCertKey
     notBefore, notAfter = validityPeriod
     cert = crypto.X509()
-    cert.set_version(3)
+    cert.set_version(2)
     cert.set_serial_number(serial)
     cert.gmtime_adj_notBefore(notBefore)
     cert.gmtime_adj_notAfter(notAfter)
