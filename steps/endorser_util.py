@@ -25,6 +25,7 @@ from peer import transaction_pb2
 from peer import proposal_pb2
 from peer import query_pb2
 from peer import proposal_response_pb2
+from peer import admin_pb2_grpc
 from peer import peer_pb2_grpc
 from peer import resources_pb2
 from common import ledger_pb2 as common_dot_ledger_pb2
@@ -133,8 +134,7 @@ def createInstallChaincodeSpecForBDD(ccDeploymentSpec, chainID):
                                          args=['install', ccDeploymentSpec.SerializeToString()])
     return lc_chaincode_spec
 
-
-def getEndorserStubs(context, composeServices, directory, nodeAdminTuple):
+def getStubs(context, composeServices, directory, nodeAdminTuple, new_stub_callback):
     stubs = []
     user = directory.getUser(nodeAdminTuple.user)
     signingOrg = directory.getOrganization(nodeAdminTuple.organization)
@@ -146,9 +146,18 @@ def getEndorserStubs(context, composeServices, directory, nodeAdminTuple):
         root_certificates = directory.getTrustedRootsForPeerNetworkAsPEM()
         channel = bdd_grpc_util.getGRPCChannel(ipAddress=ipAddress, port=port, root_certificates=root_certificates,
                                                ssl_target_name_override=composeService)
-        newEndorserStub = peer_pb2_grpc.EndorserStub(channel)
-        stubs.append(newEndorserStub)
+        newStub = new_stub_callback(channel)
+        stubs.append(newStub)
     return stubs
+
+def getEndorserStubs(context, composeServices, directory, nodeAdminTuple):
+    new_stub_callback = lambda channel: peer_pb2_grpc.EndorserStub(channel)
+    return getStubs(context=context, composeServices=composeServices, directory=directory, nodeAdminTuple=nodeAdminTuple, new_stub_callback=new_stub_callback)
+
+def getAdminStubs(context, composeServices, directory, nodeAdminTuple):
+    new_stub_callback = lambda channel: admin_pb2_grpc.AdminStub(channel)
+    return getStubs(context=context, composeServices=composeServices, directory=directory, nodeAdminTuple=nodeAdminTuple, new_stub_callback=new_stub_callback)
+
 
 def getExample02ChaincodeSpec():
     return getChaincodeSpec("GOLANG", "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02", "example02", ["init","a","100","b","200"])
