@@ -23,6 +23,7 @@ if sys.version_info < (3, 6):
 
 from OpenSSL import crypto
 import ecdsa
+from asn1crypto.core import Sequence, Integer, OctetString
 
 from collections import namedtuple
 from itertools import groupby
@@ -542,7 +543,30 @@ class ServicesStoppedAndReadyForSnapshot:
             self.composition.issueCommand(['start'],[compose_service])
 
 
+
 class BootstrapHelper:
+
+    class BlockHeaderSequence(Sequence):
+        """ASN.1 Structure for BlockHeader.  Used for computation of Block hash."""
+        _fields = [
+            ('Number', Integer),
+            ('PreviousHash', OctetString),
+            ('DataHash', OctetString),
+        ]
+
+    def compute_block_hash(self, block):
+        """Computes the Hash of the given block."""
+        bhs = BootstrapHelper.BlockHeaderSequence({'Number' : block.header.number, 'PreviousHash': block.header.previous_hash,'DataHash': block.header.data_hash})
+        return computeCryptoHash(bhs.dump())
+
+    def compute_block_data_hash(self, block_data):
+        """Computes the Hash of the given BlockData."""
+        return computeCryptoHash("".join(block_data.data))
+
+    def verify_block(self, block):
+        """Verifies a block.  NOTE: Currently does NOT verify all of the signatures"""
+        assert self.compute_block_data_hash(block.data) == block.header.data_hash, "Hash of block.data does NOT match block.header.data_hash"
+
     KEY_CONSENSUS_TYPE = "ConsensusType"
     KEY_ORDERER_KAFKA_BROKERS = "KafkaBrokers"
     KEY_CHAIN_CREATION_POLICY_NAMES = "ChainCreationPolicyNames"
@@ -607,9 +631,6 @@ class BootstrapHelper:
         self.preferredMaxBytes = preferredMaxBytes
         self.signers = signers
 
-    def computeBlockDataHash(self, blockData):
-        return computeCryptoHash(blockData.SerializeToString())
-
     def create_genesis_block(self, context, service_names, chainId, consensusType, nodeAdminTuple, signedConfigItems=[]):
         'Generates the genesis block for starting the oderers and for use in the chain config transaction by peers'
         # assert not "bootstrapGenesisBlock" in context,"Genesis block already created:\n{0}".format(context.bootstrapGenesisBlock)
@@ -639,7 +660,7 @@ class BootstrapHelper:
             header=common_dot_common_pb2.BlockHeader(
                 number=0,
                 previous_hash=None,
-                data_hash=bootstrapHelper.computeBlockDataHash(blockData),
+                data_hash=bootstrapHelper.compute_block_data_hash(blockData),
             ),
             data=blockData,
             metadata=common_dot_common_pb2.BlockMetadata(
