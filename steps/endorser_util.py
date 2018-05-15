@@ -330,4 +330,4 @@ def send_proposal_and_get_response_payload_using_handler(context, user, director
             results.append((proposal_resposnse, get_proposal_response_payload_as_type(proposal_resposnse, proposal_response_handler)))
         except Exception as e:
             results.append((e, None))
-    return dict(zip(endorsers, results))
+    return (signedProposal, dict(zip(endorsers, results)))
