@@ -430,7 +430,7 @@ class Directory:
             self.users[userName].tags = keyTuple[2]
         for orgName, tuple in data['organizations'].iteritems():
             org = Organization(orgName, ecdsaSigningKey=ecdsa.SigningKey.from_pem(tuple[0]),
-                               rsaSigningKey=priv_key_from_pem(tuple[0]))
+                               rsaSigningKey=priv_key_from_pem(tuple[1]))
             org.signedCert = crypto.load_certificate(crypto.FILETYPE_PEM, tuple[2])
             org.networks = [Network[name] for name in tuple[3]]
             self.organizations[orgName] = org
