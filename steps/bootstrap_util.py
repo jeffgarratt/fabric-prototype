@@ -495,13 +495,15 @@ def make_signature_header(serializeCertChain, nonce):
     return common_dot_common_pb2.SignatureHeader(creator=serializeCertChain,
                                                      nonce=nonce)
 
+def get_timestamp():
+    return timestamp_pb2.Timestamp(seconds=int(time.time()), nanos=0)
 
 def make_chain_header(type, channel_id, txID="", extension='', version=1,
-                      timestamp=timestamp_pb2.Timestamp(seconds=int(time.time()), nanos=0),
+                      timestamp_func=get_timestamp,
                       epoch=0):
     return common_dot_common_pb2.ChannelHeader(type=type,
                                                version=version,
-                                               timestamp=timestamp,
+                                               timestamp=timestamp_func(),
                                                channel_id=channel_id,
                                                epoch=epoch,
                                                tx_id=txID,
