@@ -48,22 +48,22 @@ You can install either using fixed versions with a requirments file or by instal
 ##### Installing using a requirements.txt file with fixed versions
 
 ```
-pip install -r requirements.txt
+pip install --user -r requirements.txt
 ```
 
 ##### Installing using latest versions from pip
 
 ```
-    pip install behave
-    pip install grpcio-tools
-    pip install "pysha3==1.0b1"
-    pip install b3j0f.aop
-    pip install jinja2
+    pip install --user behave
+    pip install --user grpcio-tools
+    pip install --user "pysha3==1.0b1"
+    pip install --user b3j0f.aop
+    pip install --user jinja2
     # The pyopenssl install gives errors, but installs succeeds
-    pip install pyopenssl
-    pip install ecdsa
-    pip install python-slugify
-    pip install pyyaml
+    pip install --user pyopenssl
+    pip install --user ecdsa
+    pip install --user python-slugify
+    pip install --user pyyaml
 ```
 
 ### Running behave
