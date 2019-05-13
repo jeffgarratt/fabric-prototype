@@ -88,24 +88,32 @@ def step_impl(context, certAlias, ordererGenesisBlockName, ordererSystemChainIdN
         configGroups += ordererBootstrapAdmin.tags[configGroupName]
     # Concatenate signedConfigItems
 
-    service_names = compose.Composition(context, composeFilesYaml=composeFile, register_and_up=False).getServiceNames()
+    # Construct context without registration and up, just register
+    context.composition = compose.Composition(context, composeFilesYaml=composeFile, register_and_up=False)
+    # Construct callbacks before register (They self register)
+    ordererCallback = bootstrap_util.OrdererGensisBlockCompositionCallback(context)
+    peerCallback = bootstrap_util.PeerCompositionCallback(context)
+    composer.ComposerCompositionCallback(context, peerCallback)
+    # This will trigger the composing callback for the CallbackHelpers
+    context.composition.register()
+    service_names = context.composition.getServiceNames()
+
 
     # Construct block
     nodeAdminTuple = ordererBootstrapAdmin.tags[certAlias]
     bootstrapCert = directory.findCertForNodeAdminTuple(nodeAdminTuple=nodeAdminTuple)
-    (genesisBlock, envelope, genesis_block_channel_config) = bootstrap_helper.create_genesis_block(context=context,
+    (genesis_block, envelope, genesis_block_channel_config) = bootstrap_helper.create_genesis_block(context=context,
                                                                                                    service_names=service_names,
                                                                                                    chainId=ordererSystemChainIdGUUID,
                                                                                                    consensusType=consensusType,
                                                                                                    nodeAdminTuple=nodeAdminTuple,
                                                                                                    signedConfigItems=configGroups)
     ordererBootstrapAdmin.setTagValue(ordererGenesisBlockName + "_genesis_channel_config", genesis_block_channel_config)
-    ordererBootstrapAdmin.setTagValue(ordererGenesisBlockName, genesisBlock)
+    ordererBootstrapAdmin.setTagValue(ordererGenesisBlockName, genesis_block)
     ordererBootstrapAdmin.setTagValue("ConsensusType", consensusType)
-    ordererCallback = bootstrap_util.OrdererGensisBlockCompositionCallback(context, genesisBlock)
-    peerCallback = bootstrap_util.PeerCompositionCallback(context)
-    composer.ComposerCompositionCallback(context, peerCallback)
 
+    # Make the genesis block available as a file for the orderers
+    ordererCallback.write_genesis_file(composition=context.composition, genesis_block=genesis_block)
 
 @given(u'the orderer admins inspect and approve the genesis block for chain "{chainId}"')
 def step_impl(context, chainId):
@@ -405,9 +413,10 @@ def step_impl(context, default_fabric_version):
 @given(u'we compose "{composeYamlFile}"')
 def step_impl(context, composeYamlFile):
     # time.sleep(10)              # Should be replaced with a definitive interlock guaranteeing that all peers/membersrvc are ready
-    composition = compose.Composition(context, composeYamlFile)
+    assert "composition" in context, "No composition found in context.  Should have been constructed during Orderer system Genesis block creation."
+    composition = context.composition
+    composition.up(context=context)
     context.compose_containers = composition.containerDataList
-    context.composition = composition
 
 
 def check_state(container_data, state_status, state_running):

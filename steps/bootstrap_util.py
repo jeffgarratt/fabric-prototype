@@ -27,7 +27,7 @@ from asn1crypto.core import Sequence, Integer, OctetString
 
 from collections import namedtuple
 from itertools import groupby
-from concurrent.futures import ThreadPoolExecutor, wait, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from enum import Enum
 
@@ -39,6 +39,7 @@ from common import policies_pb2 as common_dot_policies_pb2
 from msp import msp_config_pb2, msp_principal_pb2, identities_pb2
 from peer import configuration_pb2 as peer_dot_configuration_pb2
 from orderer import configuration_pb2 as orderer_dot_configuration_pb2
+from orderer.etcdraft import configuration_pb2 as orderer_dot_etcdraft_dot_configuration_pb2
 import orderer_util
 from bdd_test_util import cli_call
 
@@ -639,7 +640,7 @@ class BootstrapHelper:
         directory = getDirectory(context)
         assert len(directory.ordererAdminTuples) > 0, "No orderer admin tuples defined!!!"
 
-        channelConfig = self.create_channel_config_group(directory=directory, service_names=service_names, consensusType=consensusType)
+        channelConfig = self.create_channel_config_group(context = context, directory=directory, service_names=service_names, consensusType=consensusType)
         for configGroup in signedConfigItems:
             merge_config_groups(channelConfig, configGroup)
 
@@ -679,7 +680,7 @@ class BootstrapHelper:
 
         return (block, envelope, channelConfig)
 
-    def create_channel_config_group(self, directory, service_names, hashingAlgoName="SHA256", consensusType="solo", batchTimeout="1s", batchSizeMaxMessageCount=10, batchSizeAbsoluteMaxBytes=100000000, batchSizePreferredMaxBytes=512 * 1024, channel_max_count=0):
+    def create_channel_config_group(self, context, directory, service_names, hashingAlgoName="SHA256", consensusType="solo", batchTimeout="1s", batchSizeMaxMessageCount=10, batchSizeAbsoluteMaxBytes=100000000, batchSizePreferredMaxBytes=512 * 1024, channel_max_count=0):
 
         channel = common_dot_configtx_pb2.ConfigGroup()
         # channel.groups[ApplicationGroup] = common_dot_configtx_pb2.ConfigGroup()
@@ -695,9 +696,39 @@ class BootstrapHelper:
         channel.values[BootstrapHelper.KEY_BLOCKDATA_HASHING_STRUCTURE].value = toValue(
             common_dot_configuration_pb2.BlockDataHashingStructure(width=golangMathMaxUint32))
 
-        channel.groups[OrdererGroup].values[BootstrapHelper.KEY_BATCH_SIZE].value = toValue(orderer_dot_configuration_pb2.BatchSize(maxMessageCount=batchSizeMaxMessageCount,absoluteMaxBytes=batchSizeAbsoluteMaxBytes,preferredMaxBytes=batchSizePreferredMaxBytes))
+
+        if consensusType == "etcdraft":
+            # Build the Consenters
+            options = orderer_dot_etcdraft_dot_configuration_pb2.Options(tick_interval="500ms",
+                                                                         election_tick=10,
+                                                                         heartbeat_tick=1,
+                                                                         max_inflight_blocks=5,
+                                                                         snapshot_interval_size=10 * 1024 * 1024)
+            configMetadata = orderer_dot_etcdraft_dot_configuration_pb2.ConfigMetadata(options=options)
+
+            composition = context.composition
+            orderer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, OrdererGensisBlockCompositionCallback.DISCRIMINATOR)
+            assert orderer_callback_helper, "No Orderer callback helper currently registered in context"
+            for orderer_service_name in [service_name for service_name in service_names if "orderer" in service_name]:
+                consenter = configMetadata.consenters.add()
+                consenter.host = orderer_service_name
+                consenter.port = 7050
+                (_, pnt) = orderer_callback_helper._getPathAndUserInfo(directory=directory, project_name=composition.projectName, compose_service=orderer_service_name, pathType=PathType.Container)
+                (keyPath, certPath) = orderer_callback_helper.getTLSKeyPaths(pnt=pnt, project_name=composition.projectName, compose_service=orderer_service_name, pathType=PathType.Container)
+                with open(certPath, 'rb') as f:
+                    cert = f.read()
+                    consenter.client_tls_cert = cert
+                    consenter.server_tls_cert = cert
+                # org = directory.getOrganization(pnt.organization)
+                # org_cert_as_pem = org.getCertAsPEM()
+                # consenter.client_tls_cert = org_cert_as_pem
+                # consenter.server_tls_cert = org_cert_as_pem
+            channel.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].value = toValue(orderer_dot_configuration_pb2.ConsensusType(type=consensusType, metadata=toValue(configMetadata)))
+        else:
+            channel.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].value = toValue(orderer_dot_configuration_pb2.ConsensusType(type=consensusType))
+
+        channel.groups[OrdererGroup].values[BootstrapHelper.KEY_BATCH_SIZE].value = toValue(orderer_dot_configuration_pb2.BatchSize(max_message_count=batchSizeMaxMessageCount,absolute_max_bytes=batchSizeAbsoluteMaxBytes,preferred_max_bytes=batchSizePreferredMaxBytes))
         channel.groups[OrdererGroup].values[BootstrapHelper.KEY_BATCH_TIMEOUT].value = toValue(orderer_dot_configuration_pb2.BatchTimeout(timeout=batchTimeout))
-        channel.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].value = toValue(orderer_dot_configuration_pb2.ConsensusType(type=consensusType))
         channel.groups[OrdererGroup].values[BootstrapHelper.KEY_CHANNEL_RESTRICTIONS].value = toValue(orderer_dot_configuration_pb2.ChannelRestrictions(max_count=channel_max_count))
 
 
@@ -1074,7 +1105,7 @@ class CallbackHelper:
         return [serviceName for serviceName in composition.getServiceNames() if self.discriminator in serviceName]
 
     def getVolumePath(self, project_name, pathType=PathType.Local):
-        assert pathType in PathType, "Expected pathType of {0}".format(PathType)
+        # assert pathType in PathType, "Expected pathType of {0}".format(PathType)
         basePath = self.volumeRootPathLocal
         if pathType == PathType.Container:
             basePath = self.volumeRootPathInContainer
@@ -1229,11 +1260,10 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
 
     DISCRIMINATOR = "orderer"
 
-    def __init__(self, context, genesisBlock, genesisFileName="genesis_file"):
+    def __init__(self, context, genesisFileName="genesis_file"):
         CallbackHelper.__init__(self, discriminator="orderer")
         self.context = context
         self.genesisFileName = genesisFileName
-        self.genesisBlock = genesisBlock
         compose.Composition.RegisterCallbackInContext(context, self)
         # Now initialize the Kafka composition callbacks
         KafkaCompositionCallback(context=context)
@@ -1246,11 +1276,14 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
     def get_orderer_service_list(cls, composition):
         return [serviceName for serviceName in composition.getServiceNames() if "orderer" in serviceName]
 
+    def write_genesis_file(self, composition, genesis_block):
+        print("Will copy gensisiBlock over at this point ")
+        with open(self.getGenesisFilePath(composition.projectName), "wb") as f:
+            f.write(genesis_block.SerializeToString())
+
     def composing(self, composition, context):
         print("Will copy gensisiBlock over at this point ")
         os.makedirs(self.getVolumePath(composition.projectName))
-        with open(self.getGenesisFilePath(composition.projectName), "wb") as f:
-            f.write(self.genesisBlock.SerializeToString())
         directory = getDirectory(context)
 
         for ordererService in OrdererGensisBlockCompositionCallback.get_orderer_service_list(composition):

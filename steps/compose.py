@@ -129,6 +129,10 @@ class Composition:
             [callback.composing(self, context) for callback in Composition.GetCompositionCallbacksFromContext(context)]
             self.up(context, force_recreate, components)
 
+    def register(self):
+        self.contextHelper.registerComposition(self)
+        [callback.composing(self, self.contextHelper.context) for callback in Composition.GetCompositionCallbacksFromContext(self.contextHelper.context)]
+
     def _collectServiceNames(self):
         'First collect the services names.'
         servicesList = [service for service in self.issueCommand(["config", "--services"]).splitlines() if "WARNING" not in service]
