@@ -920,7 +920,7 @@ Feature: Safe Asset Transfer
 
     Examples: Orderer Options
       | ComposeFile                      | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info |
-      | dc-base.yml dc-base-4-thru-7.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
+      | dc-base.yml dc-base-5-thru-7.yml | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
 #      | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       |
 #      | dc-base.yml  dc-orderer-kafka.yml                     | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
 #      | dc-base.yml  dc-peer-couchdb.yml dc-orderer-kafka.yml | 40               | kafka         | 10               | 5                 | orderer0 | orderer1 | orderer2 |                       |
