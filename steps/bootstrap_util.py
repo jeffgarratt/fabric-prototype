@@ -715,7 +715,7 @@ class BootstrapHelper:
                 consenter.port = 7050
                 (_, pnt) = orderer_callback_helper._getPathAndUserInfo(directory=directory, project_name=composition.projectName, compose_service=orderer_service_name, pathType=PathType.Container)
                 (keyPath, certPath) = orderer_callback_helper.getTLSKeyPaths(pnt=pnt, project_name=composition.projectName, compose_service=orderer_service_name, pathType=PathType.Container)
-                with open(certPath, 'rb') as f:
+                with open(certPath, 'r') as f:
                     cert = f.read()
                     consenter.client_tls_cert = cert
                     consenter.server_tls_cert = cert
@@ -1311,6 +1311,10 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             (keyPath, certPath) = self.getTLSKeyPaths(pnt=pnt, project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container)
             env["{0}_ORDERER_GENERAL_TLS_CERTIFICATE".format(ordererService.upper())] = certPath
             env["{0}_ORDERER_GENERAL_TLS_PRIVATEKEY".format(ordererService.upper())] = keyPath
+
+            env["{0}_ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY".format(ordererService.upper())] = keyPath
+            env["{0}_ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE".format(ordererService.upper())] = certPath
+
             env["{0}_ORDERER_GENERAL_TLS_ROOTCAS".format(ordererService.upper())] = "[{0}]".format(self.getLocalMspConfigRootCertPath(
                 directory=directory, project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container))
             # The Filestore settings

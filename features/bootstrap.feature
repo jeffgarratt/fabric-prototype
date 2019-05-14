@@ -446,6 +446,7 @@ Feature: Bootstrap
       Examples: Orderer Options
         | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | FabricBaseVersion |
         | dc-base.yml                                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
+#        | dc-base.yml                                           | 0                | etcdraft          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
 #        | dc-base.yml dc-flink-base.yml                         | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
 #        | dc-base.yml dc-composer.yml                           | 0                | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | x86_64-1.0.3      |
 #        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
