@@ -153,12 +153,18 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | dev0Org7  | consortium1 | peerOrg7     | consortium1-cert |
 
       And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org0" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org1" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org2" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org3" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org4" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org5" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org6" who saves it as "consortium1"
+      And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org7" who saves it as "consortium1"
 
       And the user "dev0Org0" creates a peer organization set "peerOrgSet1" with peer organizations:
         | Organization |
         | peerOrg0     |
-        | peerOrg1     |
-        | peerOrg6     |
+        | peerOrg7     |
 
       And the user "dev0Org0" creates an peer anchor set "anchors1" for orgs:
         | User        | Peer  | Organization |
@@ -175,8 +181,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       And the user "dev0Org0" collects signatures for ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope" from developers:
         | Developer | Cert Alias       |
         | dev0Org0  | consortium1-cert |
-        | dev0Org1  | consortium1-cert |
-        | dev0Org6  | consortium1-cert |
+        | dev0Org7  | consortium1-cert |
 
       And the user "dev0Org0" creates a ConfigUpdate Tx "configUpdateTx1" using cert alias "consortium1-cert" using signed ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope"
 
@@ -194,11 +199,8 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannel" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
-      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "dev0Org1" who saves it as "genesisBlockForMyNewChannel"
-
       Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer0Admin" who saves it as "genesisBlockForMyNewChannel"
-      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer1Admin" who saves it as "genesisBlockForMyNewChannel"
-      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer6Admin" who saves it as "genesisBlockForMyNewChannel"
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer7Admin" who saves it as "genesisBlockForMyNewChannel"
 
 
     # This is entry point for joining an existing channel
@@ -210,21 +212,13 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | Peer  |
         | peer0 |
 
-      When user "peer1Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
         | Peer  |
-        | peer1 |
+        | peer7 |
 
-      Then user "peer1Admin" expects result code for "joinChannelResult" of "200" from peers:
+      Then user "peer7Admin" expects result code for "joinChannelResult" of "200" from peers:
         | Peer  |
-        | peer1 |
-
-      When user "peer6Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
-        | Peer  |
-        | peer6 |
-
-      Then user "peer6Admin" expects result code for "joinChannelResult" of "200" from peers:
-        | Peer  |
-        | peer6 |
+        | peer7 |
 
       Given the user "configAdminPeerOrg0" creates an peer anchor set "anchors1" for orgs:
         | User        | Peer  | Organization |
@@ -333,14 +327,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
 
       Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromPeer" from "peer0" of "1" blocks with "1" messages within "1" seconds
-
-      When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer1" using port "7051"
-      And user "dev0Org0" sends deliver a seek request on node "peer1" with properties:
-        | ChainId                               | Start |  End    |
-        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
-
-      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromOtherOrgsPeer" from "peer1" of "1" blocks with "1" messages within "1" seconds
-
+      
 
       # Entry point for invoking on an existing channel
       When user "peer0Admin" creates a chaincode spec "ccSpec" with name "appmgr" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/marketplace/app_mgr" with args
@@ -379,25 +366,21 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       Given user "peer0Admin" gives "ccSpec" to user "dev0Org0" who saves it as "ccSpec"
       And user "peer0Admin" gives "ccSpec" to user "configAdminPeerOrg0" who saves it as "ccSpec"
 
-      And user "configAdminPeerOrg0" creates a signature policy envelope "signedByMemberOfPeerOrg0AndPeerOrg1" using "envelope(n_out_of(2,[signed_by(0),signed_by(1)]),[member('peerOrg0'), member('peerOrg1')])"
+      And user "configAdminPeerOrg0" creates a signature policy envelope "signedByMemberOfPeerOrg0" using "envelope(n_out_of(1,[signed_by(0)]),[member('peerOrg0')])"
 
-      When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg0AndPeerOrg1"
+      When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg0"
 
       And user "configAdminPeerOrg0" using cert alias "config-admin-cert" sends proposal "instantiateProposal1" to endorsers with timeout of "90" seconds with proposal responses "instantiateProposalResponses":
         | Endorser |
         | peer0    |
-        | peer1    |
-
 
       Then user "configAdminPeerOrg0" expects proposal responses "instantiateProposalResponses" with status "200" from endorsers:
         | Endorser |
         | peer0    |
-        | peer1    |
 
       And user "configAdminPeerOrg0" expects proposal responses "instantiateProposalResponses" each have the same value from endorsers:
         | Endorser |
         | peer0    |
-        | peer1    |
 
       When the user "configAdminPeerOrg0" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.acme.blockchain.jdoe.channel1"
 
