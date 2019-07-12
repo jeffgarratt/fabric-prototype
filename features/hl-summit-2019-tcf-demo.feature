@@ -398,7 +398,93 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       # Sleep to allow for chaincode instantiation on the peer
       And I wait "5" seconds
 
+
+
+      # Now second channel for hospital #2
+      Given the user "dev0Org1" creates a peer organization set "peerOrgSet1" with peer organizations:
+        | Organization |
+        | peerOrg1     |
+        | peerOrg7     |
+
+    # Entry point for creating a channel
+      And the user "dev0Org1" creates a new channel ConfigUpdate "createChannelConfigUpdate1" using consortium "consortium1"
+        | ChannelID                               | PeerOrgSet  | [PeerAnchorSet] |
+        | com.peerorg1.blockchain.channel.medical | peerOrgSet1 |                 |
+
+      And the user "dev0Org1" creates a configUpdateEnvelope "createChannelConfigUpdate1Envelope" using configUpdate "createChannelConfigUpdate1"
+
+
+      And the user "dev0Org1" collects signatures for ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope" from developers:
+        | Developer | Cert Alias       |
+        | dev0Org1  | consortium1-cert |
+        | dev0Org7  | consortium1-cert |
+
+      And the user "dev0Org1" creates a ConfigUpdate Tx "configUpdateTx1" using cert alias "consortium1-cert" using signed ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope"
+
+      And the user "dev0Org1" using cert alias "consortium1-cert" broadcasts ConfigUpdate Tx "configUpdateTx1" to orderer "<orderer0>"
+
+    # Sleep as the local orderer needs to bring up the resources that correspond to the new channel
+    # For the Kafka orderer, this includes setting up a producer and consumer for the channel's partition
+    # Requesting a deliver earlier may result in a SERVICE_UNAVAILABLE response and a connection drop
+      And I wait "<ChannelJoinDelay>" seconds
+
+      When user "dev0Org1" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
+      And user "dev0Org1" sends deliver a seek request on node "<orderer0>" with properties:
+        | ChainId                                 | Start | End |
+        | com.peerorg1.blockchain.channel.medical | 0     | 0   |
+
+      Then user "dev0Org1" should get a delivery "genesisBlockForNewChannelPeerOrg1Medical" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      Given user "dev0Org1" gives "genesisBlockForNewChannelPeerOrg1Medical" to user "peer1Admin" who saves it as "genesisBlockForNewChannelPeerOrg1Medical"
+      Given user "dev0Org1" gives "genesisBlockForNewChannelPeerOrg1Medical" to user "peer7Admin" who saves it as "genesisBlockForNewChannelPeerOrg1Medical"
+
+
+
+
+      When user "peer1Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg1Medical" on peers with result "joinChannelResultPeerOrg1Medical"
+        | Peer  |
+        | peer1 |
+
+      Then user "peer1Admin" expects result code for "joinChannelResultPeerOrg1Medical" of "200" from peers:
+        | Peer  |
+        | peer1 |
+
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg1Medical" on peers with result "joinChannelResultPeerOrg1Medical"
+        | Peer  |
+        | peer7 |
+
+      Then user "peer7Admin" expects result code for "joinChannelResultPeerOrg1Medical" of "200" from peers:
+        | Peer  |
+        | peer7 |
+
+
+
+
+
+
+
       And I quit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       # Entry point for invoking on an existing channel
       When user "dev0Org0" creates a chaincode invocation spec "querySpec1" using spec "ccSpec" with input:
