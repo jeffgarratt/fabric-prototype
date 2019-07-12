@@ -458,6 +458,70 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | peer7 |
 
 
+      
+      
+      
+      
+      
+      
+      # Now channel for hospital #3
+      Given the user "dev0Org2" creates a peer organization set "peerOrgSet1" with peer organizations:
+        | Organization |
+        | peerOrg2     |
+        | peerOrg7     |
+
+    # Entry point for creating a channel
+      And the user "dev0Org2" creates a new channel ConfigUpdate "createChannelConfigUpdate1" using consortium "consortium1"
+        | ChannelID                               | PeerOrgSet  | [PeerAnchorSet] |
+        | com.peerorg2.blockchain.channel.medical | peerOrgSet1 |                 |
+
+      And the user "dev0Org2" creates a configUpdateEnvelope "createChannelConfigUpdate1Envelope" using configUpdate "createChannelConfigUpdate1"
+
+
+      And the user "dev0Org2" collects signatures for ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope" from developers:
+        | Developer | Cert Alias       |
+        | dev0Org2  | consortium1-cert |
+        | dev0Org7  | consortium1-cert |
+
+      And the user "dev0Org2" creates a ConfigUpdate Tx "configUpdateTx1" using cert alias "consortium1-cert" using signed ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope"
+
+      And the user "dev0Org2" using cert alias "consortium1-cert" broadcasts ConfigUpdate Tx "configUpdateTx1" to orderer "<orderer0>"
+
+    # Sleep as the local orderer needs to bring up the resources that correspond to the new channel
+    # For the Kafka orderer, this includes setting up a producer and consumer for the channel's partition
+    # Requesting a deliver earlier may result in a SERVICE_UNAVAILABLE response and a connection drop
+      And I wait "<ChannelJoinDelay>" seconds
+
+      When user "dev0Org2" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
+      And user "dev0Org2" sends deliver a seek request on node "<orderer0>" with properties:
+        | ChainId                                 | Start | End |
+        | com.peerorg2.blockchain.channel.medical | 0     | 0   |
+
+      Then user "dev0Org2" should get a delivery "genesisBlockForNewChannelPeerOrg2Medical" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      Given user "dev0Org2" gives "genesisBlockForNewChannelPeerOrg2Medical" to user "peer2Admin" who saves it as "genesisBlockForNewChannelPeerOrg2Medical"
+      Given user "dev0Org2" gives "genesisBlockForNewChannelPeerOrg2Medical" to user "peer7Admin" who saves it as "genesisBlockForNewChannelPeerOrg2Medical"
+
+
+      # Now join the new medical channel for peerOrg2
+      When user "peer2Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg2Medical" on peers with result "joinChannelResultPeerOrg2Medical"
+        | Peer  |
+        | peer2 |
+
+      Then user "peer2Admin" expects result code for "joinChannelResultPeerOrg2Medical" of "200" from peers:
+        | Peer  |
+        | peer2 |
+
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg2Medical" on peers with result "joinChannelResultPeerOrg2Medical"
+        | Peer  |
+        | peer7 |
+
+      Then user "peer7Admin" expects result code for "joinChannelResultPeerOrg2Medical" of "200" from peers:
+        | Peer  |
+        | peer7 |
+
+      
+      
 
 
 
