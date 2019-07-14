@@ -194,29 +194,29 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
       And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
-        | ChainId                           | Start | End |
+        | ChainId                                 | Start | End |
         | com.peerorg0.blockchain.channel.medical | 0     | 0   |
 
-      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannel" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+      Then user "dev0Org0" should get a delivery "genesisBlockForNewChannelPeerOrg0Medical" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
-      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer0Admin" who saves it as "genesisBlockForMyNewChannel"
-      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer7Admin" who saves it as "genesisBlockForMyNewChannel"
+      Given user "dev0Org0" gives "genesisBlockForNewChannelPeerOrg0Medical" to user "peer0Admin" who saves it as "genesisBlockForNewChannelPeerOrg0Medical"
+      Given user "dev0Org0" gives "genesisBlockForNewChannelPeerOrg0Medical" to user "peer7Admin" who saves it as "genesisBlockForNewChannelPeerOrg0Medical"
 
 
     # This is entry point for joining an existing channel
-      When user "peer0Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+      When user "peer0Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg0Medical" on peers with result "joinChannelResultPeerOrg0Medical"
         | Peer  |
         | peer0 |
 
-      Then user "peer0Admin" expects result code for "joinChannelResult" of "200" from peers:
+      Then user "peer0Admin" expects result code for "joinChannelResultPeerOrg0Medical" of "200" from peers:
         | Peer  |
         | peer0 |
 
-      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg0Medical" on peers with result "joinChannelResultPeerOrg0Medical"
         | Peer  |
         | peer7 |
 
-      Then user "peer7Admin" expects result code for "joinChannelResult" of "200" from peers:
+      Then user "peer7Admin" expects result code for "joinChannelResultPeerOrg0Medical" of "200" from peers:
         | Peer  |
         | peer7 |
 
@@ -257,56 +257,6 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       Then user "configAdminPeerOrg0" should get a delivery "deliveredExistingChannelConfigUpdateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
-
-#    And I quit
-
-#      Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer2Admin" who saves it as "genesisBlockForMyNewChannel"
-#      Given user "dev0Org1" gives "genesisBlockForMyNewChannel" to user "peer3Admin" who saves it as "genesisBlockForMyNewChannel"
-#
-#      When user "peer2Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
-#        | Peer  |
-#        | peer2 |
-#
-#      Then user "peer2Admin" expects result code for "joinChannelResult" of "200" from peers:
-#        | Peer  |
-#        | peer2 |
-#
-#      When user "peer3Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
-#        | Peer  |
-#        | peer3 |
-#
-#      Then user "peer3Admin" expects result code for "joinChannelResult" of "200" from peers:
-#        | Peer  |
-#        | peer3 |
-
-
-#      #######################################################
-#      #
-#      # Add peerOrg2 to channel
-#      #
-#      #######################################################
-#      When the user "configAdminPeerOrg0" using cert alias "config-admin-cert" adds organization "peerOrg2" to channel "com.peerorg0.blockchain.channel.medical" using orderer "orderer0" collecting signatures from:
-#        | User                | Cert Alias        |
-#        | configAdminPeerOrg0 | config-admin-cert |
-#        | configAdminPeerOrg1 | config-admin-cert |
-#
-#      And I wait "<BroadcastWaitTime>" seconds
-#      # Had to add a wait as instantiation would fail with variant response bytes due to MSP cache not be updated in some cases.
-#      And I wait "3" seconds
-#
-#
-#      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer4Admin" who saves it as "genesisBlockForMyNewChannel"
-#    # This is entry point for joining an existing channel
-#      When user "peer4Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
-#        | Peer  |
-#        | peer4 |
-#
-#      Then user "peer4Admin" expects result code for "joinChannelResult" of "200" from peers:
-#        | Peer  |
-#        | peer4 |
-
-      # Uncomment this if you wish to stop with just a channel created and joined on all peers
-#      And we stop
 
 
       Given the user "configAdminPeerOrg1" creates an peer anchor set "anchors1" for orgs:
@@ -350,6 +300,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       Given user "peer0Admin" gives "ccSpec" to user "peer1Admin" who saves it as "ccSpec"
       And user "peer0Admin" gives "ccSpec" to user "peer2Admin" who saves it as "ccSpec"
       And user "peer0Admin" gives "ccSpec" to user "peer3Admin" who saves it as "ccSpec"
+      And user "peer0Admin" gives "ccSpec" to user "peer7Admin" who saves it as "ccSpec"
 
       # Under the covers, create a deployment spec, etc.
       When user "peer1Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" using chaincode spec "ccSpec"
