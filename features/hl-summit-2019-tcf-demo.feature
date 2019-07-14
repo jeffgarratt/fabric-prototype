@@ -173,7 +173,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
     # Entry point for creating a channel
       And the user "dev0Org0" creates a new channel ConfigUpdate "createChannelConfigUpdate1" using consortium "consortium1"
         | ChannelID                         | PeerOrgSet  | [PeerAnchorSet] |
-        | com.acme.blockchain.jdoe.channel1 | peerOrgSet1 |                 |
+        | com.peerorg0.blockchain.channel.medical | peerOrgSet1 |                 |
 
       And the user "dev0Org0" creates a configUpdateEnvelope "createChannelConfigUpdate1Envelope" using configUpdate "createChannelConfigUpdate1"
 
@@ -195,7 +195,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
       And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
         | ChainId                           | Start | End |
-        | com.acme.blockchain.jdoe.channel1 | 0     | 0   |
+        | com.peerorg0.blockchain.channel.medical | 0     | 0   |
 
       Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannel" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
@@ -226,11 +226,11 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       And user "configAdminPeerOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
 
-      And user "configAdminPeerOrg0" retrieves the latest config update "latestChannelConfigUpdate" from orderer "<orderer0>" for channel "com.acme.blockchain.jdoe.channel1"
+      And user "configAdminPeerOrg0" retrieves the latest config update "latestChannelConfigUpdate" from orderer "<orderer0>" for channel "com.peerorg0.blockchain.channel.medical"
 
       And the user "configAdminPeerOrg0" creates an existing channel config update "existingChannelConfigUpdate1" using config update "latestChannelConfigUpdate"
         | ChannelID                         | [PeerAnchorSet] |
-        | com.acme.blockchain.jdoe.channel1 | anchors1        |
+        | com.peerorg0.blockchain.channel.medical | anchors1        |
 
 
 
@@ -253,7 +253,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
         | ChainId                           | Start | End |
-        | com.acme.blockchain.jdoe.channel1 | 1     | 1   |
+        | com.peerorg0.blockchain.channel.medical | 1     | 1   |
 
       Then user "configAdminPeerOrg0" should get a delivery "deliveredExistingChannelConfigUpdateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
@@ -285,7 +285,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 #      # Add peerOrg2 to channel
 #      #
 #      #######################################################
-#      When the user "configAdminPeerOrg0" using cert alias "config-admin-cert" adds organization "peerOrg2" to channel "com.acme.blockchain.jdoe.channel1" using orderer "orderer0" collecting signatures from:
+#      When the user "configAdminPeerOrg0" using cert alias "config-admin-cert" adds organization "peerOrg2" to channel "com.peerorg0.blockchain.channel.medical" using orderer "orderer0" collecting signatures from:
 #        | User                | Cert Alias        |
 #        | configAdminPeerOrg0 | config-admin-cert |
 #        | configAdminPeerOrg1 | config-admin-cert |
@@ -324,7 +324,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "peer0" using port "7051"
       And user "dev0Org0" sends deliver a seek request on node "peer0" with properties:
         | ChainId                               | Start |  End    |
-        | com.acme.blockchain.jdoe.channel1     |   0   |  0      |
+        | com.peerorg0.blockchain.channel.medical     |   0   |  0      |
 
       Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromPeer" from "peer0" of "1" blocks with "1" messages within "1" seconds
       
@@ -368,7 +368,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       And user "configAdminPeerOrg0" creates a signature policy envelope "signedByMemberOfPeerOrg0" using "envelope(n_out_of(1,[signed_by(0)]),[member('peerOrg0')])"
 
-      When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.acme.blockchain.jdoe.channel1" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg0"
+      When user "configAdminPeerOrg0" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.peerorg0.blockchain.channel.medical" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg0"
 
       And user "configAdminPeerOrg0" using cert alias "config-admin-cert" sends proposal "instantiateProposal1" to endorsers with timeout of "90" seconds with proposal responses "instantiateProposalResponses":
         | Endorser |
@@ -382,7 +382,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | Endorser |
         | peer0    |
 
-      When the user "configAdminPeerOrg0" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.acme.blockchain.jdoe.channel1"
+      When the user "configAdminPeerOrg0" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.peerorg0.blockchain.channel.medical"
 
       And the user "configAdminPeerOrg0" broadcasts transaction "instantiateTx1" to orderer "<orderer1>"
 
@@ -391,7 +391,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
         | ChainId                           | Start | End |
-        | com.acme.blockchain.jdoe.channel1 | 2     | 2   |
+        | com.peerorg0.blockchain.channel.medical | 2     | 2   |
 
       Then user "configAdminPeerOrg0" should get a delivery "deliveredInstantiateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
