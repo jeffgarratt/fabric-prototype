@@ -472,7 +472,47 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | peer7 |
 
       
+
       
+      
+      # Now instantiate on peerOrg1
+      Given user "peer1Admin" gives "ccSpec" to user "dev0Org1" who saves it as "ccSpec"
+      And user "peer1Admin" gives "ccSpec" to user "configAdminPeerOrg1" who saves it as "ccSpec"
+
+      And user "configAdminPeerOrg1" creates a signature policy envelope "signedByMemberOfPeerOrg1" using "envelope(n_out_of(1,[signed_by(0)]),[member('peerOrg1')])"
+
+      When user "configAdminPeerOrg1" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.peerorg1.blockchain.channel.medical" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg1"
+
+      And user "configAdminPeerOrg1" using cert alias "config-admin-cert" sends proposal "instantiateProposal1" to endorsers with timeout of "90" seconds with proposal responses "instantiateProposalResponses":
+        | Endorser |
+        | peer1    |
+
+      Then user "configAdminPeerOrg1" expects proposal responses "instantiateProposalResponses" with status "200" from endorsers:
+        | Endorser |
+        | peer1    |
+
+      And user "configAdminPeerOrg1" expects proposal responses "instantiateProposalResponses" each have the same value from endorsers:
+        | Endorser |
+        | peer1    |
+
+      When the user "configAdminPeerOrg1" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.peerorg1.blockchain.channel.medical"
+
+      And the user "configAdminPeerOrg1" broadcasts transaction "instantiateTx1" to orderer "<orderer1>"
+
+      # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
+      And I wait "<BroadcastWaitTime>" seconds
+
+
+      Given user "configAdminPeerOrg1" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
+
+      When user "configAdminPeerOrg1" sends deliver a seek request on node "<orderer0>" with properties:
+        | ChainId                                 | Start | End |
+        | com.peerorg1.blockchain.channel.medical | 1     | 1   |
+
+      Then user "configAdminPeerOrg1" should get a delivery "deliveredInstantiateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      # Sleep to allow for chaincode instantiation on the peer
+      And I wait "5" seconds
 
 
 
