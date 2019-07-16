@@ -313,6 +313,16 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
         | Endorser |
         | peer1    |
 
+      When user "peer2Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" using chaincode spec "ccSpec"
+
+      And user "peer2Admin" using cert alias "peer-admin-cert" sends proposal "installProposal1" to endorsers with timeout of "90" seconds with proposal responses "installProposalResponses":
+        | Endorser |
+        | peer2    |
+
+      Then user "peer2Admin" expects proposal responses "installProposalResponses" with status "200" from endorsers:
+        | Endorser |
+        | peer2    |
+
 
       Given user "peer0Admin" gives "ccSpec" to user "dev0Org0" who saves it as "ccSpec"
       And user "peer0Admin" gives "ccSpec" to user "configAdminPeerOrg0" who saves it as "ccSpec"
@@ -514,6 +524,50 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       # Sleep to allow for chaincode instantiation on the peer
       And I wait "5" seconds
 
+
+
+
+
+
+
+      # Now instantiate on peerOrg2
+      Given user "peer2Admin" gives "ccSpec" to user "dev0Org2" who saves it as "ccSpec"
+      And user "peer2Admin" gives "ccSpec" to user "configAdminPeerOrg2" who saves it as "ccSpec"
+
+      And user "configAdminPeerOrg2" creates a signature policy envelope "signedByMemberOfPeerOrg2" using "envelope(n_out_of(1,[signed_by(0)]),[member('peerOrg2')])"
+
+      When user "configAdminPeerOrg2" using cert alias "config-admin-cert" creates a instantiate proposal "instantiateProposal1" for channel "com.peerorg2.blockchain.channel.medical" using chaincode spec "ccSpec" and endorsement policy "signedByMemberOfPeerOrg2"
+
+      And user "configAdminPeerOrg2" using cert alias "config-admin-cert" sends proposal "instantiateProposal1" to endorsers with timeout of "90" seconds with proposal responses "instantiateProposalResponses":
+        | Endorser |
+        | peer2    |
+
+      Then user "configAdminPeerOrg2" expects proposal responses "instantiateProposalResponses" with status "200" from endorsers:
+        | Endorser |
+        | peer2    |
+
+      And user "configAdminPeerOrg2" expects proposal responses "instantiateProposalResponses" each have the same value from endorsers:
+        | Endorser |
+        | peer2    |
+
+      When the user "configAdminPeerOrg2" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.peerorg2.blockchain.channel.medical"
+
+      And the user "configAdminPeerOrg2" broadcasts transaction "instantiateTx1" to orderer "<orderer1>"
+
+      # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
+      And I wait "<BroadcastWaitTime>" seconds
+
+
+      Given user "configAdminPeerOrg2" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
+
+      When user "configAdminPeerOrg2" sends deliver a seek request on node "<orderer0>" with properties:
+        | ChainId                                 | Start | End |
+        | com.peerorg2.blockchain.channel.medical | 1     | 1   |
+
+      Then user "configAdminPeerOrg2" should get a delivery "deliveredInstantiateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      # Sleep to allow for chaincode instantiation on the peer
+      And I wait "5" seconds
 
 
 
