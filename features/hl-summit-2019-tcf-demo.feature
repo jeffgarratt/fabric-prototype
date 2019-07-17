@@ -172,7 +172,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
     # Entry point for creating a channel
       And the user "dev0Org0" creates a new channel ConfigUpdate "createChannelConfigUpdate1" using consortium "consortium1"
-        | ChannelID                         | PeerOrgSet  | [PeerAnchorSet] |
+        | ChannelID                               | PeerOrgSet  | [PeerAnchorSet] |
         | com.peerorg0.blockchain.channel.medical | peerOrgSet1 |                 |
 
       And the user "dev0Org0" creates a configUpdateEnvelope "createChannelConfigUpdate1Envelope" using configUpdate "createChannelConfigUpdate1"
@@ -229,7 +229,7 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
       And user "configAdminPeerOrg0" retrieves the latest config update "latestChannelConfigUpdate" from orderer "<orderer0>" for channel "com.peerorg0.blockchain.channel.medical"
 
       And the user "configAdminPeerOrg0" creates an existing channel config update "existingChannelConfigUpdate1" using config update "latestChannelConfigUpdate"
-        | ChannelID                         | [PeerAnchorSet] |
+        | ChannelID                               | [PeerAnchorSet] |
         | com.peerorg0.blockchain.channel.medical | anchors1        |
 
 
@@ -568,6 +568,53 @@ Feature: Hyperledger Summit 2019 TCF Demo Bootstrap
 
       # Sleep to allow for chaincode instantiation on the peer
       And I wait "5" seconds
+
+
+
+
+
+
+
+      # Now the Worker channel and chaincode
+      Given the user "dev0Org7" creates a peer organization set "peerOrgSet1" with peer organizations:
+        | Organization |
+        | peerOrg7     |
+
+      And the user "dev0Org7" creates a new channel ConfigUpdate "createChannelConfigUpdate1" using consortium "consortium1"
+        | ChannelID                               | PeerOrgSet  | [PeerAnchorSet] |
+        | com.peerorg7.blockchain.channel.worker  | peerOrgSet1 |                 |
+
+      And the user "dev0Org7" creates a configUpdateEnvelope "createChannelConfigUpdate1Envelope" using configUpdate "createChannelConfigUpdate1"
+
+
+      And the user "dev0Org7" collects signatures for ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope" from developers:
+        | Developer | Cert Alias       |
+        | dev0Org7  | consortium1-cert |
+
+      And the user "dev0Org7" creates a ConfigUpdate Tx "configUpdateTx1" using cert alias "consortium1-cert" using signed ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope"
+
+      And the user "dev0Org7" using cert alias "consortium1-cert" broadcasts ConfigUpdate Tx "configUpdateTx1" to orderer "<orderer0>"
+
+      # Requesting a deliver earlier may result in a SERVICE_UNAVAILABLE response and a connection drop
+      And I wait "<ChannelJoinDelay>" seconds
+
+      When user "dev0Org7" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
+      And user "dev0Org7" sends deliver a seek request on node "<orderer0>" with properties:
+        | ChainId                                 | Start | End |
+        | com.peerorg7.blockchain.channel.worker  | 0     | 0   |
+
+      Then user "dev0Org7" should get a delivery "genesisBlockForNewChannelPeerOrg7Worker" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      Given user "dev0Org7" gives "genesisBlockForNewChannelPeerOrg7Worker" to user "peer7Admin" who saves it as "genesisBlockForNewChannelPeerOrg7Worker"
+
+      # Now join the new worker channel for peerOrg7
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForNewChannelPeerOrg7Worker" on peers with result "joinChannelResultPeerOrg7Worker"
+        | Peer  |
+        | peer7 |
+
+      Then user "peer7Admin" expects result code for "joinChannelResultPeerOrg7Worker" of "200" from peers:
+        | Peer  |
+        | peer7 |
 
 
 
