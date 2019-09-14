@@ -1158,10 +1158,7 @@ class CallbackHelper:
 
     def _copy_filestore(self, src_path, dest_path):
         assert os.path.exists(src_path), "Filestore source path not found: {0}".format(src_path)
-        shutil.copytree(src_path, dest_path, ignore=shutil.ignore_patterns('blockfile_*'))
-        # Now use sudo cp for the permissioned files
-        for file_path_skipped in self.glob_recursive(root_dir=src_path, pattern='blockfile_*'):
-            cli_call(['sudo','cp',file_path_skipped, file_path_skipped.replace(src_path, dest_path)])
+        cli_call(['sudo','cp', '-r', src_path, dest_path])
 
     def get_snapshot_path(self, project_name, compose_service, snapshot, pathType=PathType.Local):
         "Returns the snapshot path calculated per the supplied snapshot name."
@@ -1320,6 +1317,10 @@ class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, Callbac
             # The Filestore settings
             container_filestore_path = self.getFilestorePath(project_name=composition.projectName, compose_service=ordererService, pathType=PathType.Container)
             env["{0}_ORDERER_FILELEDGER_LOCATION".format(ordererService.upper())] = container_filestore_path
+
+            # Now the Raft settings
+            env["{0}_ORDERER_CONSENSUS_WALDIR".format(ordererService.upper())] = os.path.join(container_filestore_path, "etcdraft", "waldir")
+            env["{0}_ORDERER_CONSENSUS_SNAPDIR".format(ordererService.upper())] = os.path.join(container_filestore_path, "etcdraft", "snapdir")
 
             # Now the orderer image if it is set
             version_for_orderer = composition.get_version_for_service(ordererService)
