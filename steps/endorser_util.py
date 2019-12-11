@@ -25,7 +25,6 @@ from peer import transaction_pb2
 from peer import proposal_pb2
 from peer import query_pb2
 from peer import proposal_response_pb2
-from peer import admin_pb2_grpc
 from peer import peer_pb2_grpc
 from peer import resources_pb2
 from common import ledger_pb2 as common_dot_ledger_pb2
@@ -153,11 +152,6 @@ def getStubs(context, composeServices, directory, nodeAdminTuple, new_stub_callb
 def getEndorserStubs(context, composeServices, directory, nodeAdminTuple):
     new_stub_callback = lambda channel: peer_pb2_grpc.EndorserStub(channel)
     return getStubs(context=context, composeServices=composeServices, directory=directory, nodeAdminTuple=nodeAdminTuple, new_stub_callback=new_stub_callback)
-
-def getAdminStubs(context, composeServices, directory, nodeAdminTuple):
-    new_stub_callback = lambda channel: admin_pb2_grpc.AdminStub(channel)
-    return getStubs(context=context, composeServices=composeServices, directory=directory, nodeAdminTuple=nodeAdminTuple, new_stub_callback=new_stub_callback)
-
 
 def getExample02ChaincodeSpec():
     return getChaincodeSpec("GOLANG", "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02", "example02", ["init","a","100","b","200"])

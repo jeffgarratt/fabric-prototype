@@ -20,42 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='peer/resources.proto',
   package='protos',
   syntax='proto3',
-  serialized_pb=_b('\n\x14peer/resources.proto\x12\x06protos\x1a\x15\x63ommon/configtx.proto\"!\n\x0b\x41PIResource\x12\x12\n\npolicy_ref\x18\x01 \x01(\t\"4\n\x13\x43haincodeIdentifier\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12\x0f\n\x07version\x18\x02 \x01(\t\"5\n\x13\x43haincodeValidation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x61rgument\x18\x02 \x01(\x0c\"*\n\x08VSCCArgs\x12\x1e\n\x16\x65ndorsement_policy_ref\x18\x01 \x01(\t\"$\n\x14\x43haincodeEndorsement\x12\x0c\n\x04name\x18\x01 \x01(\t\"^\n\nConfigTree\x12&\n\x0e\x63hannel_config\x18\x01 \x01(\x0b\x32\x0e.common.Config\x12(\n\x10resources_config\x18\x02 \x01(\x0b\x32\x0e.common.ConfigBO\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peerb\x06proto3')
+  serialized_pb=_b('\n\x14peer/resources.proto\x12\x06protos\x1a\x15\x63ommon/configtx.proto\"4\n\x13\x43haincodeIdentifier\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12\x0f\n\x07version\x18\x02 \x01(\t\"5\n\x13\x43haincodeValidation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x61rgument\x18\x02 \x01(\x0c\"*\n\x08VSCCArgs\x12\x1e\n\x16\x65ndorsement_policy_ref\x18\x01 \x01(\t\"$\n\x14\x43haincodeEndorsement\x12\x0c\n\x04name\x18\x01 \x01(\t\"^\n\nConfigTree\x12&\n\x0e\x63hannel_config\x18\x01 \x01(\x0b\x32\x0e.common.Config\x12(\n\x10resources_config\x18\x02 \x01(\x0b\x32\x0e.common.ConfigBR\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peerb\x06proto3')
   ,
   dependencies=[common_dot_configtx__pb2.DESCRIPTOR,])
 
 
-
-
-_APIRESOURCE = _descriptor.Descriptor(
-  name='APIResource',
-  full_name='protos.APIResource',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='policy_ref', full_name='protos.APIResource.policy_ref', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=55,
-  serialized_end=88,
-)
 
 
 _CHAINCODEIDENTIFIER = _descriptor.Descriptor(
@@ -71,14 +40,14 @@ _CHAINCODEIDENTIFIER = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='version', full_name='protos.ChaincodeIdentifier.version', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -91,8 +60,8 @@ _CHAINCODEIDENTIFIER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=90,
-  serialized_end=142,
+  serialized_start=55,
+  serialized_end=107,
 )
 
 
@@ -109,14 +78,14 @@ _CHAINCODEVALIDATION = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='argument', full_name='protos.ChaincodeValidation.argument', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -129,8 +98,8 @@ _CHAINCODEVALIDATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=144,
-  serialized_end=197,
+  serialized_start=109,
+  serialized_end=162,
 )
 
 
@@ -147,7 +116,7 @@ _VSCCARGS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -160,8 +129,8 @@ _VSCCARGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=199,
-  serialized_end=241,
+  serialized_start=164,
+  serialized_end=206,
 )
 
 
@@ -178,7 +147,7 @@ _CHAINCODEENDORSEMENT = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -191,8 +160,8 @@ _CHAINCODEENDORSEMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=243,
-  serialized_end=279,
+  serialized_start=208,
+  serialized_end=244,
 )
 
 
@@ -209,14 +178,14 @@ _CONFIGTREE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='resources_config', full_name='protos.ConfigTree.resources_config', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -229,26 +198,18 @@ _CONFIGTREE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=281,
-  serialized_end=375,
+  serialized_start=246,
+  serialized_end=340,
 )
 
 _CONFIGTREE.fields_by_name['channel_config'].message_type = common_dot_configtx__pb2._CONFIG
 _CONFIGTREE.fields_by_name['resources_config'].message_type = common_dot_configtx__pb2._CONFIG
-DESCRIPTOR.message_types_by_name['APIResource'] = _APIRESOURCE
 DESCRIPTOR.message_types_by_name['ChaincodeIdentifier'] = _CHAINCODEIDENTIFIER
 DESCRIPTOR.message_types_by_name['ChaincodeValidation'] = _CHAINCODEVALIDATION
 DESCRIPTOR.message_types_by_name['VSCCArgs'] = _VSCCARGS
 DESCRIPTOR.message_types_by_name['ChaincodeEndorsement'] = _CHAINCODEENDORSEMENT
 DESCRIPTOR.message_types_by_name['ConfigTree'] = _CONFIGTREE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-APIResource = _reflection.GeneratedProtocolMessageType('APIResource', (_message.Message,), dict(
-  DESCRIPTOR = _APIRESOURCE,
-  __module__ = 'peer.resources_pb2'
-  # @@protoc_insertion_point(class_scope:protos.APIResource)
-  ))
-_sym_db.RegisterMessage(APIResource)
 
 ChaincodeIdentifier = _reflection.GeneratedProtocolMessageType('ChaincodeIdentifier', (_message.Message,), dict(
   DESCRIPTOR = _CHAINCODEIDENTIFIER,
@@ -287,15 +248,5 @@ _sym_db.RegisterMessage(ConfigTree)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peer'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-except ImportError:
-  pass
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peer'))
 # @@protoc_insertion_point(module_scope)

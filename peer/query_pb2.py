@@ -19,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='peer/query.proto',
   package='protos',
   syntax='proto3',
-  serialized_pb=_b('\n\x10peer/query.proto\x12\x06protos\"C\n\x16\x43haincodeQueryResponse\x12)\n\nchaincodes\x18\x01 \x03(\x0b\x32\x15.protos.ChaincodeInfo\"g\n\rChaincodeInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0c\n\x04path\x18\x03 \x01(\t\x12\r\n\x05input\x18\x04 \x01(\t\x12\x0c\n\x04\x65scc\x18\x05 \x01(\t\x12\x0c\n\x04vscc\x18\x06 \x01(\t\"=\n\x14\x43hannelQueryResponse\x12%\n\x08\x63hannels\x18\x01 \x03(\x0b\x32\x13.protos.ChannelInfo\"!\n\x0b\x43hannelInfo\x12\x12\n\nchannel_id\x18\x01 \x01(\tBO\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peerb\x06proto3')
+  serialized_pb=_b('\n\x10peer/query.proto\x12\x06protos\"C\n\x16\x43haincodeQueryResponse\x12)\n\nchaincodes\x18\x01 \x03(\x0b\x32\x15.protos.ChaincodeInfo\"s\n\rChaincodeInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0c\n\x04path\x18\x03 \x01(\t\x12\r\n\x05input\x18\x04 \x01(\t\x12\x0c\n\x04\x65scc\x18\x05 \x01(\t\x12\x0c\n\x04vscc\x18\x06 \x01(\t\x12\n\n\x02id\x18\x07 \x01(\x0c\"=\n\x14\x43hannelQueryResponse\x12%\n\x08\x63hannels\x18\x01 \x03(\x0b\x32\x13.protos.ChannelInfo\"!\n\x0b\x43hannelInfo\x12\x12\n\nchannel_id\x18\x01 \x01(\tBR\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peerb\x06proto3')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -39,7 +38,7 @@ _CHAINCODEQUERYRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -70,42 +69,49 @@ _CHAINCODEINFO = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='version', full_name='protos.ChaincodeInfo.version', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='path', full_name='protos.ChaincodeInfo.path', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='input', full_name='protos.ChaincodeInfo.input', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='escc', full_name='protos.ChaincodeInfo.escc', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='vscc', full_name='protos.ChaincodeInfo.vscc', index=5,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='protos.ChaincodeInfo.id', index=6,
+      number=7, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -119,7 +125,7 @@ _CHAINCODEINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=97,
-  serialized_end=200,
+  serialized_end=212,
 )
 
 
@@ -136,7 +142,7 @@ _CHANNELQUERYRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -149,8 +155,8 @@ _CHANNELQUERYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=202,
-  serialized_end=263,
+  serialized_start=214,
+  serialized_end=275,
 )
 
 
@@ -167,7 +173,7 @@ _CHANNELINFO = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -180,8 +186,8 @@ _CHANNELINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=265,
-  serialized_end=298,
+  serialized_start=277,
+  serialized_end=310,
 )
 
 _CHAINCODEQUERYRESPONSE.fields_by_name['chaincodes'].message_type = _CHAINCODEINFO
@@ -190,6 +196,7 @@ DESCRIPTOR.message_types_by_name['ChaincodeQueryResponse'] = _CHAINCODEQUERYRESP
 DESCRIPTOR.message_types_by_name['ChaincodeInfo'] = _CHAINCODEINFO
 DESCRIPTOR.message_types_by_name['ChannelQueryResponse'] = _CHANNELQUERYRESPONSE
 DESCRIPTOR.message_types_by_name['ChannelInfo'] = _CHANNELINFO
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ChaincodeQueryResponse = _reflection.GeneratedProtocolMessageType('ChaincodeQueryResponse', (_message.Message,), dict(
   DESCRIPTOR = _CHAINCODEQUERYRESPONSE,
@@ -221,15 +228,5 @@ _sym_db.RegisterMessage(ChannelInfo)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peer'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-except ImportError:
-  pass
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peer'))
 # @@protoc_insertion_point(module_scope)

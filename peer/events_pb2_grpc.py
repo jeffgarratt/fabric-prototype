@@ -5,48 +5,6 @@ from common import common_pb2 as common_dot_common__pb2
 from peer import events_pb2 as peer_dot_events__pb2
 
 
-class EventsStub(object):
-  """Interface exported by the events server
-  """
-
-  def __init__(self, channel):
-    """Constructor.
-
-    Args:
-      channel: A grpc.Channel.
-    """
-    self.Chat = channel.stream_stream(
-        '/protos.Events/Chat',
-        request_serializer=peer_dot_events__pb2.SignedEvent.SerializeToString,
-        response_deserializer=peer_dot_events__pb2.Event.FromString,
-        )
-
-
-class EventsServicer(object):
-  """Interface exported by the events server
-  """
-
-  def Chat(self, request_iterator, context):
-    """event chatting using Event
-    """
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
-
-
-def add_EventsServicer_to_server(servicer, server):
-  rpc_method_handlers = {
-      'Chat': grpc.stream_stream_rpc_method_handler(
-          servicer.Chat,
-          request_deserializer=peer_dot_events__pb2.SignedEvent.FromString,
-          response_serializer=peer_dot_events__pb2.Event.SerializeToString,
-      ),
-  }
-  generic_handler = grpc.method_handlers_generic_handler(
-      'protos.Events', rpc_method_handlers)
-  server.add_generic_rpc_handlers((generic_handler,))
-
-
 class DeliverStub(object):
   # missing associated documentation comment in .proto file
   pass
@@ -67,6 +25,11 @@ class DeliverStub(object):
         request_serializer=common_dot_common__pb2.Envelope.SerializeToString,
         response_deserializer=peer_dot_events__pb2.DeliverResponse.FromString,
         )
+    self.DeliverWithPrivateData = channel.stream_stream(
+        '/protos.Deliver/DeliverWithPrivateData',
+        request_serializer=common_dot_common__pb2.Envelope.SerializeToString,
+        response_deserializer=peer_dot_events__pb2.DeliverResponse.FromString,
+        )
 
 
 class DeliverServicer(object):
@@ -74,16 +37,27 @@ class DeliverServicer(object):
   pass
 
   def Deliver(self, request_iterator, context):
-    """deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with Payload data as a marshaled orderer.SeekInfo message,
-    then a stream of block replies is received.
+    """Deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with
+    Payload data as a marshaled orderer.SeekInfo message,
+    then a stream of block replies is received
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def DeliverFiltered(self, request_iterator, context):
-    """deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with Payload data as a marshaled orderer.SeekInfo message,
-    then a stream of **filtered** block replies is received.
+    """DeliverFiltered first requires an Envelope of type ab.DELIVER_SEEK_INFO with
+    Payload data as a marshaled orderer.SeekInfo message,
+    then a stream of **filtered** block replies is received
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def DeliverWithPrivateData(self, request_iterator, context):
+    """DeliverWithPrivateData first requires an Envelope of type ab.DELIVER_SEEK_INFO with
+    Payload data as a marshaled orderer.SeekInfo message,
+    then a stream of block and private data replies is received
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -99,6 +73,11 @@ def add_DeliverServicer_to_server(servicer, server):
       ),
       'DeliverFiltered': grpc.stream_stream_rpc_method_handler(
           servicer.DeliverFiltered,
+          request_deserializer=common_dot_common__pb2.Envelope.FromString,
+          response_serializer=peer_dot_events__pb2.DeliverResponse.SerializeToString,
+      ),
+      'DeliverWithPrivateData': grpc.stream_stream_rpc_method_handler(
+          servicer.DeliverWithPrivateData,
           request_deserializer=common_dot_common__pb2.Envelope.FromString,
           response_serializer=peer_dot_events__pb2.DeliverResponse.SerializeToString,
       ),

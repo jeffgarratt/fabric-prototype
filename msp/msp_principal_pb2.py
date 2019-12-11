@@ -19,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='msp/msp_principal.proto',
   package='common',
   syntax='proto3',
-  serialized_pb=_b('\n\x17msp/msp_principal.proto\x12\x06\x63ommon\"\xa9\x01\n\x0cMSPPrincipal\x12\x45\n\x18principal_classification\x18\x01 \x01(\x0e\x32#.common.MSPPrincipal.Classification\x12\x11\n\tprincipal\x18\x02 \x01(\x0c\"?\n\x0e\x43lassification\x12\x08\n\x04ROLE\x10\x00\x12\x15\n\x11ORGANIZATION_UNIT\x10\x01\x12\x0c\n\x08IDENTITY\x10\x02\"q\n\x10OrganizationUnit\x12\x16\n\x0emsp_identifier\x18\x01 \x01(\t\x12&\n\x1eorganizational_unit_identifier\x18\x02 \x01(\t\x12\x1d\n\x15\x63\x65rtifiers_identifier\x18\x03 \x01(\x0c\"r\n\x07MSPRole\x12\x16\n\x0emsp_identifier\x18\x01 \x01(\t\x12)\n\x04role\x18\x02 \x01(\x0e\x32\x1b.common.MSPRole.MSPRoleType\"$\n\x0bMSPRoleType\x12\n\n\x06MEMBER\x10\x00\x12\t\n\x05\x41\x44MIN\x10\x01\x42P\n$org.hyperledger.fabric.protos.commonZ(github.com/hyperledger/fabric/protos/mspb\x06proto3')
+  serialized_pb=_b('\n\x17msp/msp_principal.proto\x12\x06\x63ommon\"\xc6\x01\n\x0cMSPPrincipal\x12\x45\n\x18principal_classification\x18\x01 \x01(\x0e\x32#.common.MSPPrincipal.Classification\x12\x11\n\tprincipal\x18\x02 \x01(\x0c\"\\\n\x0e\x43lassification\x12\x08\n\x04ROLE\x10\x00\x12\x15\n\x11ORGANIZATION_UNIT\x10\x01\x12\x0c\n\x08IDENTITY\x10\x02\x12\r\n\tANONYMITY\x10\x03\x12\x0c\n\x08\x43OMBINED\x10\x04\"q\n\x10OrganizationUnit\x12\x16\n\x0emsp_identifier\x18\x01 \x01(\t\x12&\n\x1eorganizational_unit_identifier\x18\x02 \x01(\t\x12\x1d\n\x15\x63\x65rtifiers_identifier\x18\x03 \x01(\x0c\"\x95\x01\n\x07MSPRole\x12\x16\n\x0emsp_identifier\x18\x01 \x01(\t\x12)\n\x04role\x18\x02 \x01(\x0e\x32\x1b.common.MSPRole.MSPRoleType\"G\n\x0bMSPRoleType\x12\n\n\x06MEMBER\x10\x00\x12\t\n\x05\x41\x44MIN\x10\x01\x12\n\n\x06\x43LIENT\x10\x02\x12\x08\n\x04PEER\x10\x03\x12\x0b\n\x07ORDERER\x10\x04\"\x9d\x01\n\x14MSPIdentityAnonymity\x12M\n\x0e\x61nonymity_type\x18\x01 \x01(\x0e\x32\x35.common.MSPIdentityAnonymity.MSPIdentityAnonymityType\"6\n\x18MSPIdentityAnonymityType\x12\x0b\n\x07NOMINAL\x10\x00\x12\r\n\tANONYMOUS\x10\x01\"=\n\x11\x43ombinedPrincipal\x12(\n\nprincipals\x18\x01 \x03(\x0b\x32\x14.common.MSPPrincipalBS\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric-protos-go/mspb\x06proto3')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -43,11 +42,19 @@ _MSPPRINCIPAL_CLASSIFICATION = _descriptor.EnumDescriptor(
       name='IDENTITY', index=2, number=2,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ANONYMITY', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='COMBINED', index=4, number=4,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=142,
-  serialized_end=205,
+  serialized_end=234,
 )
 _sym_db.RegisterEnumDescriptor(_MSPPRINCIPAL_CLASSIFICATION)
 
@@ -65,13 +72,47 @@ _MSPROLE_MSPROLETYPE = _descriptor.EnumDescriptor(
       name='ADMIN', index=1, number=1,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CLIENT', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PEER', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ORDERER', index=4, number=4,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=400,
-  serialized_end=436,
+  serialized_start=430,
+  serialized_end=501,
 )
 _sym_db.RegisterEnumDescriptor(_MSPROLE_MSPROLETYPE)
+
+_MSPIDENTITYANONYMITY_MSPIDENTITYANONYMITYTYPE = _descriptor.EnumDescriptor(
+  name='MSPIdentityAnonymityType',
+  full_name='common.MSPIdentityAnonymity.MSPIdentityAnonymityType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='NOMINAL', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ANONYMOUS', index=1, number=1,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=607,
+  serialized_end=661,
+)
+_sym_db.RegisterEnumDescriptor(_MSPIDENTITYANONYMITY_MSPIDENTITYANONYMITYTYPE)
 
 
 _MSPPRINCIPAL = _descriptor.Descriptor(
@@ -87,14 +128,14 @@ _MSPPRINCIPAL = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='principal', full_name='common.MSPPrincipal.principal', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -109,7 +150,7 @@ _MSPPRINCIPAL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=36,
-  serialized_end=205,
+  serialized_end=234,
 )
 
 
@@ -126,21 +167,21 @@ _ORGANIZATIONUNIT = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='organizational_unit_identifier', full_name='common.OrganizationUnit.organizational_unit_identifier', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='certifiers_identifier', full_name='common.OrganizationUnit.certifiers_identifier', index=2,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -153,8 +194,8 @@ _ORGANIZATIONUNIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=207,
-  serialized_end=320,
+  serialized_start=236,
+  serialized_end=349,
 )
 
 
@@ -171,14 +212,14 @@ _MSPROLE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='role', full_name='common.MSPRole.role', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -192,17 +233,86 @@ _MSPROLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=322,
-  serialized_end=436,
+  serialized_start=352,
+  serialized_end=501,
+)
+
+
+_MSPIDENTITYANONYMITY = _descriptor.Descriptor(
+  name='MSPIdentityAnonymity',
+  full_name='common.MSPIdentityAnonymity',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='anonymity_type', full_name='common.MSPIdentityAnonymity.anonymity_type', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _MSPIDENTITYANONYMITY_MSPIDENTITYANONYMITYTYPE,
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=504,
+  serialized_end=661,
+)
+
+
+_COMBINEDPRINCIPAL = _descriptor.Descriptor(
+  name='CombinedPrincipal',
+  full_name='common.CombinedPrincipal',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='principals', full_name='common.CombinedPrincipal.principals', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=663,
+  serialized_end=724,
 )
 
 _MSPPRINCIPAL.fields_by_name['principal_classification'].enum_type = _MSPPRINCIPAL_CLASSIFICATION
 _MSPPRINCIPAL_CLASSIFICATION.containing_type = _MSPPRINCIPAL
 _MSPROLE.fields_by_name['role'].enum_type = _MSPROLE_MSPROLETYPE
 _MSPROLE_MSPROLETYPE.containing_type = _MSPROLE
+_MSPIDENTITYANONYMITY.fields_by_name['anonymity_type'].enum_type = _MSPIDENTITYANONYMITY_MSPIDENTITYANONYMITYTYPE
+_MSPIDENTITYANONYMITY_MSPIDENTITYANONYMITYTYPE.containing_type = _MSPIDENTITYANONYMITY
+_COMBINEDPRINCIPAL.fields_by_name['principals'].message_type = _MSPPRINCIPAL
 DESCRIPTOR.message_types_by_name['MSPPrincipal'] = _MSPPRINCIPAL
 DESCRIPTOR.message_types_by_name['OrganizationUnit'] = _ORGANIZATIONUNIT
 DESCRIPTOR.message_types_by_name['MSPRole'] = _MSPROLE
+DESCRIPTOR.message_types_by_name['MSPIdentityAnonymity'] = _MSPIDENTITYANONYMITY
+DESCRIPTOR.message_types_by_name['CombinedPrincipal'] = _COMBINEDPRINCIPAL
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 MSPPrincipal = _reflection.GeneratedProtocolMessageType('MSPPrincipal', (_message.Message,), dict(
   DESCRIPTOR = _MSPPRINCIPAL,
@@ -225,17 +335,21 @@ MSPRole = _reflection.GeneratedProtocolMessageType('MSPRole', (_message.Message,
   ))
 _sym_db.RegisterMessage(MSPRole)
 
+MSPIdentityAnonymity = _reflection.GeneratedProtocolMessageType('MSPIdentityAnonymity', (_message.Message,), dict(
+  DESCRIPTOR = _MSPIDENTITYANONYMITY,
+  __module__ = 'msp.msp_principal_pb2'
+  # @@protoc_insertion_point(class_scope:common.MSPIdentityAnonymity)
+  ))
+_sym_db.RegisterMessage(MSPIdentityAnonymity)
+
+CombinedPrincipal = _reflection.GeneratedProtocolMessageType('CombinedPrincipal', (_message.Message,), dict(
+  DESCRIPTOR = _COMBINEDPRINCIPAL,
+  __module__ = 'msp.msp_principal_pb2'
+  # @@protoc_insertion_point(class_scope:common.CombinedPrincipal)
+  ))
+_sym_db.RegisterMessage(CombinedPrincipal)
+
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ(github.com/hyperledger/fabric/protos/msp'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-except ImportError:
-  pass
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric-protos-go/msp'))
 # @@protoc_insertion_point(module_scope)

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='orderer/etcdraft/configuration.proto',
   package='etcdraft',
   syntax='proto3',
-  serialized_pb=_b('\n$orderer/etcdraft/configuration.proto\x12\x08\x65tcdraft\"]\n\x0e\x43onfigMetadata\x12\'\n\nconsenters\x18\x01 \x03(\x0b\x32\x13.etcdraft.Consenter\x12\"\n\x07options\x18\x02 \x01(\x0b\x32\x11.etcdraft.Options\"Y\n\tConsenter\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\x12\x17\n\x0f\x63lient_tls_cert\x18\x03 \x01(\x0c\x12\x17\n\x0fserver_tls_cert\x18\x04 \x01(\x0c\"\x8c\x01\n\x07Options\x12\x15\n\rtick_interval\x18\x01 \x01(\t\x12\x15\n\relection_tick\x18\x02 \x01(\r\x12\x16\n\x0eheartbeat_tick\x18\x03 \x01(\r\x12\x1b\n\x13max_inflight_blocks\x18\x04 \x01(\r\x12\x1e\n\x16snapshot_interval_size\x18\x05 \x01(\r\"U\n\rBlockMetadata\x12\x15\n\rconsenter_ids\x18\x01 \x03(\x04\x12\x19\n\x11next_consenter_id\x18\x02 \x01(\x04\x12\x12\n\nraft_index\x18\x03 \x01(\x04\x42g\n.org.hyperledger.fabric.protos.orderer.etcdraftZ5github.com/hyperledger/fabric/protos/orderer/etcdraftb\x06proto3')
+  serialized_pb=_b('\n$orderer/etcdraft/configuration.proto\x12\x08\x65tcdraft\"]\n\x0e\x43onfigMetadata\x12\'\n\nconsenters\x18\x01 \x03(\x0b\x32\x13.etcdraft.Consenter\x12\"\n\x07options\x18\x02 \x01(\x0b\x32\x11.etcdraft.Options\"Y\n\tConsenter\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\x12\x17\n\x0f\x63lient_tls_cert\x18\x03 \x01(\x0c\x12\x17\n\x0fserver_tls_cert\x18\x04 \x01(\x0c\"\x8c\x01\n\x07Options\x12\x15\n\rtick_interval\x18\x01 \x01(\t\x12\x15\n\relection_tick\x18\x02 \x01(\r\x12\x16\n\x0eheartbeat_tick\x18\x03 \x01(\r\x12\x1b\n\x13max_inflight_blocks\x18\x04 \x01(\r\x12\x1e\n\x16snapshot_interval_size\x18\x05 \x01(\rBj\n.org.hyperledger.fabric.protos.orderer.etcdraftZ8github.com/hyperledger/fabric-protos-go/orderer/etcdraftb\x06proto3')
 )
 
 
@@ -173,57 +173,11 @@ _OPTIONS = _descriptor.Descriptor(
   serialized_end=377,
 )
 
-
-_BLOCKMETADATA = _descriptor.Descriptor(
-  name='BlockMetadata',
-  full_name='etcdraft.BlockMetadata',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='consenter_ids', full_name='etcdraft.BlockMetadata.consenter_ids', index=0,
-      number=1, type=4, cpp_type=4, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='next_consenter_id', full_name='etcdraft.BlockMetadata.next_consenter_id', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='raft_index', full_name='etcdraft.BlockMetadata.raft_index', index=2,
-      number=3, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=379,
-  serialized_end=464,
-)
-
 _CONFIGMETADATA.fields_by_name['consenters'].message_type = _CONSENTER
 _CONFIGMETADATA.fields_by_name['options'].message_type = _OPTIONS
 DESCRIPTOR.message_types_by_name['ConfigMetadata'] = _CONFIGMETADATA
 DESCRIPTOR.message_types_by_name['Consenter'] = _CONSENTER
 DESCRIPTOR.message_types_by_name['Options'] = _OPTIONS
-DESCRIPTOR.message_types_by_name['BlockMetadata'] = _BLOCKMETADATA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ConfigMetadata = _reflection.GeneratedProtocolMessageType('ConfigMetadata', (_message.Message,), dict(
@@ -247,14 +201,7 @@ Options = _reflection.GeneratedProtocolMessageType('Options', (_message.Message,
   ))
 _sym_db.RegisterMessage(Options)
 
-BlockMetadata = _reflection.GeneratedProtocolMessageType('BlockMetadata', (_message.Message,), dict(
-  DESCRIPTOR = _BLOCKMETADATA,
-  __module__ = 'orderer.etcdraft.configuration_pb2'
-  # @@protoc_insertion_point(class_scope:etcdraft.BlockMetadata)
-  ))
-_sym_db.RegisterMessage(BlockMetadata)
-
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n.org.hyperledger.fabric.protos.orderer.etcdraftZ5github.com/hyperledger/fabric/protos/orderer/etcdraft'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n.org.hyperledger.fabric.protos.orderer.etcdraftZ8github.com/hyperledger/fabric-protos-go/orderer/etcdraft'))
 # @@protoc_insertion_point(module_scope)

@@ -21,10 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common/common.proto',
   package='common',
   syntax='proto3',
-  serialized_pb=_b('\n\x13\x63ommon/common.proto\x12\x06\x63ommon\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1b\n\nLastConfig\x12\r\n\x05index\x18\x01 \x01(\x04\"H\n\x08Metadata\x12\r\n\x05value\x18\x01 \x01(\x0c\x12-\n\nsignatures\x18\x02 \x03(\x0b\x32\x19.common.MetadataSignature\"@\n\x11MetadataSignature\x12\x18\n\x10signature_header\x18\x01 \x01(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\":\n\x06Header\x12\x16\n\x0e\x63hannel_header\x18\x01 \x01(\x0c\x12\x18\n\x10signature_header\x18\x02 \x01(\x0c\"\xa2\x01\n\rChannelHeader\x12\x0c\n\x04type\x18\x01 \x01(\x05\x12\x0f\n\x07version\x18\x02 \x01(\x05\x12-\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x12\n\nchannel_id\x18\x04 \x01(\t\x12\r\n\x05tx_id\x18\x05 \x01(\t\x12\r\n\x05\x65poch\x18\x06 \x01(\x04\x12\x11\n\textension\x18\x07 \x01(\x0c\"1\n\x0fSignatureHeader\x12\x0f\n\x07\x63reator\x18\x01 \x01(\x0c\x12\r\n\x05nonce\x18\x02 \x01(\x0c\"7\n\x07Payload\x12\x1e\n\x06header\x18\x01 \x01(\x0b\x32\x0e.common.Header\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\".\n\x08\x45nvelope\x12\x0f\n\x07payload\x18\x01 \x01(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\"v\n\x05\x42lock\x12#\n\x06header\x18\x01 \x01(\x0b\x32\x13.common.BlockHeader\x12\x1f\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x11.common.BlockData\x12\'\n\x08metadata\x18\x03 \x01(\x0b\x32\x15.common.BlockMetadata\"G\n\x0b\x42lockHeader\x12\x0e\n\x06number\x18\x01 \x01(\x04\x12\x15\n\rprevious_hash\x18\x02 \x01(\x0c\x12\x11\n\tdata_hash\x18\x03 \x01(\x0c\"\x19\n\tBlockData\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x0c\"!\n\rBlockMetadata\x12\x10\n\x08metadata\x18\x01 \x03(\x0c*\xaa\x01\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0c\n\x07SUCCESS\x10\xc8\x01\x12\x10\n\x0b\x42\x41\x44_REQUEST\x10\x90\x03\x12\x0e\n\tFORBIDDEN\x10\x93\x03\x12\x0e\n\tNOT_FOUND\x10\x94\x03\x12\x1d\n\x18REQUEST_ENTITY_TOO_LARGE\x10\x9d\x03\x12\x1a\n\x15INTERNAL_SERVER_ERROR\x10\xf4\x03\x12\x18\n\x13SERVICE_UNAVAILABLE\x10\xf7\x03*\x99\x01\n\nHeaderType\x12\x0b\n\x07MESSAGE\x10\x00\x12\n\n\x06\x43ONFIG\x10\x01\x12\x11\n\rCONFIG_UPDATE\x10\x02\x12\x18\n\x14\x45NDORSER_TRANSACTION\x10\x03\x12\x17\n\x13ORDERER_TRANSACTION\x10\x04\x12\x15\n\x11\x44\x45LIVER_SEEK_INFO\x10\x05\x12\x15\n\x11\x43HAINCODE_PACKAGE\x10\x06*[\n\x12\x42lockMetadataIndex\x12\x0e\n\nSIGNATURES\x10\x00\x12\x0f\n\x0bLAST_CONFIG\x10\x01\x12\x17\n\x13TRANSACTIONS_FILTER\x10\x02\x12\x0b\n\x07ORDERER\x10\x03\x42S\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric/protos/commonb\x06proto3')
+  serialized_pb=_b('\n\x13\x63ommon/common.proto\x12\x06\x63ommon\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1b\n\nLastConfig\x12\r\n\x05index\x18\x01 \x01(\x04\"H\n\x08Metadata\x12\r\n\x05value\x18\x01 \x01(\x0c\x12-\n\nsignatures\x18\x02 \x03(\x0b\x32\x19.common.MetadataSignature\"@\n\x11MetadataSignature\x12\x18\n\x10signature_header\x18\x01 \x01(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\":\n\x06Header\x12\x16\n\x0e\x63hannel_header\x18\x01 \x01(\x0c\x12\x18\n\x10signature_header\x18\x02 \x01(\x0c\"\xb9\x01\n\rChannelHeader\x12\x0c\n\x04type\x18\x01 \x01(\x05\x12\x0f\n\x07version\x18\x02 \x01(\x05\x12-\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x12\n\nchannel_id\x18\x04 \x01(\t\x12\r\n\x05tx_id\x18\x05 \x01(\t\x12\r\n\x05\x65poch\x18\x06 \x01(\x04\x12\x11\n\textension\x18\x07 \x01(\x0c\x12\x15\n\rtls_cert_hash\x18\x08 \x01(\x0c\"1\n\x0fSignatureHeader\x12\x0f\n\x07\x63reator\x18\x01 \x01(\x0c\x12\r\n\x05nonce\x18\x02 \x01(\x0c\"7\n\x07Payload\x12\x1e\n\x06header\x18\x01 \x01(\x0b\x32\x0e.common.Header\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\".\n\x08\x45nvelope\x12\x0f\n\x07payload\x18\x01 \x01(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\"v\n\x05\x42lock\x12#\n\x06header\x18\x01 \x01(\x0b\x32\x13.common.BlockHeader\x12\x1f\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x11.common.BlockData\x12\'\n\x08metadata\x18\x03 \x01(\x0b\x32\x15.common.BlockMetadata\"G\n\x0b\x42lockHeader\x12\x0e\n\x06number\x18\x01 \x01(\x04\x12\x15\n\rprevious_hash\x18\x02 \x01(\x0c\x12\x11\n\tdata_hash\x18\x03 \x01(\x0c\"\x19\n\tBlockData\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x0c\"!\n\rBlockMetadata\x12\x10\n\x08metadata\x18\x01 \x03(\x0c\"[\n\x14OrdererBlockMetadata\x12\'\n\x0blast_config\x18\x01 \x01(\x0b\x32\x12.common.LastConfig\x12\x1a\n\x12\x63onsenter_metadata\x18\x02 \x01(\x0c*\xc0\x01\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0c\n\x07SUCCESS\x10\xc8\x01\x12\x10\n\x0b\x42\x41\x44_REQUEST\x10\x90\x03\x12\x0e\n\tFORBIDDEN\x10\x93\x03\x12\x0e\n\tNOT_FOUND\x10\x94\x03\x12\x1d\n\x18REQUEST_ENTITY_TOO_LARGE\x10\x9d\x03\x12\x1a\n\x15INTERNAL_SERVER_ERROR\x10\xf4\x03\x12\x14\n\x0fNOT_IMPLEMENTED\x10\xf5\x03\x12\x18\n\x13SERVICE_UNAVAILABLE\x10\xf7\x03*\xe8\x01\n\nHeaderType\x12\x0b\n\x07MESSAGE\x10\x00\x12\n\n\x06\x43ONFIG\x10\x01\x12\x11\n\rCONFIG_UPDATE\x10\x02\x12\x18\n\x14\x45NDORSER_TRANSACTION\x10\x03\x12\x17\n\x13ORDERER_TRANSACTION\x10\x04\x12\x15\n\x11\x44\x45LIVER_SEEK_INFO\x10\x05\x12\x15\n\x11\x43HAINCODE_PACKAGE\x10\x06\x12\x18\n\x14PEER_ADMIN_OPERATION\x10\x08\"\x04\x08\x07\x10\x07\"\x04\x08\t\x10\t*\x14PEER_RESOURCE_UPDATE*\x11TOKEN_TRANSACTION*t\n\x12\x42lockMetadataIndex\x12\x0e\n\nSIGNATURES\x10\x00\x12\x13\n\x0bLAST_CONFIG\x10\x01\x1a\x02\x08\x01\x12\x17\n\x13TRANSACTIONS_FILTER\x10\x02\x12\x0f\n\x07ORDERER\x10\x03\x1a\x02\x08\x01\x12\x0f\n\x0b\x43OMMIT_HASH\x10\x04\x42V\n$org.hyperledger.fabric.protos.commonZ.github.com/hyperledger/fabric-protos-go/commonb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _STATUS = _descriptor.EnumDescriptor(
   name='Status',
@@ -61,14 +60,18 @@ _STATUS = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SERVICE_UNAVAILABLE', index=7, number=503,
+      name='NOT_IMPLEMENTED', index=7, number=501,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SERVICE_UNAVAILABLE', index=8, number=503,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=870,
-  serialized_end=1040,
+  serialized_start=986,
+  serialized_end=1178,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS)
 
@@ -107,11 +110,15 @@ _HEADERTYPE = _descriptor.EnumDescriptor(
       name='CHAINCODE_PACKAGE', index=6, number=6,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PEER_ADMIN_OPERATION', index=7, number=8,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=1043,
-  serialized_end=1196,
+  serialized_start=1181,
+  serialized_end=1413,
 )
 _sym_db.RegisterEnumDescriptor(_HEADERTYPE)
 
@@ -128,7 +135,7 @@ _BLOCKMETADATAINDEX = _descriptor.EnumDescriptor(
       type=None),
     _descriptor.EnumValueDescriptor(
       name='LAST_CONFIG', index=1, number=1,
-      options=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\010\001')),
       type=None),
     _descriptor.EnumValueDescriptor(
       name='TRANSACTIONS_FILTER', index=2, number=2,
@@ -136,13 +143,17 @@ _BLOCKMETADATAINDEX = _descriptor.EnumDescriptor(
       type=None),
     _descriptor.EnumValueDescriptor(
       name='ORDERER', index=3, number=3,
+      options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\010\001')),
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='COMMIT_HASH', index=4, number=4,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=1198,
-  serialized_end=1289,
+  serialized_start=1415,
+  serialized_end=1531,
 )
 _sym_db.RegisterEnumDescriptor(_BLOCKMETADATAINDEX)
 
@@ -154,6 +165,7 @@ FORBIDDEN = 403
 NOT_FOUND = 404
 REQUEST_ENTITY_TOO_LARGE = 413
 INTERNAL_SERVER_ERROR = 500
+NOT_IMPLEMENTED = 501
 SERVICE_UNAVAILABLE = 503
 MESSAGE = 0
 CONFIG = 1
@@ -162,10 +174,12 @@ ENDORSER_TRANSACTION = 3
 ORDERER_TRANSACTION = 4
 DELIVER_SEEK_INFO = 5
 CHAINCODE_PACKAGE = 6
+PEER_ADMIN_OPERATION = 8
 SIGNATURES = 0
 LAST_CONFIG = 1
 TRANSACTIONS_FILTER = 2
 ORDERER = 3
+COMMIT_HASH = 4
 
 
 
@@ -182,7 +196,7 @@ _LASTCONFIG = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -213,14 +227,14 @@ _METADATA = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='signatures', full_name='common.Metadata.signatures', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -251,14 +265,14 @@ _METADATASIGNATURE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='signature', full_name='common.MetadataSignature.signature', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -289,14 +303,14 @@ _HEADER = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='signature_header', full_name='common.Header.signature_header', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -327,49 +341,56 @@ _CHANNELHEADER = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='version', full_name='common.ChannelHeader.version', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='timestamp', full_name='common.ChannelHeader.timestamp', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='channel_id', full_name='common.ChannelHeader.channel_id', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tx_id', full_name='common.ChannelHeader.tx_id', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='epoch', full_name='common.ChannelHeader.epoch', index=5,
       number=6, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='extension', full_name='common.ChannelHeader.extension', index=6,
       number=7, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='tls_cert_hash', full_name='common.ChannelHeader.tls_cert_hash', index=7,
+      number=8, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -383,7 +404,7 @@ _CHANNELHEADER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=294,
-  serialized_end=456,
+  serialized_end=479,
 )
 
 
@@ -400,14 +421,14 @@ _SIGNATUREHEADER = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='nonce', full_name='common.SignatureHeader.nonce', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -420,8 +441,8 @@ _SIGNATUREHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=458,
-  serialized_end=507,
+  serialized_start=481,
+  serialized_end=530,
 )
 
 
@@ -438,14 +459,14 @@ _PAYLOAD = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data', full_name='common.Payload.data', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -458,8 +479,8 @@ _PAYLOAD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=509,
-  serialized_end=564,
+  serialized_start=532,
+  serialized_end=587,
 )
 
 
@@ -476,14 +497,14 @@ _ENVELOPE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='signature', full_name='common.Envelope.signature', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -496,8 +517,8 @@ _ENVELOPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=566,
-  serialized_end=612,
+  serialized_start=589,
+  serialized_end=635,
 )
 
 
@@ -514,21 +535,21 @@ _BLOCK = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data', full_name='common.Block.data', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='metadata', full_name='common.Block.metadata', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -541,8 +562,8 @@ _BLOCK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=614,
-  serialized_end=732,
+  serialized_start=637,
+  serialized_end=755,
 )
 
 
@@ -559,21 +580,21 @@ _BLOCKHEADER = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='previous_hash', full_name='common.BlockHeader.previous_hash', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data_hash', full_name='common.BlockHeader.data_hash', index=2,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -586,8 +607,8 @@ _BLOCKHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=734,
-  serialized_end=805,
+  serialized_start=757,
+  serialized_end=828,
 )
 
 
@@ -604,7 +625,7 @@ _BLOCKDATA = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -617,8 +638,8 @@ _BLOCKDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=807,
-  serialized_end=832,
+  serialized_start=830,
+  serialized_end=855,
 )
 
 
@@ -635,7 +656,7 @@ _BLOCKMETADATA = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -648,8 +669,46 @@ _BLOCKMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=834,
-  serialized_end=867,
+  serialized_start=857,
+  serialized_end=890,
+)
+
+
+_ORDERERBLOCKMETADATA = _descriptor.Descriptor(
+  name='OrdererBlockMetadata',
+  full_name='common.OrdererBlockMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='last_config', full_name='common.OrdererBlockMetadata.last_config', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='consenter_metadata', full_name='common.OrdererBlockMetadata.consenter_metadata', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=892,
+  serialized_end=983,
 )
 
 _METADATA.fields_by_name['signatures'].message_type = _METADATASIGNATURE
@@ -658,6 +717,7 @@ _PAYLOAD.fields_by_name['header'].message_type = _HEADER
 _BLOCK.fields_by_name['header'].message_type = _BLOCKHEADER
 _BLOCK.fields_by_name['data'].message_type = _BLOCKDATA
 _BLOCK.fields_by_name['metadata'].message_type = _BLOCKMETADATA
+_ORDERERBLOCKMETADATA.fields_by_name['last_config'].message_type = _LASTCONFIG
 DESCRIPTOR.message_types_by_name['LastConfig'] = _LASTCONFIG
 DESCRIPTOR.message_types_by_name['Metadata'] = _METADATA
 DESCRIPTOR.message_types_by_name['MetadataSignature'] = _METADATASIGNATURE
@@ -670,9 +730,11 @@ DESCRIPTOR.message_types_by_name['Block'] = _BLOCK
 DESCRIPTOR.message_types_by_name['BlockHeader'] = _BLOCKHEADER
 DESCRIPTOR.message_types_by_name['BlockData'] = _BLOCKDATA
 DESCRIPTOR.message_types_by_name['BlockMetadata'] = _BLOCKMETADATA
+DESCRIPTOR.message_types_by_name['OrdererBlockMetadata'] = _ORDERERBLOCKMETADATA
 DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
 DESCRIPTOR.enum_types_by_name['HeaderType'] = _HEADERTYPE
 DESCRIPTOR.enum_types_by_name['BlockMetadataIndex'] = _BLOCKMETADATAINDEX
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 LastConfig = _reflection.GeneratedProtocolMessageType('LastConfig', (_message.Message,), dict(
   DESCRIPTOR = _LASTCONFIG,
@@ -758,17 +820,18 @@ BlockMetadata = _reflection.GeneratedProtocolMessageType('BlockMetadata', (_mess
   ))
 _sym_db.RegisterMessage(BlockMetadata)
 
+OrdererBlockMetadata = _reflection.GeneratedProtocolMessageType('OrdererBlockMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _ORDERERBLOCKMETADATA,
+  __module__ = 'common.common_pb2'
+  # @@protoc_insertion_point(class_scope:common.OrdererBlockMetadata)
+  ))
+_sym_db.RegisterMessage(OrdererBlockMetadata)
+
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric/protos/common'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-except ImportError:
-  pass
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ.github.com/hyperledger/fabric-protos-go/common'))
+_BLOCKMETADATAINDEX.values_by_name["LAST_CONFIG"].has_options = True
+_BLOCKMETADATAINDEX.values_by_name["LAST_CONFIG"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\010\001'))
+_BLOCKMETADATAINDEX.values_by_name["ORDERER"].has_options = True
+_BLOCKMETADATAINDEX.values_by_name["ORDERER"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\010\001'))
 # @@protoc_insertion_point(module_scope)

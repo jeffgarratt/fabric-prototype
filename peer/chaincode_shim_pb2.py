@@ -22,10 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='peer/chaincode_shim.proto',
   package='protos',
   syntax='proto3',
-  serialized_pb=_b('\n\x19peer/chaincode_shim.proto\x12\x06protos\x1a\x1apeer/chaincode_event.proto\x1a\x13peer/proposal.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x04\n\x10\x43haincodeMessage\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x1d.protos.ChaincodeMessage.Type\x12-\n\ttimestamp\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0f\n\x07payload\x18\x03 \x01(\x0c\x12\x0c\n\x04txid\x18\x04 \x01(\t\x12\"\n\x08proposal\x18\x05 \x01(\x0b\x32\x10.protos.Proposal\x12/\n\x0f\x63haincode_event\x18\x06 \x01(\x0b\x32\x16.protos.ChaincodeEvent\"\xc7\x02\n\x04Type\x12\r\n\tUNDEFINED\x10\x00\x12\x0c\n\x08REGISTER\x10\x01\x12\x0e\n\nREGISTERED\x10\x02\x12\x08\n\x04INIT\x10\x03\x12\t\n\x05READY\x10\x04\x12\x0f\n\x0bTRANSACTION\x10\x05\x12\r\n\tCOMPLETED\x10\x06\x12\t\n\x05\x45RROR\x10\x07\x12\r\n\tGET_STATE\x10\x08\x12\r\n\tPUT_STATE\x10\t\x12\r\n\tDEL_STATE\x10\n\x12\x14\n\x10INVOKE_CHAINCODE\x10\x0b\x12\x0c\n\x08RESPONSE\x10\r\x12\x16\n\x12GET_STATE_BY_RANGE\x10\x0e\x12\x14\n\x10GET_QUERY_RESULT\x10\x0f\x12\x14\n\x10QUERY_STATE_NEXT\x10\x10\x12\x15\n\x11QUERY_STATE_CLOSE\x10\x11\x12\r\n\tKEEPALIVE\x10\x12\x12\x17\n\x13GET_HISTORY_FOR_KEY\x10\x13\"*\n\x0cPutStateInfo\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\"3\n\x0fGetStateByRange\x12\x10\n\x08startKey\x18\x01 \x01(\t\x12\x0e\n\x06\x65ndKey\x18\x02 \x01(\t\"\x1f\n\x0eGetQueryResult\x12\r\n\x05query\x18\x01 \x01(\t\"\x1f\n\x10GetHistoryForKey\x12\x0b\n\x03key\x18\x01 \x01(\t\"\x1c\n\x0eQueryStateNext\x12\n\n\x02id\x18\x01 \x01(\t\"\x1d\n\x0fQueryStateClose\x12\n\n\x02id\x18\x01 \x01(\t\"0\n\x12QueryStateKeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\"g\n\x12QueryStateResponse\x12\x33\n\x0fkeys_and_values\x18\x01 \x03(\x0b\x32\x1a.protos.QueryStateKeyValue\x12\x10\n\x08has_more\x18\x02 \x01(\x08\x12\n\n\x02id\x18\x03 \x01(\t2X\n\x10\x43haincodeSupport\x12\x44\n\x08Register\x12\x18.protos.ChaincodeMessage\x1a\x18.protos.ChaincodeMessage\"\x00(\x01\x30\x01\x42O\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peerb\x06proto3')
+  serialized_pb=_b('\n\x19peer/chaincode_shim.proto\x12\x06protos\x1a\x1apeer/chaincode_event.proto\x1a\x13peer/proposal.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x05\n\x10\x43haincodeMessage\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x1d.protos.ChaincodeMessage.Type\x12-\n\ttimestamp\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0f\n\x07payload\x18\x03 \x01(\x0c\x12\x0c\n\x04txid\x18\x04 \x01(\t\x12(\n\x08proposal\x18\x05 \x01(\x0b\x32\x16.protos.SignedProposal\x12/\n\x0f\x63haincode_event\x18\x06 \x01(\x0b\x32\x16.protos.ChaincodeEvent\x12\x12\n\nchannel_id\x18\x07 \x01(\t\"\x92\x03\n\x04Type\x12\r\n\tUNDEFINED\x10\x00\x12\x0c\n\x08REGISTER\x10\x01\x12\x0e\n\nREGISTERED\x10\x02\x12\x08\n\x04INIT\x10\x03\x12\t\n\x05READY\x10\x04\x12\x0f\n\x0bTRANSACTION\x10\x05\x12\r\n\tCOMPLETED\x10\x06\x12\t\n\x05\x45RROR\x10\x07\x12\r\n\tGET_STATE\x10\x08\x12\r\n\tPUT_STATE\x10\t\x12\r\n\tDEL_STATE\x10\n\x12\x14\n\x10INVOKE_CHAINCODE\x10\x0b\x12\x0c\n\x08RESPONSE\x10\r\x12\x16\n\x12GET_STATE_BY_RANGE\x10\x0e\x12\x14\n\x10GET_QUERY_RESULT\x10\x0f\x12\x14\n\x10QUERY_STATE_NEXT\x10\x10\x12\x15\n\x11QUERY_STATE_CLOSE\x10\x11\x12\r\n\tKEEPALIVE\x10\x12\x12\x17\n\x13GET_HISTORY_FOR_KEY\x10\x13\x12\x16\n\x12GET_STATE_METADATA\x10\x14\x12\x16\n\x12PUT_STATE_METADATA\x10\x15\x12\x19\n\x15GET_PRIVATE_DATA_HASH\x10\x16\"+\n\x08GetState\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x12\n\ncollection\x18\x02 \x01(\t\"3\n\x10GetStateMetadata\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x12\n\ncollection\x18\x02 \x01(\t\":\n\x08PutState\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x12\n\ncollection\x18\x03 \x01(\t\"\\\n\x10PutStateMetadata\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x12\n\ncollection\x18\x03 \x01(\t\x12\'\n\x08metadata\x18\x04 \x01(\x0b\x32\x15.protos.StateMetadata\"+\n\x08\x44\x65lState\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x12\n\ncollection\x18\x02 \x01(\t\"Y\n\x0fGetStateByRange\x12\x10\n\x08startKey\x18\x01 \x01(\t\x12\x0e\n\x06\x65ndKey\x18\x02 \x01(\t\x12\x12\n\ncollection\x18\x03 \x01(\t\x12\x10\n\x08metadata\x18\x04 \x01(\x0c\"E\n\x0eGetQueryResult\x12\r\n\x05query\x18\x01 \x01(\t\x12\x12\n\ncollection\x18\x02 \x01(\t\x12\x10\n\x08metadata\x18\x03 \x01(\x0c\"3\n\rQueryMetadata\x12\x10\n\x08pageSize\x18\x01 \x01(\x05\x12\x10\n\x08\x62ookmark\x18\x02 \x01(\t\"\x1f\n\x10GetHistoryForKey\x12\x0b\n\x03key\x18\x01 \x01(\t\"\x1c\n\x0eQueryStateNext\x12\n\n\x02id\x18\x01 \x01(\t\"\x1d\n\x0fQueryStateClose\x12\n\n\x02id\x18\x01 \x01(\t\"\'\n\x10QueryResultBytes\x12\x13\n\x0bresultBytes\x18\x01 \x01(\x0c\"j\n\rQueryResponse\x12)\n\x07results\x18\x01 \x03(\x0b\x32\x18.protos.QueryResultBytes\x12\x10\n\x08has_more\x18\x02 \x01(\x08\x12\n\n\x02id\x18\x03 \x01(\t\x12\x10\n\x08metadata\x18\x04 \x01(\x0c\"H\n\x15QueryResponseMetadata\x12\x1d\n\x15\x66\x65tched_records_count\x18\x01 \x01(\x05\x12\x10\n\x08\x62ookmark\x18\x02 \x01(\t\"/\n\rStateMetadata\x12\x0f\n\x07metakey\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\"=\n\x13StateMetadataResult\x12&\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x15.protos.StateMetadata2V\n\x10\x43haincodeSupport\x12\x42\n\x08Register\x12\x18.protos.ChaincodeMessage\x1a\x18.protos.ChaincodeMessage(\x01\x30\x01\x32N\n\tChaincode\x12\x41\n\x07\x43onnect\x12\x18.protos.ChaincodeMessage\x1a\x18.protos.ChaincodeMessage(\x01\x30\x01\x42R\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peerb\x06proto3')
   ,
   dependencies=[peer_dot_chaincode__event__pb2.DESCRIPTOR,peer_dot_proposal__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -111,11 +110,23 @@ _CHAINCODEMESSAGE_TYPE = _descriptor.EnumDescriptor(
       name='GET_HISTORY_FOR_KEY', index=18, number=19,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GET_STATE_METADATA', index=19, number=20,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PUT_STATE_METADATA', index=20, number=21,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GET_PRIVATE_DATA_HASH', index=21, number=22,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=349,
-  serialized_end=676,
+  serialized_start=375,
+  serialized_end=777,
 )
 _sym_db.RegisterEnumDescriptor(_CHAINCODEMESSAGE_TYPE)
 
@@ -133,42 +144,49 @@ _CHAINCODEMESSAGE = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='timestamp', full_name='protos.ChaincodeMessage.timestamp', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload', full_name='protos.ChaincodeMessage.payload', index=2,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='txid', full_name='protos.ChaincodeMessage.txid', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='proposal', full_name='protos.ChaincodeMessage.proposal', index=4,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='chaincode_event', full_name='protos.ChaincodeMessage.chaincode_event', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='channel_id', full_name='protos.ChaincodeMessage.channel_id', index=6,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -183,31 +201,31 @@ _CHAINCODEMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=120,
-  serialized_end=676,
+  serialized_end=777,
 )
 
 
-_PUTSTATEINFO = _descriptor.Descriptor(
-  name='PutStateInfo',
-  full_name='protos.PutStateInfo',
+_GETSTATE = _descriptor.Descriptor(
+  name='GetState',
+  full_name='protos.GetState',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='protos.PutStateInfo.key', index=0,
+      name='key', full_name='protos.GetState.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='protos.PutStateInfo.value', index=1,
-      number=2, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
+      name='collection', full_name='protos.GetState.collection', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -220,8 +238,174 @@ _PUTSTATEINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=678,
-  serialized_end=720,
+  serialized_start=779,
+  serialized_end=822,
+)
+
+
+_GETSTATEMETADATA = _descriptor.Descriptor(
+  name='GetStateMetadata',
+  full_name='protos.GetStateMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='protos.GetStateMetadata.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.GetStateMetadata.collection', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=824,
+  serialized_end=875,
+)
+
+
+_PUTSTATE = _descriptor.Descriptor(
+  name='PutState',
+  full_name='protos.PutState',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='protos.PutState.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='protos.PutState.value', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.PutState.collection', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=877,
+  serialized_end=935,
+)
+
+
+_PUTSTATEMETADATA = _descriptor.Descriptor(
+  name='PutStateMetadata',
+  full_name='protos.PutStateMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='protos.PutStateMetadata.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.PutStateMetadata.collection', index=1,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='metadata', full_name='protos.PutStateMetadata.metadata', index=2,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=937,
+  serialized_end=1029,
+)
+
+
+_DELSTATE = _descriptor.Descriptor(
+  name='DelState',
+  full_name='protos.DelState',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='protos.DelState.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.DelState.collection', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1031,
+  serialized_end=1074,
 )
 
 
@@ -238,14 +422,28 @@ _GETSTATEBYRANGE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='endKey', full_name='protos.GetStateByRange.endKey', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.GetStateByRange.collection', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='metadata', full_name='protos.GetStateByRange.metadata', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -258,8 +456,8 @@ _GETSTATEBYRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=722,
-  serialized_end=773,
+  serialized_start=1076,
+  serialized_end=1165,
 )
 
 
@@ -276,7 +474,21 @@ _GETQUERYRESULT = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='collection', full_name='protos.GetQueryResult.collection', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='metadata', full_name='protos.GetQueryResult.metadata', index=2,
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -289,8 +501,46 @@ _GETQUERYRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=775,
-  serialized_end=806,
+  serialized_start=1167,
+  serialized_end=1236,
+)
+
+
+_QUERYMETADATA = _descriptor.Descriptor(
+  name='QueryMetadata',
+  full_name='protos.QueryMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='pageSize', full_name='protos.QueryMetadata.pageSize', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='bookmark', full_name='protos.QueryMetadata.bookmark', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1238,
+  serialized_end=1289,
 )
 
 
@@ -307,7 +557,7 @@ _GETHISTORYFORKEY = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -320,8 +570,8 @@ _GETHISTORYFORKEY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=808,
-  serialized_end=839,
+  serialized_start=1291,
+  serialized_end=1322,
 )
 
 
@@ -338,7 +588,7 @@ _QUERYSTATENEXT = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -351,8 +601,8 @@ _QUERYSTATENEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=841,
-  serialized_end=869,
+  serialized_start=1324,
+  serialized_end=1352,
 )
 
 
@@ -369,7 +619,7 @@ _QUERYSTATECLOSE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -382,32 +632,25 @@ _QUERYSTATECLOSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=871,
-  serialized_end=900,
+  serialized_start=1354,
+  serialized_end=1383,
 )
 
 
-_QUERYSTATEKEYVALUE = _descriptor.Descriptor(
-  name='QueryStateKeyValue',
-  full_name='protos.QueryStateKeyValue',
+_QUERYRESULTBYTES = _descriptor.Descriptor(
+  name='QueryResultBytes',
+  full_name='protos.QueryResultBytes',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='protos.QueryStateKeyValue.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='protos.QueryStateKeyValue.value', index=1,
-      number=2, type=12, cpp_type=9, label=1,
+      name='resultBytes', full_name='protos.QueryResultBytes.resultBytes', index=0,
+      number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -420,39 +663,46 @@ _QUERYSTATEKEYVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=902,
-  serialized_end=950,
+  serialized_start=1385,
+  serialized_end=1424,
 )
 
 
-_QUERYSTATERESPONSE = _descriptor.Descriptor(
-  name='QueryStateResponse',
-  full_name='protos.QueryStateResponse',
+_QUERYRESPONSE = _descriptor.Descriptor(
+  name='QueryResponse',
+  full_name='protos.QueryResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='keys_and_values', full_name='protos.QueryStateResponse.keys_and_values', index=0,
+      name='results', full_name='protos.QueryResponse.results', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='has_more', full_name='protos.QueryStateResponse.has_more', index=1,
+      name='has_more', full_name='protos.QueryResponse.has_more', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='id', full_name='protos.QueryStateResponse.id', index=2,
+      name='id', full_name='protos.QueryResponse.id', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='metadata', full_name='protos.QueryResponse.metadata', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -465,25 +715,143 @@ _QUERYSTATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=952,
-  serialized_end=1055,
+  serialized_start=1426,
+  serialized_end=1532,
+)
+
+
+_QUERYRESPONSEMETADATA = _descriptor.Descriptor(
+  name='QueryResponseMetadata',
+  full_name='protos.QueryResponseMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='fetched_records_count', full_name='protos.QueryResponseMetadata.fetched_records_count', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='bookmark', full_name='protos.QueryResponseMetadata.bookmark', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1534,
+  serialized_end=1606,
+)
+
+
+_STATEMETADATA = _descriptor.Descriptor(
+  name='StateMetadata',
+  full_name='protos.StateMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='metakey', full_name='protos.StateMetadata.metakey', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='protos.StateMetadata.value', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1608,
+  serialized_end=1655,
+)
+
+
+_STATEMETADATARESULT = _descriptor.Descriptor(
+  name='StateMetadataResult',
+  full_name='protos.StateMetadataResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='entries', full_name='protos.StateMetadataResult.entries', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1657,
+  serialized_end=1718,
 )
 
 _CHAINCODEMESSAGE.fields_by_name['type'].enum_type = _CHAINCODEMESSAGE_TYPE
 _CHAINCODEMESSAGE.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_CHAINCODEMESSAGE.fields_by_name['proposal'].message_type = peer_dot_proposal__pb2._PROPOSAL
+_CHAINCODEMESSAGE.fields_by_name['proposal'].message_type = peer_dot_proposal__pb2._SIGNEDPROPOSAL
 _CHAINCODEMESSAGE.fields_by_name['chaincode_event'].message_type = peer_dot_chaincode__event__pb2._CHAINCODEEVENT
 _CHAINCODEMESSAGE_TYPE.containing_type = _CHAINCODEMESSAGE
-_QUERYSTATERESPONSE.fields_by_name['keys_and_values'].message_type = _QUERYSTATEKEYVALUE
+_PUTSTATEMETADATA.fields_by_name['metadata'].message_type = _STATEMETADATA
+_QUERYRESPONSE.fields_by_name['results'].message_type = _QUERYRESULTBYTES
+_STATEMETADATARESULT.fields_by_name['entries'].message_type = _STATEMETADATA
 DESCRIPTOR.message_types_by_name['ChaincodeMessage'] = _CHAINCODEMESSAGE
-DESCRIPTOR.message_types_by_name['PutStateInfo'] = _PUTSTATEINFO
+DESCRIPTOR.message_types_by_name['GetState'] = _GETSTATE
+DESCRIPTOR.message_types_by_name['GetStateMetadata'] = _GETSTATEMETADATA
+DESCRIPTOR.message_types_by_name['PutState'] = _PUTSTATE
+DESCRIPTOR.message_types_by_name['PutStateMetadata'] = _PUTSTATEMETADATA
+DESCRIPTOR.message_types_by_name['DelState'] = _DELSTATE
 DESCRIPTOR.message_types_by_name['GetStateByRange'] = _GETSTATEBYRANGE
 DESCRIPTOR.message_types_by_name['GetQueryResult'] = _GETQUERYRESULT
+DESCRIPTOR.message_types_by_name['QueryMetadata'] = _QUERYMETADATA
 DESCRIPTOR.message_types_by_name['GetHistoryForKey'] = _GETHISTORYFORKEY
 DESCRIPTOR.message_types_by_name['QueryStateNext'] = _QUERYSTATENEXT
 DESCRIPTOR.message_types_by_name['QueryStateClose'] = _QUERYSTATECLOSE
-DESCRIPTOR.message_types_by_name['QueryStateKeyValue'] = _QUERYSTATEKEYVALUE
-DESCRIPTOR.message_types_by_name['QueryStateResponse'] = _QUERYSTATERESPONSE
+DESCRIPTOR.message_types_by_name['QueryResultBytes'] = _QUERYRESULTBYTES
+DESCRIPTOR.message_types_by_name['QueryResponse'] = _QUERYRESPONSE
+DESCRIPTOR.message_types_by_name['QueryResponseMetadata'] = _QUERYRESPONSEMETADATA
+DESCRIPTOR.message_types_by_name['StateMetadata'] = _STATEMETADATA
+DESCRIPTOR.message_types_by_name['StateMetadataResult'] = _STATEMETADATARESULT
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ChaincodeMessage = _reflection.GeneratedProtocolMessageType('ChaincodeMessage', (_message.Message,), dict(
   DESCRIPTOR = _CHAINCODEMESSAGE,
@@ -492,12 +860,40 @@ ChaincodeMessage = _reflection.GeneratedProtocolMessageType('ChaincodeMessage', 
   ))
 _sym_db.RegisterMessage(ChaincodeMessage)
 
-PutStateInfo = _reflection.GeneratedProtocolMessageType('PutStateInfo', (_message.Message,), dict(
-  DESCRIPTOR = _PUTSTATEINFO,
+GetState = _reflection.GeneratedProtocolMessageType('GetState', (_message.Message,), dict(
+  DESCRIPTOR = _GETSTATE,
   __module__ = 'peer.chaincode_shim_pb2'
-  # @@protoc_insertion_point(class_scope:protos.PutStateInfo)
+  # @@protoc_insertion_point(class_scope:protos.GetState)
   ))
-_sym_db.RegisterMessage(PutStateInfo)
+_sym_db.RegisterMessage(GetState)
+
+GetStateMetadata = _reflection.GeneratedProtocolMessageType('GetStateMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _GETSTATEMETADATA,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.GetStateMetadata)
+  ))
+_sym_db.RegisterMessage(GetStateMetadata)
+
+PutState = _reflection.GeneratedProtocolMessageType('PutState', (_message.Message,), dict(
+  DESCRIPTOR = _PUTSTATE,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.PutState)
+  ))
+_sym_db.RegisterMessage(PutState)
+
+PutStateMetadata = _reflection.GeneratedProtocolMessageType('PutStateMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _PUTSTATEMETADATA,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.PutStateMetadata)
+  ))
+_sym_db.RegisterMessage(PutStateMetadata)
+
+DelState = _reflection.GeneratedProtocolMessageType('DelState', (_message.Message,), dict(
+  DESCRIPTOR = _DELSTATE,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.DelState)
+  ))
+_sym_db.RegisterMessage(DelState)
 
 GetStateByRange = _reflection.GeneratedProtocolMessageType('GetStateByRange', (_message.Message,), dict(
   DESCRIPTOR = _GETSTATEBYRANGE,
@@ -512,6 +908,13 @@ GetQueryResult = _reflection.GeneratedProtocolMessageType('GetQueryResult', (_me
   # @@protoc_insertion_point(class_scope:protos.GetQueryResult)
   ))
 _sym_db.RegisterMessage(GetQueryResult)
+
+QueryMetadata = _reflection.GeneratedProtocolMessageType('QueryMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _QUERYMETADATA,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.QueryMetadata)
+  ))
+_sym_db.RegisterMessage(QueryMetadata)
 
 GetHistoryForKey = _reflection.GeneratedProtocolMessageType('GetHistoryForKey', (_message.Message,), dict(
   DESCRIPTOR = _GETHISTORYFORKEY,
@@ -534,137 +937,90 @@ QueryStateClose = _reflection.GeneratedProtocolMessageType('QueryStateClose', (_
   ))
 _sym_db.RegisterMessage(QueryStateClose)
 
-QueryStateKeyValue = _reflection.GeneratedProtocolMessageType('QueryStateKeyValue', (_message.Message,), dict(
-  DESCRIPTOR = _QUERYSTATEKEYVALUE,
+QueryResultBytes = _reflection.GeneratedProtocolMessageType('QueryResultBytes', (_message.Message,), dict(
+  DESCRIPTOR = _QUERYRESULTBYTES,
   __module__ = 'peer.chaincode_shim_pb2'
-  # @@protoc_insertion_point(class_scope:protos.QueryStateKeyValue)
+  # @@protoc_insertion_point(class_scope:protos.QueryResultBytes)
   ))
-_sym_db.RegisterMessage(QueryStateKeyValue)
+_sym_db.RegisterMessage(QueryResultBytes)
 
-QueryStateResponse = _reflection.GeneratedProtocolMessageType('QueryStateResponse', (_message.Message,), dict(
-  DESCRIPTOR = _QUERYSTATERESPONSE,
+QueryResponse = _reflection.GeneratedProtocolMessageType('QueryResponse', (_message.Message,), dict(
+  DESCRIPTOR = _QUERYRESPONSE,
   __module__ = 'peer.chaincode_shim_pb2'
-  # @@protoc_insertion_point(class_scope:protos.QueryStateResponse)
+  # @@protoc_insertion_point(class_scope:protos.QueryResponse)
   ))
-_sym_db.RegisterMessage(QueryStateResponse)
+_sym_db.RegisterMessage(QueryResponse)
+
+QueryResponseMetadata = _reflection.GeneratedProtocolMessageType('QueryResponseMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _QUERYRESPONSEMETADATA,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.QueryResponseMetadata)
+  ))
+_sym_db.RegisterMessage(QueryResponseMetadata)
+
+StateMetadata = _reflection.GeneratedProtocolMessageType('StateMetadata', (_message.Message,), dict(
+  DESCRIPTOR = _STATEMETADATA,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.StateMetadata)
+  ))
+_sym_db.RegisterMessage(StateMetadata)
+
+StateMetadataResult = _reflection.GeneratedProtocolMessageType('StateMetadataResult', (_message.Message,), dict(
+  DESCRIPTOR = _STATEMETADATARESULT,
+  __module__ = 'peer.chaincode_shim_pb2'
+  # @@protoc_insertion_point(class_scope:protos.StateMetadataResult)
+  ))
+_sym_db.RegisterMessage(StateMetadataResult)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ)github.com/hyperledger/fabric/protos/peer'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerZ,github.com/hyperledger/fabric-protos-go/peer'))
+
+_CHAINCODESUPPORT = _descriptor.ServiceDescriptor(
+  name='ChaincodeSupport',
+  full_name='protos.ChaincodeSupport',
+  file=DESCRIPTOR,
+  index=0,
+  options=None,
+  serialized_start=1720,
+  serialized_end=1806,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='Register',
+    full_name='protos.ChaincodeSupport.Register',
+    index=0,
+    containing_service=None,
+    input_type=_CHAINCODEMESSAGE,
+    output_type=_CHAINCODEMESSAGE,
+    options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_CHAINCODESUPPORT)
+
+DESCRIPTOR.services_by_name['ChaincodeSupport'] = _CHAINCODESUPPORT
 
 
-  class ChaincodeSupportStub(object):
-    """Interface that provides support to chaincode execution. ChaincodeContext
-    provides the context necessary for the server to respond appropriately.
-    """
+_CHAINCODE = _descriptor.ServiceDescriptor(
+  name='Chaincode',
+  full_name='protos.Chaincode',
+  file=DESCRIPTOR,
+  index=1,
+  options=None,
+  serialized_start=1808,
+  serialized_end=1886,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='Connect',
+    full_name='protos.Chaincode.Connect',
+    index=0,
+    containing_service=None,
+    input_type=_CHAINCODEMESSAGE,
+    output_type=_CHAINCODEMESSAGE,
+    options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_CHAINCODE)
 
-    def __init__(self, channel):
-      """Constructor.
+DESCRIPTOR.services_by_name['Chaincode'] = _CHAINCODE
 
-      Args:
-        channel: A grpc.Channel.
-      """
-      self.Register = channel.stream_stream(
-          '/protos.ChaincodeSupport/Register',
-          request_serializer=ChaincodeMessage.SerializeToString,
-          response_deserializer=ChaincodeMessage.FromString,
-          )
-
-
-  class ChaincodeSupportServicer(object):
-    """Interface that provides support to chaincode execution. ChaincodeContext
-    provides the context necessary for the server to respond appropriately.
-    """
-
-    def Register(self, request_iterator, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-
-  def add_ChaincodeSupportServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-        'Register': grpc.stream_stream_rpc_method_handler(
-            servicer.Register,
-            request_deserializer=ChaincodeMessage.FromString,
-            response_serializer=ChaincodeMessage.SerializeToString,
-        ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-        'protos.ChaincodeSupport', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
-  class BetaChaincodeSupportServicer(object):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This class was generated
-    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    """Interface that provides support to chaincode execution. ChaincodeContext
-    provides the context necessary for the server to respond appropriately.
-    """
-    def Register(self, request_iterator, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-
-
-  class BetaChaincodeSupportStub(object):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This class was generated
-    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    """Interface that provides support to chaincode execution. ChaincodeContext
-    provides the context necessary for the server to respond appropriately.
-    """
-    def Register(self, request_iterator, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-
-
-  def beta_create_ChaincodeSupport_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This function was
-    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
-    request_deserializers = {
-      ('protos.ChaincodeSupport', 'Register'): ChaincodeMessage.FromString,
-    }
-    response_serializers = {
-      ('protos.ChaincodeSupport', 'Register'): ChaincodeMessage.SerializeToString,
-    }
-    method_implementations = {
-      ('protos.ChaincodeSupport', 'Register'): face_utilities.stream_stream_inline(servicer.Register),
-    }
-    server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
-    return beta_implementations.server(method_implementations, options=server_options)
-
-
-  def beta_create_ChaincodeSupport_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This function was
-    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
-    request_serializers = {
-      ('protos.ChaincodeSupport', 'Register'): ChaincodeMessage.SerializeToString,
-    }
-    response_deserializers = {
-      ('protos.ChaincodeSupport', 'Register'): ChaincodeMessage.FromString,
-    }
-    cardinalities = {
-      'Register': cardinality.Cardinality.STREAM_STREAM,
-    }
-    stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
-    return beta_implementations.dynamic_stub(channel, 'protos.ChaincodeSupport', cardinalities, options=stub_options)
-except ImportError:
-  pass
 # @@protoc_insertion_point(module_scope)

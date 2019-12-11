@@ -19,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='peer/chaincode_event.proto',
   package='protos',
   syntax='proto3',
-  serialized_pb=_b('\n\x1apeer/chaincode_event.proto\x12\x06protos\"Z\n\x0e\x43haincodeEvent\x12\x14\n\x0c\x63haincode_id\x18\x01 \x01(\t\x12\r\n\x05tx_id\x18\x02 \x01(\t\x12\x12\n\nevent_name\x18\x03 \x01(\t\x12\x0f\n\x07payload\x18\x04 \x01(\x0c\x42\x66\n\"org.hyperledger.fabric.protos.peerB\x15\x43haincodeEventPackageZ)github.com/hyperledger/fabric/protos/peerb\x06proto3')
+  serialized_pb=_b('\n\x1apeer/chaincode_event.proto\x12\x06protos\"Z\n\x0e\x43haincodeEvent\x12\x14\n\x0c\x63haincode_id\x18\x01 \x01(\t\x12\r\n\x05tx_id\x18\x02 \x01(\t\x12\x12\n\nevent_name\x18\x03 \x01(\t\x12\x0f\n\x07payload\x18\x04 \x01(\x0c\x42i\n\"org.hyperledger.fabric.protos.peerB\x15\x43haincodeEventPackageZ,github.com/hyperledger/fabric-protos-go/peerb\x06proto3')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -39,28 +38,28 @@ _CHAINCODEEVENT = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tx_id', full_name='protos.ChaincodeEvent.tx_id', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='event_name', full_name='protos.ChaincodeEvent.event_name', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload', full_name='protos.ChaincodeEvent.payload', index=3,
       number=4, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -78,6 +77,7 @@ _CHAINCODEEVENT = _descriptor.Descriptor(
 )
 
 DESCRIPTOR.message_types_by_name['ChaincodeEvent'] = _CHAINCODEEVENT
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ChaincodeEvent = _reflection.GeneratedProtocolMessageType('ChaincodeEvent', (_message.Message,), dict(
   DESCRIPTOR = _CHAINCODEEVENT,
@@ -88,15 +88,5 @@ _sym_db.RegisterMessage(ChaincodeEvent)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerB\025ChaincodeEventPackageZ)github.com/hyperledger/fabric/protos/peer'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-except ImportError:
-  pass
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\"org.hyperledger.fabric.protos.peerB\025ChaincodeEventPackageZ,github.com/hyperledger/fabric-protos-go/peer'))
 # @@protoc_insertion_point(module_scope)

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common/configuration.proto',
   package='common',
   syntax='proto3',
-  serialized_pb=_b('\n\x1a\x63ommon/configuration.proto\x12\x06\x63ommon\" \n\x10HashingAlgorithm\x12\x0c\n\x04name\x18\x01 \x01(\t\"*\n\x19\x42lockDataHashingStructure\x12\r\n\x05width\x18\x01 \x01(\r\"%\n\x10OrdererAddresses\x12\x11\n\taddresses\x18\x01 \x03(\t\"\x1a\n\nConsortium\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x95\x01\n\x0c\x43\x61pabilities\x12<\n\x0c\x63\x61pabilities\x18\x01 \x03(\x0b\x32&.common.Capabilities.CapabilitiesEntry\x1aG\n\x11\x43\x61pabilitiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.common.Capability:\x02\x38\x01\"\x0c\n\nCapabilityBS\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric/protos/commonb\x06proto3')
+  serialized_pb=_b('\n\x1a\x63ommon/configuration.proto\x12\x06\x63ommon\" \n\x10HashingAlgorithm\x12\x0c\n\x04name\x18\x01 \x01(\t\"*\n\x19\x42lockDataHashingStructure\x12\r\n\x05width\x18\x01 \x01(\r\"%\n\x10OrdererAddresses\x12\x11\n\taddresses\x18\x01 \x03(\t\"\x1a\n\nConsortium\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x95\x01\n\x0c\x43\x61pabilities\x12<\n\x0c\x63\x61pabilities\x18\x01 \x03(\x0b\x32&.common.Capabilities.CapabilitiesEntry\x1aG\n\x11\x43\x61pabilitiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.common.Capability:\x02\x38\x01\"\x0c\n\nCapabilityBV\n$org.hyperledger.fabric.protos.commonZ.github.com/hyperledger/fabric-protos-go/commonb\x06proto3')
 )
 
 
@@ -38,7 +38,7 @@ _HASHINGALGORITHM = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -69,7 +69,7 @@ _BLOCKDATAHASHINGSTRUCTURE = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -100,7 +100,7 @@ _ORDERERADDRESSES = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -131,7 +131,7 @@ _CONSORTIUM = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -162,14 +162,14 @@ _CAPABILITIES_CAPABILITIESENTRY = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='common.Capabilities.CapabilitiesEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -199,7 +199,7 @@ _CAPABILITIES = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -303,17 +303,7 @@ _sym_db.RegisterMessage(Capability)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ+github.com/hyperledger/fabric/protos/common'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n$org.hyperledger.fabric.protos.commonZ.github.com/hyperledger/fabric-protos-go/common'))
 _CAPABILITIES_CAPABILITIESENTRY.has_options = True
 _CAPABILITIES_CAPABILITIESENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-except ImportError:
-  pass
 # @@protoc_insertion_point(module_scope)
