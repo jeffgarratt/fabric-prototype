@@ -604,6 +604,16 @@ def step_impl(context, orderer_snapshot_alias):
                                              snapshot_name=orderer_snapshot_alias)
 
 
+@given(u'we take snapshot "{orderer_snapshot_alias}" for the following orderers')
+def step_impl(context, orderer_snapshot_alias):
+    contextHelper = ContextHelper.GetHelper(context=context)
+    bootstrap_helper = contextHelper.get_bootstrap_helper()
+    assert "composition" in context, "No composition found in context"
+    composition = context.composition
+    orderers_to_snapshot = [row['Orderer'] for row in context.table.rows]
+    bootstrap_helper.snapshot_orderers(orderers_to_snapshot=orderers_to_snapshot, context=context, composition=composition,
+                                       snapshot_name=orderer_snapshot_alias)
+
 @given(u'we take snapshot "{peer_snapshot_alias}" for the following peers')
 def step_impl(context, peer_snapshot_alias):
     contextHelper = ContextHelper.GetHelper(context=context)
@@ -614,3 +624,4 @@ def step_impl(context, peer_snapshot_alias):
     peers_to_snapshot = [row['Peer'] for row in context.table.rows]
     bootstrap_helper.snapshot_peers(peers_to_snapshot=peers_to_snapshot, context=context, composition=composition,
                                     snapshot_name=peer_snapshot_alias)
+

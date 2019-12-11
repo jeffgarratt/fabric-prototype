@@ -380,10 +380,15 @@ Feature: Disaster Recovery
       And I wait "5" seconds
 
 
+      Given all users disconnect from orderers
+      And we take snapshot "snapshot1" for the following orderers:
+        | Orderer  |
+        | orderer0 |
+
       And I quit
 
-      Given all users disconnect from orderers
-      And the ordererBootstrapAdmin takes a snapshot "snapshot1" of the orderer system
+
+#      And the ordererBootstrapAdmin takes a snapshot "snapshot1" of the orderer system
       And user "configAdminPeerOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
       And user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
 

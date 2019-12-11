@@ -853,12 +853,12 @@ class BootstrapHelper:
             current_config_group = current_config_group.groups[group_id]
         return current_config_group
 
-    def _orderer_system_snapshot_template_method(self, method_name, context, composition, snapshot_name, snapshot_folder_exist):
+    def _orderer_system_snapshot_template_method(self, method_name, orderers, context, composition, snapshot_name, snapshot_folder_exist):
         'Performs the provided snapshot method for the orderer system.'
         orderer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, OrdererGensisBlockCompositionCallback.DISCRIMINATOR)
         assert orderer_callback_helper, "No Orderer callback helper currently registered in context"
         with ServicesStoppedAndReadyForSnapshot(callback_helper=orderer_callback_helper, snapshot_name=snapshot_name,
-                                                composition=composition, compose_services=orderer_callback_helper.get_service_list(composition=composition),
+                                                composition=composition, compose_services=orderers,
                                                 snapshot_folder_exist=snapshot_folder_exist) as ctxMgr:
             for compose_service in ctxMgr.compose_services:
                 func = getattr(orderer_callback_helper, method_name)
@@ -875,12 +875,27 @@ class BootstrapHelper:
                         func(project_name=composition.projectName, compose_service=compose_service, snapshot=snapshot_name)
 
     def snapshot_orderer_system(self, context, composition, snapshot_name):
-        'Snapshots the orderer system.'
-        self._orderer_system_snapshot_template_method(method_name="snapshot_filestore", context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=False)
+        'Snapshots the orderer system.  This was a pre Raft system operation, as before raft, it only made sense to snapshot the entire system.'
+        orderer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, OrdererGensisBlockCompositionCallback.DISCRIMINATOR)
+        assert orderer_callback_helper, "No Orderer callback helper currently registered in context"
+        all_orderers=orderer_callback_helper.get_service_list(composition=composition)
+        self._orderer_system_snapshot_template_method(method_name="snapshot_filestore", orderers=all_orderers, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=False)
+
 
     def restore_orderer_system_using_snapshot(self, context, composition, snapshot_name):
         'Restores the orderer system using a supplied snapshot name.'
-        self._orderer_system_snapshot_template_method(method_name="restore_filestore_snapshot", context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=True)
+        orderer_callback_helper = composition.GetCallbackInContextByDiscriminator(context, OrdererGensisBlockCompositionCallback.DISCRIMINATOR)
+        assert orderer_callback_helper, "No Orderer callback helper currently registered in context"
+        all_orderers=orderer_callback_helper.get_service_list(composition=composition)
+        self._orderer_system_snapshot_template_method(method_name="restore_filestore_snapshot", orderers=all_orderers, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=True)
+
+    def snapshot_orderers(self, orderers_to_snapshot, context, composition, snapshot_name):
+        'Snapshots the supplied orderers.'
+        self._orderer_system_snapshot_template_method(method_name="snapshot_filestore", orderers=orderers_to_snapshot, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=False)
+
+    def restore_orderers_using_snapshot(self, orderers_to_restore, context, composition, snapshot_name):
+        'Restores the specified orderers system using a supplied snapshot name.'
+        self._orderer_system_snapshot_template_method(method_name="restore_filestore_snapshot", orderers=orderers_to_restore, context=context, composition=composition, snapshot_name=snapshot_name, snapshot_folder_exist=True)
 
     def _snapshot_peer(self, peer_callback_helper, method_name, compose_service, context, composition, snapshot_name, composition_config_as_yaml):
         'Performs the provided snapshot method for the peer compose_service provided.'
