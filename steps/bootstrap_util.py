@@ -1558,6 +1558,40 @@ def create_orderer_consortium_config_update(orderer_system_chain_id, orderer_cha
     # configUpdateEnvelope = common_dot_configtx_pb2.ConfigUpdateEnvelope(config_update=configUpdate.SerializeToString(), signatures =[])
     return config_update
 
+def create_orderer_consensus_state_config_update(orderer_system_chain_id, orderer_channel_group, consensusState):
+    'Creates the orderer config update for modifying the consensus state (NORMAL|MAINTENANCE)'
+    # First determine read set
+    read_set = common_dot_configtx_pb2.ConfigGroup()
+    # do NOT believe I need to increment the /Channel version, so simply copying from provided.
+    read_set.CopyFrom(orderer_channel_group)
+    curr_consensustype_config_value = orderer_channel_group.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE]
+
+    write_set = common_dot_configtx_pb2.ConfigGroup()
+    write_set.CopyFrom(read_set)
+    # Have to clear the values
+    write_set.values.clear()
+    # Can only update 1 group, so pop Consortiums if defined
+    write_set.groups.pop(ConsortiumsGroup, None)
+    # Remove any groups under /Channel/Orderer
+    write_set.groups[OrdererGroup].groups.clear()
+
+    new_consensustype = orderer_dot_configuration_pb2.ConsensusType()
+    new_consensustype.ParseFromString(curr_consensustype_config_value.value)
+    # Change to the desired state
+    new_consensustype.state = orderer_dot_configuration_pb2.ConsensusType.State.Value(consensusState)
+    # Can only contain the one value
+    write_set.groups[OrdererGroup].values.clear()
+    write_set.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].CopyFrom(curr_consensustype_config_value)
+    write_set.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].value = new_consensustype.SerializeToString()
+    write_set.groups[OrdererGroup].values[BootstrapHelper.KEY_CONSENSUS_TYPE].version += 1
+
+    config_update = common_dot_configtx_pb2.ConfigUpdate(channel_id=orderer_system_chain_id,
+                                                         read_set=read_set,
+                                                         write_set=write_set)
+    # configUpdateEnvelope = common_dot_configtx_pb2.ConfigUpdateEnvelope(config_update=configUpdate.SerializeToString(), signatures =[])
+    return config_update
+
+
 def create_channel_config_update(system_channel_version, channel_id, consortium_config_group):
     read_set = common_dot_configtx_pb2.ConfigGroup()
     read_set.version = system_channel_version

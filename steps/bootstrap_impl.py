@@ -13,16 +13,17 @@
 # limitations under the License.
 #
 
-from collections import defaultdict
+import ast
+import time
 from behave import *
-from contexthelper import ContextHelper
-import endorser_util
+from collections import defaultdict
+
 import bootstrap_util
-import orderer_util
 import compose
 import composer
-import time
-import ast
+import endorser_util
+import orderer_util
+from contexthelper import ContextHelper
 
 
 @given(u'the orderer network has organizations')
@@ -146,6 +147,22 @@ def step_impl(context, ordererConfigAdmin, consortiumName, modPolicy):
     consortium = bootstrap_util.create_consortium(context=context, consortium_name=consortiumName, org_names=orgNames,
                                                   mod_policy=modPolicy)
     ordererConfigAdmin.setTagValue(consortiumName, consortium)
+
+
+@given(u'the orderer config admin "{ordererConfigAdmin}" creates a consensus state update "{consensusStateConfigUpdateName}" using config "{configName}" using orderer system channel ID "{ordererSystemChainIdName}" to change state to "{consensusState}"')
+def step_impl(context, ordererConfigAdmin, consensusStateConfigUpdateName, configName, ordererSystemChainIdName, consensusState):
+    '''
+    channel group/Consortiums/
+    Read the consortiums Group from existing genesis block.
+    '''
+    directory = bootstrap_util.getDirectory(context)
+    ordererConfigAdmin = directory.getUser(ordererConfigAdmin)
+    channel_group = ordererConfigAdmin.getTagValue(configName)
+    orderer_system_chain_id = ordererConfigAdmin.getTagValue(ordererSystemChainIdName)
+    config_groups = []
+    config_update = bootstrap_util.create_orderer_consensus_state_config_update(orderer_system_chain_id, channel_group,
+                                                                                consensusState)
+    ordererConfigAdmin.setTagValue(tagKey=consensusStateConfigUpdateName, tagValue=config_update)
 
 
 @given(u'the orderer config admin "{ordererConfigAdmin}" creates a consortiums config update "{consortiumsConfigUpdateName}" using config "{configName}" using orderer system channel ID "{ordererSystemChainIdName}" to add consortiums')

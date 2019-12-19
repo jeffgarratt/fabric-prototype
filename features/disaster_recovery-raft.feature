@@ -308,6 +308,79 @@ Feature: Disaster Recovery
 #      Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannelFromOtherOrgsPeer" from "peer2" of "1" blocks with "1" messages within "1" seconds
 
 
+      ###########################################################################
+      #
+      # Config_update to system channel for group /Channel/Orderer with new value 'Capabilities'
+      #
+      ###########################################################################
+      Given user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
+      And user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
+      And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer" using config "latestOrdererConfigForCapabilitiesChange" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
+        | Group            | Capabilities |
+        | /Channel/Orderer | V1_4_2       |
+      And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer" using configUpdate "capabilitiesV1.1ConfigUpdateForOrderer"
+
+      And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer" from developers:
+        | Developer              | Cert Alias        |
+        | configAdminOrdererOrg0 | config-admin-cert |
+        | configAdminOrdererOrg1 | config-admin-cert |
+
+      And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer"
+
+      And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateTx1" to orderer "<orderer0>"
+
+      And I wait "<BroadcastWaitTime>" seconds
+
+
+      ###########################################################################
+      #
+      # Config_update to system channel for group /Channel with new value 'Capabilities'
+      #
+      ###########################################################################
+      Given user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForCapabilitiesChange2" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
+      And user "configAdminOrdererOrg0" creates a capabilities config update "capabilitiesV1.1ConfigUpdateForOrderer2" using config "latestOrdererConfigForCapabilitiesChange2" using channel ID "{ordererSystemChannelId}" with mod policy "Admins" to add capabilities:
+        | Group    | Capabilities |
+        | /Channel | V1_4_3       |
+      And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" using configUpdate "capabilitiesV1.1ConfigUpdateForOrderer2"
+
+      And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2" from developers:
+        | Developer              | Cert Alias        |
+        | configAdminOrdererOrg0 | config-admin-cert |
+        | configAdminOrdererOrg1 | config-admin-cert |
+
+      And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "capabilitiesConfigUpdateTx2" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "capabilitiesV1.1ConfigUpdateEnvelopeForOrderer2"
+
+      And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "capabilitiesConfigUpdateTx2" to orderer "<orderer0>"
+
+      And I wait "<BroadcastWaitTime>" seconds
+
+
+      ###########################################################################
+      #
+      # Config_update to system channel to put system into maintenance mode.
+      #
+      ###########################################################################
+      Given user "configAdminOrdererOrg0" retrieves the latest config update "latestOrdererConfigForConensusStateMaint" from orderer "<orderer0>" for channel "{ordererSystemChannelId}"
+      And the orderer config admin "configAdminOrdererOrg0" creates a consensus state update "consensusStateMaintConfigUpdate1" using config "latestOrdererConfigForConensusStateMaint" using orderer system channel ID "ordererSystemChannelId" to change state to "STATE_MAINTENANCE"
+      And the user "configAdminOrdererOrg0" creates a configUpdateEnvelope "consensusStateConfigUpdate1Envelope" using configUpdate "consensusStateMaintConfigUpdate1"
+
+      And the user "configAdminOrdererOrg0" collects signatures for ConfigUpdateEnvelope "consensusStateConfigUpdate1Envelope" from developers:
+        | Developer              | Cert Alias        |
+        | configAdminOrdererOrg0 | config-admin-cert |
+        | configAdminOrdererOrg1 | config-admin-cert |
+
+      And the user "configAdminOrdererOrg0" creates a ConfigUpdate Tx "consensusStateConfigUpdateTx1" using cert alias "config-admin-cert" using signed ConfigUpdateEnvelope "consensusStateConfigUpdate1Envelope"
+
+      And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "consensusStateConfigUpdateTx1" to orderer "<orderer0>"
+
+      And I wait "<BroadcastWaitTime>" seconds
+
+      And I quit
+
+
+
+
+
       # Entry point for invoking on an existing channel
       When user "peer0Admin" creates a chaincode spec "ccSpec" with name "example02" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd" with args
         | funcName | arg1 | arg2 | arg3 | arg4 |
