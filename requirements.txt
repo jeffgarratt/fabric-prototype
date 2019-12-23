@@ -18,7 +18,7 @@ parse==1.8.2
 parse-type==0.4.2
 protobuf==3.4.0
 pycparser==2.18
-pyOpenSSL==17.3.0
+pyOpenSSL==17.5.0
 pysha3==1.0b1
 python-slugify==1.2.4
 PyYAML==3.12
