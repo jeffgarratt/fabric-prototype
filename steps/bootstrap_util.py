@@ -1900,3 +1900,25 @@ def add_org_to_channel(context, directory, requesting_config_admin_nat, signing_
     # Now broadcast to orderer
     broadcast_channel_config_tx(context=context, certAlias=None, composeService=orderer_compose_service, user=requesting_config_admin,
                                 configTxEnvelope=envelope_for_config_update)
+
+def get_channel_names_for_channel(context, user_name, service_name, channel_id_or_ref):
+    directory = getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    (channel_id,) = get_args_for_user([channel_id_or_ref], user)
+    deliverer_stream_helper = user.getDelivererStreamHelper(context, service_name)
+    deliverer_stream_helper.seekToRange(chainID=channel_id, start="Oldest", end="Newest")
+    blocks = deliverer_stream_helper.getBlocks()
+    block_wrappers = [BlockWrapper(b) for b in blocks]
+    # Get all of the ORDERER_TRANSACTION type envelopes to get the list of channels referenced.
+    envx_list = [envx for bw in block_wrappers for envx in bw.envx_list if envx.get_channel_header_type_name()=="ORDERER_TRANSACTION"]
+    channel_names_duplicates = []
+    for envx in envx_list:
+        env = common_dot_common_pb2.Envelope()
+        env.ParseFromString(envx.payload.data)
+        payload = common_dot_common_pb2.Payload()
+        payload.ParseFromString(env.payload)
+        ch = common_dot_common_pb2.ChannelHeader()
+        ch.ParseFromString(payload.header.channel_header)
+        channel_names_duplicates.append(ch.channel_id)
+    channel_ids = list(dict.fromkeys(channel_names_duplicates))
+    return channel_ids

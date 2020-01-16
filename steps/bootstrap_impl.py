@@ -642,3 +642,9 @@ def step_impl(context, peer_snapshot_alias):
     bootstrap_helper.snapshot_peers(peers_to_snapshot=peers_to_snapshot, context=context, composition=composition,
                                     snapshot_name=peer_snapshot_alias)
 
+@given(u'user "{user_name}" retrieves the list of channel names "{channel_names}" from orderer "{service_name}" for orderer system channel "{channel_id_or_ref}"')
+def step_impl(context, user_name, channel_names, service_name, channel_id_or_ref):
+    directory = bootstrap_util.getDirectory(context)
+    user = directory.getUser(userName=user_name)
+    channel_ids = bootstrap_util.get_channel_names_for_channel(context, user_name, service_name, channel_id_or_ref)
+    user.setTagValue(channel_names, channel_ids)

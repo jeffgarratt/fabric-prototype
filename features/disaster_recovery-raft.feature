@@ -155,6 +155,7 @@ Feature: Disaster Recovery
 
       And the user "dev0Org0" using cert alias "consortium1-cert" broadcasts ConfigUpdate Tx "configUpdateTx1" to orderer "<orderer0>"
 
+
     # Sleep as the local orderer needs to bring up the resources that correspond to the new channel
     # For the Kafka orderer, this includes setting up a producer and consumer for the channel's partition
     # Requesting a deliver earlier may result in a SERVICE_UNAVAILABLE response and a connection drop
@@ -374,6 +375,9 @@ Feature: Disaster Recovery
       And the user "configAdminOrdererOrg0" using cert alias "config-admin-cert" broadcasts ConfigUpdate Tx "consensusStateConfigUpdateTx1" to orderer "<orderer0>"
 
       And I wait "<BroadcastWaitTime>" seconds
+
+
+      Given user "configAdminOrdererOrg0" retrieves the list of channel names "channelNamesFromOrdererSystemChannel" from orderer "<orderer0>" for orderer system channel "{ordererSystemChannelId}"
 
       And I quit
 
