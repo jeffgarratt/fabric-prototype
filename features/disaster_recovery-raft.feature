@@ -562,5 +562,5 @@ Feature: Disaster Recovery
 
       Examples: Orderer Options
         | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | FabricBaseVersion |
-        | dc-disaster-recovery-raft.yml                                           | 0                | etcdraft      | 2                | 2                 | orderer0 | orderer1 | orderer2 |                       | amd64-1.4.4            |
+        | dc-disaster-recovery-raft.yml                                           | 1                | etcdraft      | 2                | 2                 | orderer0 | orderer1 | orderer2 |                       | amd64-1.4.4            |
 #        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
