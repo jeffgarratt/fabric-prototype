@@ -561,6 +561,6 @@ Feature: Disaster Recovery
       # TODO: Once events are working, consider listen event listener as well.
 
       Examples: Orderer Options
-        | ComposeFile                                           | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | FabricBaseVersion |
-        | dc-disaster-recovery-raft.yml                                           | 1                | etcdraft      | 2                | 2                 | orderer0 | orderer1 | orderer2 |                       | amd64-1.4.4            |
+        | ComposeFile                   | SystemUpWaitTime | ConsensusType | ChannelJoinDelay | BroadcastWaitTime | orderer0 | orderer1 | orderer2 | Orderer Specific Info | FabricBaseVersion |
+        | dc-disaster-recovery-raft.yml | 1                | etcdraft      | 2                | .25               | orderer0 | orderer1 | orderer2 |                       | 2.0               |
 #        | dc-base.yml  dc-peer-couchdb.yml                      | 10               | solo          | 2                | 2                 | orderer0 | orderer0 | orderer0 |                       | latest            |
