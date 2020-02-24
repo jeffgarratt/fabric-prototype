@@ -379,16 +379,11 @@ Feature: Disaster Recovery
 
       Given user "configAdminOrdererOrg0" retrieves the list of channel names "channelNamesFromOrdererSystemChannel" from orderer "<orderer0>" for orderer system channel "{ordererSystemChannelId}"
 
-      And I quit
 
 
-
-
-
-      # Entry point for invoking on an existing channel
-      When user "peer0Admin" creates a chaincode spec "ccSpec" with name "example02" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd" with args
+      When user "peer0Admin" creates a chaincode spec "ccSpec" with name "fabcar" and version "1.0" of type "GOLANG" for chaincode "github.com/hyperledger/fabric-samples/chaincode/fabcar/go" with args
         | funcName | arg1 | arg2 | arg3 | arg4 |
-        | init     | a    | 100  | b    | 200  |
+#        | init     | a    | 100  | b    | 200  |
 
       # TODO: Will soon need to collect signatures (owners) and create a SignedChaincodeDeploymentSpec which will supplant the payload for installProposal.
 
@@ -405,7 +400,6 @@ Feature: Disaster Recovery
 
       Given user "peer0Admin" gives "ccSpec" to user "peer2Admin" who saves it as "ccSpec"
 
-      # Under the covers, create a deployment spec, etc.
       When user "peer2Admin" using cert alias "peer-admin-cert" creates a install proposal "installProposal1" using chaincode spec "ccSpec"
 
       And user "peer2Admin" using cert alias "peer-admin-cert" sends proposal "installProposal1" to endorsers with timeout of "90" seconds with proposal responses "installProposalResponses":
@@ -415,6 +409,8 @@ Feature: Disaster Recovery
       Then user "peer2Admin" expects proposal responses "installProposalResponses" with status "200" from endorsers:
         | Endorser |
         | peer2    |
+
+
 
 
       Given user "peer0Admin" gives "ccSpec" to user "dev0Org0" who saves it as "ccSpec"
@@ -440,18 +436,23 @@ Feature: Disaster Recovery
         | peer0    |
         | peer2    |
 
+
+
       When the user "configAdminPeerOrg0" creates transaction "instantiateTx1" from proposal "instantiateProposal1" and proposal responses "instantiateProposalResponses" for channel "com.acme.blockchain.jdoe.channel1"
 
       And the user "configAdminPeerOrg0" broadcasts transaction "instantiateTx1" to orderer "<orderer1>"
 
       # Sleep as the local orderer ledger needs to create the block that corresponds to the start number of the seek request
-      And I wait "<BroadcastWaitTime>" seconds
+      And I wait "2" seconds
 
       And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
         | ChainId                           | Start | End |
         | com.acme.blockchain.jdoe.channel1 | 2     | 2   |
 
       Then user "configAdminPeerOrg0" should get a delivery "deliveredInstantiateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
+
+      And I quit
+
 
       # Sleep to allow for chaincode instantiation on the peer
       And I wait "5" seconds

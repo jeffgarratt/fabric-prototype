@@ -1812,22 +1812,23 @@ def getArgsFromContextForUser(context, userName):
     args = []
     if 'table' in context:
         if context.table:
-            # There are function arguments
-            user = directory.getUser(userName)
-            # Allow the user to specify expressions referencing tags in the args list
-            pattern = re.compile('\{(.*)\}$')
-            for arg in context.table[0].cells:
-                m = pattern.match(arg)
-                if m:
-                    # tagName reference found in args list
-                    tagName = m.groups()[0]
-                    # make sure the tagName is found in the users tags
-                    assert tagName in user.tags, "TagName '{0}' not found for user '{1}'".format(tagName,
-                                                                                                 user.getUserName())
-                    args.append(user.tags[tagName])
-                else:
-                    # No tag referenced, pass the arg
-                    args.append(arg)
+            if len(context.table.rows) > 0:
+                # There are function arguments
+                user = directory.getUser(userName)
+                # Allow the user to specify expressions referencing tags in the args list
+                pattern = re.compile('\{(.*)\}$')
+                for arg in context.table[0].cells:
+                    m = pattern.match(arg)
+                    if m:
+                        # tagName reference found in args list
+                        tagName = m.groups()[0]
+                        # make sure the tagName is found in the users tags
+                        assert tagName in user.tags, "TagName '{0}' not found for user '{1}'".format(tagName,
+                                                                                                     user.getUserName())
+                        args.append(user.tags[tagName])
+                    else:
+                        # No tag referenced, pass the arg
+                        args.append(arg)
     return args
 
 
