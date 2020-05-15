@@ -38,12 +38,24 @@ Feature: Space Tech
 
 
       # Rolenames : MspPrincipal.proto
+      #
+      # Use case roles:
+      #        peerOrg0     | Buyer
+      #        peerOrg1     | Buyer
+      #        peerOrg2     | Data provider
+      #        peerOrg3     | Data provider
+      #        peerOrg4     | Curator
+      #        peerOrg5     | Curator
+      #        peerOrg6     | Auditor
       And the peer network has organizations:
         | Organization | Readers | Writers | Admins |
         | peerOrg0     | member  | member  | admin  |
         | peerOrg1     | member  | member  | admin  |
         | peerOrg2     | member  | member  | admin  |
         | peerOrg3     | member  | member  | admin  |
+        | peerOrg4     | member  | member  | admin  |
+        | peerOrg5     | member  | member  | admin  |
+        | peerOrg6     | member  | member  | admin  |
 
       And a ordererBootstrapAdmin is identified and given access to all public certificates and orderer node info
 
@@ -65,6 +77,12 @@ Feature: Space Tech
         | peer5Signer         | peer5       | peerOrg2     |                   |
         | peer6Signer         | peer6       | peerOrg3     |                   |
         | peer7Signer         | peer7       | peerOrg3     |                   |
+        | peer8Signer         | peer8       | peerOrg4     |                   |
+        | peer9Signer         | peer9       | peerOrg4     |                   |
+        | peer10Signer        | peer10      | peerOrg5     |                   |
+        | peer11Signer        | peer11      | peerOrg5     |                   |
+        | peer12Signer        | peer12      | peerOrg6     |                   |
+        | peer13Signer        | peer13      | peerOrg6     |                   |
         | peer0Admin          | peer0       | peerOrg0     | peer-admin-cert   |
         | peer1Admin          | peer1       | peerOrg0     | peer-admin-cert   |
         | peer2Admin          | peer2       | peerOrg1     | peer-admin-cert   |
@@ -73,10 +91,19 @@ Feature: Space Tech
         | peer5Admin          | peer5       | peerOrg2     | peer-admin-cert   |
         | peer6Admin          | peer6       | peerOrg3     | peer-admin-cert   |
         | peer7Admin          | peer7       | peerOrg3     | peer-admin-cert   |
+        | peer8Admin          | peer8       | peerOrg4     | peer-admin-cert   |
+        | peer9Admin          | peer9       | peerOrg4     | peer-admin-cert   |
+        | peer10Admin         | peer10      | peerOrg5     | peer-admin-cert   |
+        | peer11Admin         | peer11      | peerOrg5     | peer-admin-cert   |
+        | peer12Admin         | peer12      | peerOrg6     | peer-admin-cert   |
+        | peer13Admin         | peer13      | peerOrg6     | peer-admin-cert   |
         | configAdminPeerOrg0 | configAdmin | peerOrg0     | config-admin-cert |
         | configAdminPeerOrg1 | configAdmin | peerOrg1     | config-admin-cert |
         | configAdminPeerOrg2 | configAdmin | peerOrg2     | config-admin-cert |
         | configAdminPeerOrg3 | configAdmin | peerOrg3     | config-admin-cert |
+        | configAdminPeerOrg4 | configAdmin | peerOrg4     | config-admin-cert |
+        | configAdminPeerOrg5 | configAdmin | peerOrg5     | config-admin-cert |
+        | configAdminPeerOrg6 | configAdmin | peerOrg6     | config-admin-cert |
 
     # Order info includes orderer admin/orderer information and address (host:port) from previous steps
     # Only the peer organizations can vary.
