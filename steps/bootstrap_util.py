@@ -1133,8 +1133,8 @@ class CallbackHelper:
         return os.path.join(self.getVolumePath(project_name=project_name, pathType=pathType), compose_service, "tls_config")
 
     def _getPathAndUserInfo(self, directory , project_name, compose_service, nat_discriminator="Signer", pathType=PathType.Local):
-        matchingNATs = [nat for nat in directory.getNamedCtxTuples() if ((compose_service in nat.user) and (nat_discriminator in nat.user) and ((compose_service in nat.nodeName)))]
-        assert len(matchingNATs)==1, "Unexpected number of matching NodeAdminTuples: {0}".format(matchingNATs)
+        matchingNATs = [nat for nat in directory.getNamedCtxTuples() if ((compose_service + nat_discriminator in nat.user) and ((compose_service in nat.nodeName)))]
+        assert len(matchingNATs)==1, "Unexpected number of matching NodeAdminTuples in _getPathAndUserInfo: {0}".format(matchingNATs)
         localMspConfigPath = self.getLocalMspConfigPath(project_name=project_name, compose_service=compose_service,pathType=pathType)
         return (localMspConfigPath, matchingNATs[0])
 
@@ -1262,9 +1262,9 @@ class CallbackHelper:
             with open(certPath, 'w') as f:
                 f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, userTLSCert))
 
-    def _getMspId(self, compose_service, directory):
-        matchingNATs = [nat for nat in directory.getNamedCtxTuples() if ((compose_service in nat.user) and ("Signer" in nat.user) and ((compose_service in nat.nodeName)))]
-        assert len(matchingNATs)==1, "Unexpected number of matching NodeAdminTuples: {0}".format(matchingNATs)
+    def _getMspId(self, compose_service, directory, nat_discriminator="Signer"):
+        matchingNATs = [nat for nat in directory.getNamedCtxTuples() if ((compose_service + nat_discriminator in nat.user) and ((compose_service in nat.nodeName)))]
+        assert len(matchingNATs)==1, "Unexpected number of matching NodeAdminTuples in _getMspId: {0}".format(matchingNATs)
         return matchingNATs[0].organization
 
 class OrdererGensisBlockCompositionCallback(compose.CompositionCallback, CallbackHelper):
