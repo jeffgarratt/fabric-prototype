@@ -135,6 +135,9 @@ Feature: Space Tech
         | peerOrg1     |
         | peerOrg2     |
         | peerOrg3     |
+        | peerOrg4     |
+        | peerOrg5     |
+        | peerOrg6     |
 
       And user "configAdminOrdererOrg0" using cert alias "config-admin-cert" connects to deliver function on node "<orderer0>" using port "7050"
 
@@ -161,7 +164,10 @@ Feature: Space Tech
         | dev0Org0     | consortium1 | peerOrg0     | consortium1-cert |
         | dev0Org1     | consortium1 | peerOrg1     | consortium1-cert |
         | dev0Org2     | consortium1 | peerOrg2     | consortium1-cert |
-        | auditor0Org3 | consortium1 | peerOrg3     | consortium1-cert |
+        | dev0Org3     | consortium1 | peerOrg3     | consortium1-cert |
+        | dev0Org4     | consortium1 | peerOrg4     | consortium1-cert |
+        | dev0Org5     | consortium1 | peerOrg5     | consortium1-cert |
+        | auditor0Org6 | consortium1 | peerOrg6     | consortium1-cert |
 
       And user "configAdminOrdererOrg0" gives "consortium1" to user "dev0Org0" who saves it as "consortium1"
 
@@ -169,7 +175,11 @@ Feature: Space Tech
         | Organization |
         | peerOrg0     |
         | peerOrg1     |
-#      |  peerOrg2     |
+        | peerOrg2     |
+        | peerOrg3     |
+        | peerOrg4     |
+        | peerOrg5     |
+        | peerOrg6     |
 
       And the user "dev0Org0" creates an peer anchor set "anchors1" for orgs:
         | User        | Peer  | Organization |
@@ -185,9 +195,14 @@ Feature: Space Tech
 
 
       And the user "dev0Org0" collects signatures for ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope" from developers:
-        | Developer | Cert Alias       |
-        | dev0Org0  | consortium1-cert |
-        | dev0Org1  | consortium1-cert |
+        | Developer    | Cert Alias       |
+        | dev0Org0     | consortium1-cert |
+        | dev0Org1     | consortium1-cert |
+        | dev0Org2     | consortium1-cert |
+        | dev0Org3     | consortium1-cert |
+        | dev0Org4     | consortium1-cert |
+        | dev0Org5     | consortium1-cert |
+        | auditor0Org6 | consortium1-cert |
 
       And the user "dev0Org0" creates a ConfigUpdate Tx "configUpdateTx1" using cert alias "consortium1-cert" using signed ConfigUpdateEnvelope "createChannelConfigUpdate1Envelope"
 
@@ -201,18 +216,16 @@ Feature: Space Tech
 
       When user "dev0Org0" using cert alias "consortium1-cert" connects to deliver function on node "<orderer0>" using port "7050"
       And user "dev0Org0" sends deliver a seek request on node "<orderer0>" with properties:
-        | ChainId                           | Start | End |
+        | ChainId                                   | Start | End |
         | org.spacetech.blockchain.channel.requests | 0     | 0   |
 
       Then user "dev0Org0" should get a delivery "genesisBlockForMyNewChannel" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
 
       Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "dev0Org1" who saves it as "genesisBlockForMyNewChannel"
 
+      # This is entry point for joining an existing channel
       Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer0Admin" who saves it as "genesisBlockForMyNewChannel"
       Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer1Admin" who saves it as "genesisBlockForMyNewChannel"
-
-
-    # This is entry point for joining an existing channel
       When user "peer0Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
         | Peer  |
         | peer0 |
@@ -230,6 +243,7 @@ Feature: Space Tech
         | peer1 |
 
 
+
       Given the user "configAdminPeerOrg0" creates an peer anchor set "anchors1" for orgs:
         | User        | Peer  | Organization |
         | peer0Signer | peer0 | peerOrg0     |
@@ -239,7 +253,7 @@ Feature: Space Tech
       And user "configAdminPeerOrg0" retrieves the latest config update "latestChannelConfigUpdate" from orderer "<orderer0>" for channel "org.spacetech.blockchain.channel.requests"
 
       And the user "configAdminPeerOrg0" creates an existing channel config update "existingChannelConfigUpdate1" using config update "latestChannelConfigUpdate"
-        | ChannelID                         | [PeerAnchorSet] |
+        | ChannelID                                 | [PeerAnchorSet] |
         | org.spacetech.blockchain.channel.requests | anchors1        |
 
 
@@ -288,6 +302,80 @@ Feature: Space Tech
       Then user "peer3Admin" expects result code for "joinChannelResult" of "200" from peers:
         | Peer  |
         | peer3 |
+
+
+      # Shortcutting process here but in general would be dissiminated in a more delegatory manner (i.e. to org's devs, then to admins of peers)
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer4Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer4Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer4 |
+      Then user "peer4Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer4 |
+
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer5Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer5Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer5 |
+      Then user "peer5Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer5 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer6Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer6Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer6 |
+      Then user "peer6Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer6 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer7Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer7Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer7 |
+      Then user "peer7Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer7 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer8Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer8Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer8 |
+      Then user "peer8Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer8 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer9Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer9Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer9 |
+      Then user "peer9Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer9 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer10Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer10Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer10 |
+      Then user "peer10Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer10 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer11Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer11Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer11 |
+      Then user "peer11Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer11 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer12Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer12Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer12 |
+      Then user "peer12Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer12 |
+      Given user "dev0Org0" gives "genesisBlockForMyNewChannel" to user "peer13Admin" who saves it as "genesisBlockForMyNewChannel"
+      When user "peer13Admin" using cert alias "peer-admin-cert" requests to join channel using genesis block "genesisBlockForMyNewChannel" on peers with result "joinChannelResult"
+        | Peer  |
+        | peer13 |
+      Then user "peer13Admin" expects result code for "joinChannelResult" of "200" from peers:
+        | Peer  |
+        | peer13 |
 
 
 #      #######################################################
@@ -484,7 +572,7 @@ Feature: Space Tech
       And I wait "2" seconds
 
       And user "configAdminPeerOrg0" sends deliver a seek request on node "<orderer0>" with properties:
-        | ChainId                           | Start | End |
+        | ChainId                                   | Start | End |
         | org.spacetech.blockchain.channel.requests | 2     | 2   |
 
       Then user "configAdminPeerOrg0" should get a delivery "deliveredInstantiateTx1Block" from "<orderer0>" of "1" blocks with "1" messages within "1" seconds
